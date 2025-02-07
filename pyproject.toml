@@ -1,0 +1,23 @@
+[project]
+name = "physics-workload"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "asgiref>=3.8.1",
+    "autopep8>=2.3.2",
+    "dj-database-url>=2.3.0",
+    "django-faicon>=0.1.0",
+    "django>=5.1.5",
+    "django-import-export>=4.3.5",
+    "gunicorn>=23.0.0",
+    "iommi>=7.9.1",
+    "pycodestyle>=2.12.1",
+    "python-dotenv>=1.0.1",
+    "pytz>=2025.1",
+    "sqlparse>=0.5.3",
+    "unipath>=1.1",
+    "whitenoise>=6.8.2",
+    "django-model-utils>=5.0.0",
+]

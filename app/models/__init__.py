@@ -2,9 +2,18 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
+from django.db.models import Model
 
 from django.db import models
 from django.contrib.auth.models import User
+
+from app.models.academic_year import AcademicYear
+from app.models.managers import ActiveManager
+from app.models.module import Module, ModuleYear, DissertationLoadFunction
+from app.models.academic_group import AcademicGroup
+from app.models.standard_loads import StandardLoads
+from app.models.task import Task, TaskYearBase, TaskYearModule, TaskYearGeneral, Assignment
+from app.models.staff import Staff, StaffYear, StaffHours
 
 
 class Transaction(models.Model):

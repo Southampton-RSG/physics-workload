@@ -32,18 +32,21 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:5085', 'http:
 # Application definition
 
 INSTALLED_APPS = [
-    'app',  # Enable the inner app
-    'import_export',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'iommi',
+
+    'app',  # Enable the inner app
+    'import_export',
 ]
 
 MIDDLEWARE = [
+    'iommi.live_edit.Middleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -53,6 +56,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'app.middlewares.AjaxMiddleware',
+    'iommi.sql_trace.Middleware',
+    'iommi.profiling.Middleware',
+    'iommi.middleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -143,3 +149,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = '/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#############################################################
+#############################################################
+# Settings specific to this project:
+YEAR_MINIMUM_VALUE: int = 2000
+HOURS_MAXIMUM_VALUE: int = 2000
