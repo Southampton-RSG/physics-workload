@@ -1,0 +1,46 @@
+[
+  {
+    "model": "app.StaffYear",
+    "pk": 1,
+    "fields": {
+      "staff": 1,
+      "academic_year": 1,
+      "fte_fraction": 1.0,
+      "hours": 0,
+      "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    }
+  },
+  {
+    "model": "app.StaffYear",
+    "pk": 2,
+    "fields": {
+      "staff": 2,
+      "academic_year": 1,
+      "fte_fraction": 0.75,
+      "hours": 0,
+      "notes": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
+    }
+  },
+  {
+    "model": "app.StaffYear",
+    "pk": 3,
+    "fields": {
+      "staff": 3,
+      "academic_year": 1,
+      "fte_fraction": 0,
+      "hours": 100,
+      "notes": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+    }
+  },
+  {
+    "model": "app.StaffYear",
+    "pk": 4,
+    "fields": {
+      "staff": 4,
+      "academic_year": 1,
+      "fte_fraction": 0.0,
+      "hours": 150,
+      "notes": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    }
+  }
+]

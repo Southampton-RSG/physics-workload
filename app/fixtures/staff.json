@@ -1,0 +1,54 @@
+[
+  {
+    "model": "app.Staff",
+    "pk": 1,
+    "fields": {
+      "account": "aa1a23",
+      "name": "Alice Aardvark",
+      "is_active": 1,
+      "academic_group": 1,
+      "gender": "F",
+      "type": "Professor",
+      "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    }
+  },
+  {
+    "model": "app.Staff",
+    "pk": 2,
+    "fields": {
+      "account": "bb4b24",
+      "name": "Bob Bee",
+      "is_active": 1,
+      "academic_group": 2,
+      "gender": "M",
+      "type": "Postdoc",
+      "notes": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
+    }
+  },
+  {
+    "model": "app.Staff",
+    "pk": 3,
+    "fields": {
+      "account": "cc5c25",
+      "name": "Claire Coypu",
+      "is_active": 1,
+      "academic_group": 3,
+      "gender": "F",
+      "type": "Postdoc",
+      "notes": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+    }
+  },
+  {
+    "model": "app.Staff",
+    "pk": 4,
+    "fields": {
+      "account": "dd6d126",
+      "name": "David Donkey",
+      "is_active": 1,
+      "academic_group": 4,
+      "gender": "X",
+      "type": "Postdoc",
+      "notes": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    }
+  }
+]

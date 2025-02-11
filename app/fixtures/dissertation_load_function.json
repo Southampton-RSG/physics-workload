@@ -1,0 +1,22 @@
+[
+  {
+    "model": "app.DissertationLoadFunction",
+    "pk": 1,
+    "fields": {
+      "name": "BSc Final-Year Project",
+      "expression": "y=m*x+c",
+      "is_active": 1,
+      "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    }
+  },
+  {
+    "model": "app.DissertationLoadFunction",
+    "pk": 2,
+    "fields": {
+      "name": "Industrial Placement",
+      "expression": "y=m*x+c",
+      "is_active": 1,
+      "notes": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
+    }
+  }
+]

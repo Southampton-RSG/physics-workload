@@ -132,6 +132,15 @@ wheels = [
 ]
 
 [[package]]
+name = "parso"
+version = "0.8.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/66/94/68e2e17afaa9169cf6412ab0f28623903be73d1b32e208d9e8e541bb086d/parso-0.8.4.tar.gz", hash = "sha256:eb3a7b58240fb99099a345571deecc0f9540ea5f4dd2fe14c2a99d6b281ab92d", size = 400609 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c6/ac/dac4a63f978e4dcb3c6d3a78c4d8e0192a113d288502a1216950c41b1027/parso-0.8.4-py2.py3-none-any.whl", hash = "sha256:a418670a20291dacd2dddc80c377c5c3791378ee1e8d12bffc35420643d43f18", size = 103650 },
+]
+
+[[package]]
 name = "physics-workload"
 version = "0.1.0"
 source = { virtual = "." }
@@ -145,6 +154,7 @@ dependencies = [
     { name = "django-model-utils" },
     { name = "gunicorn" },
     { name = "iommi" },
+    { name = "parso" },
     { name = "pycodestyle" },
     { name = "python-dotenv" },
     { name = "pytz" },
@@ -164,6 +174,7 @@ requires-dist = [
     { name = "django-model-utils", specifier = ">=5.0.0" },
     { name = "gunicorn", specifier = ">=23.0.0" },
     { name = "iommi", specifier = ">=7.9.1" },
+    { name = "parso", specifier = ">=0.8.4" },
     { name = "pycodestyle", specifier = ">=2.12.1" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "pytz", specifier = ">=2025.1" },

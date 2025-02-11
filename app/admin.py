@@ -7,34 +7,17 @@ from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 
 from app.models import (
-    Transaction, AcademicGroup, AcademicYear, StandardLoads,
+    AcademicGroup, AcademicYear,
     Module, ModuleYear,
     Task, TaskYearGeneral, TaskYearModule, Assignment,
-    StaffYear, Staff, StaffHours
+    StaffYear, Staff,
 )
-from import_export import resources
-from import_export.admin import ImportMixin, ImportExportModelAdmin
-
-
-class TransactionResource(resources.ModelResource):
-    class Meta:
-        model = Transaction
-        fields = ['id', 'bill_for', 'issue_date', 'due_date', 'total', 'status', 'created_time']
 
 
 @admin.register(AcademicGroup)
 class AcademicGroupAdmin(ModelAdmin):
     """
     Admin class for the AcademicGroup model.
-    Uses the default settings, but here in case it needs expanding.
-    """
-    pass
-
-
-@admin.register(StandardLoads)
-class StandardLoadsAdmin(ModelAdmin):
-    """
-    Admin class for the StandardLoads model.
     Uses the default settings, but here in case it needs expanding.
     """
     pass
@@ -112,15 +95,6 @@ class StaffAdmin(ModelAdmin):
     pass
 
 
-@admin.register(StaffHours)
-class StaffHoursAdmin(ModelAdmin):
-    """
-    Admin class for the StaffHours model.
-    Uses the default settings, but here in case it needs expanding.
-    """
-    pass
-
-
 @admin.register(StaffYear)
 class StaffYearAdmin(ModelAdmin):
     """
@@ -128,10 +102,3 @@ class StaffYearAdmin(ModelAdmin):
     Uses the default settings, but here in case it needs expanding.
     """
     pass
-
-
-
-@admin.register(Transaction)
-class TransactionAdmin(ImportMixin, ModelAdmin):
-    list_display = ['id', 'bill_for', 'issue_date', 'due_date', 'total', 'status', 'created_time']
-    resource_class = TransactionResource

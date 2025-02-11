@@ -20,4 +20,5 @@ dependencies = [
     "unipath>=1.1",
     "whitenoise>=6.8.2",
     "django-model-utils>=5.0.0",
+    "parso>=0.8.4",
 ]

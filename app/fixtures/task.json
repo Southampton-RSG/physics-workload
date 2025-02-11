@@ -1,0 +1,32 @@
+[
+  {
+    "model": "app.Task",
+    "pk": 1,
+    "fields": {
+      "module": 1,
+      "name": "Lead Lecturer",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "is_active": 1
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": 2,
+    "fields": {
+      "module": 1,
+      "name": "Markers",
+      "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+      "is_active": 1
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": 3,
+    "fields": {
+      "name": "Director of Students",
+      "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+      "is_active": 1
+    }
+  }
+
+]

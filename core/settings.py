@@ -151,7 +151,18 @@ LOGIN_REDIRECT_URL = '/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 #############################################################
+# Settings specific to Iommi:
+#############################################################
+from iommi.style import Style
+from iommi.style_bootstrap5 import bootstrap5 as imported_style
+IOMMI_DEFAULT_STYLE = Style(
+    imported_style,
+)
+
+
 #############################################################
 # Settings specific to this project:
+#############################################################
 YEAR_MINIMUM_VALUE: int = 2000
 HOURS_MAXIMUM_VALUE: int = 2000
+

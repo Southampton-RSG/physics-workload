@@ -8,12 +8,15 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from app.models.academic_year import AcademicYear
-from app.models.managers import ActiveManager
-from app.models.module import Module, ModuleYear, DissertationLoadFunction
+from app.models.module import Module
+from app.models.module_year import ModuleYear
+from app.models.dissertation_load_function import DissertationLoadFunction
 from app.models.academic_group import AcademicGroup
-from app.models.standard_loads import StandardLoads
-from app.models.task import Task, TaskYearBase, TaskYearModule, TaskYearGeneral, Assignment
-from app.models.staff import Staff, StaffYear, StaffHours
+from app.models.task import Task
+from app.models.task_year import TaskYearBase, TaskYearGeneral, TaskYearModule
+from app.models.assignment import Assignment
+from app.models.staff import Staff
+from app.models.staff_year import StaffYear
 
 
 class Transaction(models.Model):

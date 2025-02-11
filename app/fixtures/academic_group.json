@@ -1,0 +1,34 @@
+[
+  {
+    "model": "app.AcademicGroup",
+    "pk": 1,
+    "fields": {
+      "name": "Astronomy & Astrophysics",
+      "is_active": 1
+    }
+  },
+  {
+    "model": "app.AcademicGroup",
+    "pk": 2,
+    "fields": {
+      "name": "Quantum, Light & Matter",
+      "is_active": 1
+    }
+  },
+  {
+    "model": "app.AcademicGroup",
+    "pk": 3,
+    "fields": {
+      "name": "Optoelectronics Research Centre",
+      "is_active": 1
+    }
+  },
+  {
+    "model": "app.AcademicGroup",
+    "pk": 4,
+    "fields": {
+      "name": "High Energy Physics",
+      "is_active": 1
+    }
+  }
+]

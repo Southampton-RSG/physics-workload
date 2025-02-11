@@ -10,42 +10,51 @@ from iommi.path import register_path_decoding
 from iommi import register_search_fields
 from iommi.views import crud_views
 
-from app.models import Module, ModuleYear
-from app.models.task import Task
+from app.models import Module, ModuleYear, Task, TaskYearModule
+
 
 register_path_decoding(module=lambda string, **_: Module.objects.get(code=string))
 # register_search_fields(model=Task, search_fields=['name'], allow_non_unique=True)
+
+
+class EditTableNoAdd(EditTable):
+    class Meta:
+        edit_actions__add_row = None
 
 
 class ModulePage(Page):
     """
 
     """
-    module = Table(
+    title = html.h1(lambda params, **_: f"{params.module}")
+    module = Form(
         auto__model=Module,
-        sortable=False,
-        auto__exclude=['notes'],
-        rows=lambda params, **_: [params.module],
-        title=lambda params, **_: f"{params.module}",
-        columns__edit=Column.edit(
-            cell__url=lambda row, **_: f'/module/{row.pk}/edit/',
-        ),
+        instance=lambda params, **_: params.module,
+        fields__name__group="row_1",
+        fields__code__group="row_1",
+        fields__academic_group__group="row_1",
+        fields__has_dissertation__group='row_2',
+        fields__has_placement__group='row_2',
+        auto__exclude=['is_active'],
     )
-    module_notes = html.p(
-        lambda params, **_: format_html(f"<strong>General Notes:</strong> {params.module.notes}"),
-    )
-    year = Table(
+
+    #     html.p(
+    #     lambda params, **_: format_html(f"<strong>General Notes:</strong> {params.module.notes}"),
+    # ))
+    year = Form(
         auto__model=ModuleYear,
-        title=None,
-        sortable=False,
-        auto__exclude=['notes', 'module'],
-        columns__edit=Column.edit(
-            cell__url=lambda row, **_: f'/module_year/{row.pk}/edit/',
-        ),
-        rows=lambda params, **_: [ModuleYear.objects.filter(module=params.module).latest()],
-    )
-    year_notes = html.p(
-        lambda params, **_: format_html(f"<strong>Year Notes:</strong> {ModuleYear.objects.filter(module=params.module).latest().notes}"),
+        instance=lambda params, **_: params.module.get_latest_year(),
+        fields__academic_year__group="row_1",
+        fields__students__group="row_1",
+        fields__credit_hours__group="row_1",
+        fields__lectures__group="row_2",
+        fields__problem_classes__group="row_2",
+        fields__courseworks__group="row_2",
+        fields__synoptic_lectures__group="row_2",
+        fields__exams__group="row_2",
+        fields__dissertation_load_function__group="row_2",
+        fields__notes__group="row_3",
+        auto__exclude=['module', 'academic_year'],
     )
 
     tasks = Table(
@@ -59,6 +68,7 @@ class ModulePage(Page):
             cell__url=lambda row, **_: f'/task/{row.pk}/edit/',
         ),
     )
+
     years = Table(
         title="Previous Years",
         auto__model=ModuleYear,
@@ -66,12 +76,12 @@ class ModulePage(Page):
         columns__dissertation_load_function__include=lambda params, **_: params.module.has_dissertation,
         columns__module__include=False,
         columns__notes__include=False,
-        columns__year__cell__url=lambda row, **_: f'/module_year/{row.pk}',
+        columns__academic_year__cell__url=lambda row, **_: f'/module_year/{row.pk}',
     )
 
 
 urlpatterns = [
-    path('module/<module>/', ModulePage().as_view()),
+    path('module/<module>/', ModulePage().as_view(), name='module_detail'),
     path('module/', crud_views(model=Module)),
     path('module_year/', crud_views(model=ModuleYear)),
     path('task/', crud_views(model=Task)),

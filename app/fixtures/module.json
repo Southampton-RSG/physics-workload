@@ -1,0 +1,64 @@
+[
+  {
+    "model": "app.Module",
+    "pk": 1,
+    "fields": {
+      "name": "Physics Skills 1",
+      "code": "PHYS1017",
+      "is_active": 1,
+      "has_dissertation": 1,
+      "has_placement": 0,
+      "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    }
+  },
+  {
+    "model": "app.Module",
+    "pk": 2,
+    "fields": {
+     "name": "Atomic Physics",
+      "code": "PHYS3008",
+      "academic_group": 2,
+      "is_active": 1,
+      "has_dissertation": 0,
+      "has_placement": 0,
+      "notes": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
+    }
+  },
+  {
+    "model": "app.Module",
+    "pk": 3,
+    "fields": {
+     "name": "Batchelor of Science Project",
+      "code": "PHYS3018",
+      "is_active": 1,
+      "has_dissertation": 1,
+      "has_placement": 0,
+      "notes": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+    }
+  },
+  {
+    "model": "app.Module",
+    "pk": 4,
+    "fields": {
+     "name": "R&D Project for MPhys Industrial Placement",
+      "code": "PHYS6027",
+      "is_active": 1,
+      "has_dissertation": 0,
+      "has_placement": 0,
+      "notes": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    }
+  },
+  {
+    "model": "app.Module",
+    "pk": 5,
+    "fields": {
+      "name": "Introduction to Astronomy & Space Science",
+      "code": "PHYS1005",
+      "academic_group": 1,
+      "is_active": 1,
+      "has_dissertation": 0,
+      "has_placement": 0,
+      "notes": "Varius libero penatibus lectus, vivamus ligula integer facilisi feugiat."
+    }
+  }
+]
