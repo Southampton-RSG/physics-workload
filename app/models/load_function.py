@@ -3,9 +3,10 @@ from django.urls import reverse_lazy
 from app.models.managers import ActiveManager
 
 
-class DissertationLoadFunction(Model):
+class LoadFunction(Model):
     """
-    Evaluatable Python expression that determines the load for a dissertation.
+    Evaluatable Python expression that determines the load for a number of students,
+    e.g. for number of tutees or when marking a dissertation..
     """
     name = CharField(
         max_length=128, unique=True

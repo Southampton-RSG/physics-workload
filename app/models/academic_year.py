@@ -19,61 +19,63 @@ class AcademicYear(Model):
         help_text="Initial year, e.g. 2000 for 2000-2001 academic year."
     )
 
-    load_per_lecture = FloatField(
+    load_lecture = FloatField(
         blank=False, null=False,
         validators=[
             MinValueValidator(0.0),
         ],
-        verbose_name="Load hours per lecture",
+        verbose_name="Load hours per lecture & problems class",
     )
-    load_per_synoptic_lecture = FloatField(
+    load_lecture_first = FloatField(
         blank=False, null=False,
         validators=[
             MinValueValidator(0.0),
         ],
-        verbose_name="Load hours per synoptic lecture",
+        verbose_name="Load hours per lecture & problems class for first-time assignment",
     )
-    load_per_problems_class = FloatField(
+
+    load_coursework_set = FloatField(
         blank=False, null=False,
         validators=[
             MinValueValidator(0.0),
         ],
-        verbose_name="Load hours per problem class",
+        verbose_name="Load hours per item of coursework prepared",
     )
-    load_per_exam = FloatField(
+    load_coursework_credit = FloatField(
         blank=False, null=False,
         validators=[
             MinValueValidator(0.0),
         ],
-        verbose_name="Load hours per exam",
+        verbose_name="Load hours per coursework credit hour",
     )
-    load_per_placement = FloatField(
+    load_coursework_marked = FloatField(
         blank=False, null=False,
         validators=[
             MinValueValidator(0.0),
         ],
-        verbose_name="Load hours per student on placement",
+        verbose_name="Load hours per (coursework plus coursework credit hour) marked",
     )
-    load_per_coursework = FloatField(
+
+    load_exam_credit = FloatField(
         blank=False, null=False,
         validators=[
             MinValueValidator(0.0),
         ],
-        verbose_name="Load hours per student per coursework",
+        verbose_name="Load hours per exam credit hour",
     )
-    load_first_time = FloatField(
+    load_exam_marked = FloatField(
         blank=False, null=False,
         validators=[
             MinValueValidator(0.0),
         ],
-        verbose_name="Multiplier to effective load for first-time assignment",
+        verbose_name="Load hours per exam marked",
     )
-    misc_load = FloatField(
+    load_fte_misc = FloatField(
         blank=False, null=False,
         validators=[
             MinValueValidator(0.0),
         ],
-        verbose_name="Misc",
+        verbose_name="Staff misc. load per FTE fraction",
     )
     notes = TextField(blank=True)
 
@@ -86,8 +88,8 @@ class AcademicYear(Model):
     def __str__(self) -> str:
         return f"{self.year-2000}/{self.year-1999}"
 
-    def get_absolute_url(self) -> str:
-        return reverse_lazy('academic_year_detail', args=[self.pk])
+    # def get_absolute_url(self) -> str:
+    #     return reverse_lazy('academic_year_detail', args=[self.pk])
 
 
 def get_latest_academic_year() -> AcademicYear:

@@ -58,15 +58,17 @@ class StaffYear(Model):
         :return: Returns the load if it has been calculated, calculates and caches it if not.
         """
         if not self.load_actual:
-            self.load_actual = self.calculate_load()
+            self.calculate_load()
 
         return self.load_actual
 
-    def calculate_load(self) -> float:
+    def calculate_load(self):
         """
         :return: The total of all the assignments set for this staff member this year.
         """
-        return sum(self.assignment_set.values_list('load', flat=True))
+        load: float = self.academic_year.load_fte_misc * self.fte_fraction
 
-    def get_absolute_url(self) -> str:
-        return reverse_lazy('staff_year_detail', args=[self.pk])
+        self.load_actual = load
+        self.save()
+    # def get_absolute_url(self) -> str:
+    #     return reverse_lazy('staff_year_detail', args=[self.pk])

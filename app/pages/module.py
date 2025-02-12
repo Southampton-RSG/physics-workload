@@ -53,6 +53,8 @@ class ModulePage(Page):
         fields__synoptic_lectures__group="row_2",
         fields__exams__group="row_2",
         fields__dissertation_load_function__group="row_2",
+        fields__exam_mark_fraction__group="row_3",
+        fields__coursework_mark_fraction__group="row_3",
         fields__notes__group="row_3",
         auto__exclude=['module', 'academic_year'],
     )
@@ -60,6 +62,7 @@ class ModulePage(Page):
     tasks = Table(
         auto__model=Task,
         auto__exclude=['module', 'is_active'],
+        rows=lambda params, **_: Task.objects.filter(module=params.module),
         sortable=False,
         # columns__is_active__filter__include=True,
         # query__form__fields__is_active__initial=lambda **_: True,
@@ -69,13 +72,20 @@ class ModulePage(Page):
         ),
     )
 
-    years = Table(
+    module_years = Table(
         title="Previous Years",
         auto__model=ModuleYear,
+        auto__exclude=['notes', 'module'],
         rows=lambda params, **_: ModuleYear.objects.filter(module=params.module),
         columns__dissertation_load_function__include=lambda params, **_: params.module.has_dissertation,
-        columns__module__include=False,
-        columns__notes__include=False,
+        columns__lectures__group="Load",
+        columns__problem_classes__group="Load   ",
+        columns__courseworks__group="Load",
+        columns__synoptic_lectures__group="Load",
+        columns__exams__group="Load",
+        columns__dissertation_load_function__group="Load",
+        columns__exam_mark_fraction__group="Mark Fraction",
+        columns__coursework_mark_fraction__group="Mark Fraction",
         columns__academic_year__cell__url=lambda row, **_: f'/module_year/{row.pk}',
     )
 

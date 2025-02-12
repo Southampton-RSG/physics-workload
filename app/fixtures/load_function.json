@@ -1,6 +1,6 @@
 [
   {
-    "model": "app.DissertationLoadFunction",
+    "model": "app.LoadFunction",
     "pk": 1,
     "fields": {
       "name": "BSc Final-Year Project",
@@ -10,7 +10,7 @@
     }
   },
   {
-    "model": "app.DissertationLoadFunction",
+    "model": "app.LoadFunction",
     "pk": 2,
     "fields": {
       "name": "Industrial Placement",

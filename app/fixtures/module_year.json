@@ -8,7 +8,7 @@
       "credit_hours": 120,
       "students": 250,
       "lectures": 20,
-      "courseworks": 2,
+      "coursework": 2,
       "exams": 2,
       "problem_classes": 10,
       "synoptic_lectures": 2,
@@ -24,7 +24,7 @@
       "credit_hours": 120,
       "students": 240,
       "lectures": 18,
-      "courseworks": 3,
+      "coursework": 3,
       "exams": 2,
       "problem_classes": 8,
       "synoptic_lectures": 1,
@@ -40,11 +40,10 @@
       "credit_hours": 160,
       "students": 60,
       "lectures": 0,
-      "courseworks": 0,
+      "coursework": 0,
       "exams": 0,
       "problem_classes": 0,
       "synoptic_lectures": 0,
-      "dissertation_load_function": 1,
       "notes": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
     }
   },
@@ -57,11 +56,10 @@
       "credit_hours": 180,
       "students": 60,
       "lectures": 0,
-      "courseworks": 0,
+      "coursework": 0,
       "exams": 0,
       "problem_classes": 0,
       "synoptic_lectures": 0,
-      "dissertation_load_function": 2,
       "notes": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
     }
   }

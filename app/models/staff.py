@@ -47,4 +47,3 @@ class Staff(Model):
 
     def get_absolute_url(self) -> str:
         return reverse_lazy('staff_detail', args=[self.pk])
-

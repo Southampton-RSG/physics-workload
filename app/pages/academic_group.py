@@ -124,15 +124,16 @@ class AcademicGroupPage(Page):
     """
     title = html.h1(lambda params, **_: f"{params.academic_group}")
     staff = Table(
-        auto__model=Staff, auto__exclude=['user', 'notes', 'is_active'],
+        auto__model=Staff,
+        auto__exclude=['user', 'notes', 'is_active'],
+        rows=lambda params, **_: Staff.objects_active.filter(academic_group=params.academic_group),
+        columns__name__cell__url = lambda row, **_: row.get_absolute_url(),
         page_size=20,
-        columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
-        rows=lambda params, **_: Staff.objects_active.filter(academic_group=params.academic_group)
     )
     modules = ModuleTable(
-        auto__exclude=['notes', 'academic_group', 'is_active'],
-        page_size=20,
+        auto__exclude=['description', 'academic_group', 'is_active'],
         rows=lambda params, **_: Module.objects_active.filter(academic_group=params.academic_group),
+        page_size=20,
     )
 
 

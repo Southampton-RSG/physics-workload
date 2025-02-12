@@ -4,14 +4,14 @@
     "pk": 1,
     "fields": {
       "year": 2025,
-      "load_per_lecture": 1.25,
-      "load_per_synoptic_lecture": 1,
-      "load_per_exam": 1,
-      "load_per_problems_class": 0.9,
-      "load_per_placement": 2.1,
-      "load_per_coursework": 1.5,
-      "load_first_time": 1.5,
-      "misc_load": 1.5,
+      "load_lecture": 3.5,
+      "load_lecture_first_time": 6.5,
+      "load_coursework_set": 2,
+      "load_coursework_credit": 2,
+      "load_coursework_marked": 0.1667,
+      "load_exam_credit": 2,
+      "load_exam_marked": 1,
+      "load_fte_misc": 50,
       "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     }
   }
