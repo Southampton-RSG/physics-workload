@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from model_utils.managers import QueryManager
 
 from app.models.academic_group import AcademicGroup
-from app.models.academic_year import AcademicYear, get_latest_academic_year
+from app.models.standard_load import StandardLoad, get_current_standard_load
 
 
 class Module(Model):
@@ -27,14 +27,6 @@ class Module(Model):
 
     description = TextField(blank=True)
 
-    module = ForeignKey(
-        Module, blank=False, null=False, on_delete=PROTECT,
-        related_name='module_years',
-    )
-    academic_year = ForeignKey(
-        AcademicYear, blank=False, null=False, on_delete=PROTECT,
-        default=get_latest_academic_year,
-    )
     students = IntegerField(
         null=True, blank=True, default=None, validators=[MinValueValidator(0)],
     )

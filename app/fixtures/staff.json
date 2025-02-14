@@ -4,11 +4,11 @@
     "pk": 1,
     "fields": {
       "account": "aa1a23",
-      "name": "Alice Aardvark",
+      "name": "Accomando",
       "is_active": 1,
-      "academic_group": 1,
+      "academic_group": 3,
       "gender": "F",
-      "type": "Professor",
+      "fte_fraction": 1.0,
       "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     }
   },
@@ -16,39 +16,26 @@
     "model": "app.Staff",
     "pk": 2,
     "fields": {
-      "account": "bb4b24",
-      "name": "Bob Bee",
+      "account": "bb1b23",
+      "name": "Banerji",
       "is_active": 1,
-      "academic_group": 2,
-      "gender": "M",
-      "type": "Postdoc",
-      "notes": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
+      "academic_group": 1,
+      "gender": "F",
+      "hours_fixed": 140,
+      "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     }
   },
   {
     "model": "app.Staff",
     "pk": 3,
     "fields": {
-      "account": "cc5c25",
-      "name": "Claire Coypu",
+      "account": "ff1f23",
+      "name": "Freegarde",
       "is_active": 1,
-      "academic_group": 3,
-      "gender": "F",
-      "type": "Postdoc",
-      "notes": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
-    }
-  },
-  {
-    "model": "app.Staff",
-    "pk": 4,
-    "fields": {
-      "account": "dd6d126",
-      "name": "David Donkey",
-      "is_active": 1,
-      "academic_group": 4,
-      "gender": "X",
-      "type": "Postdoc",
-      "notes": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+      "academic_group": 2,
+      "gender": "M",
+      "fte_fraction": 0.5,
+      "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     }
   }
 ]

@@ -1,17 +1,17 @@
-data: year module task assignment
+data: school module task assignment
 
 
-year:
-	uv run manage.py loaddata academic_year academic_group staff staff_year
+school:
+	uv run manage.py loaddata standard_load academic_group staff
 
-module: year
-	uv run manage.py loaddata load_function module module_year
+module: school
+	uv run manage.py loaddata load_function module
 
 task: module
-	uv run manage.py loaddata task_module task_department
+	uv run manage.py loaddata task_module task_school
 
 assignment: task
-	uv run manage.py loaddata task_year_department task_year_module assignment
+	uv run manage.py loaddata assignment_school assignment_module
 
 clean:
 	-rm -rf app/migrations/*.py

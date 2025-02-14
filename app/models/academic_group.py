@@ -11,7 +11,8 @@ class AcademicGroup(Model):
     Named AcademicGroup to avoid collision with base Django Group,
     which is more about user permissions.
     """
-    name = CharField(max_length=128, unique=True)
+    code = CharField(max_length=1, unique=True, blank=False)
+    name = CharField(max_length=128, unique=True, blank=False)
 
     is_active = BooleanField(default=True)
     objects_active = ActiveManager()
@@ -26,4 +27,4 @@ class AcademicGroup(Model):
         return self.name
 
     def get_absolute_url(self) -> str:
-        return reverse_lazy('academic_group_detail', args=[self.pk])
+        return reverse_lazy('academic_group_detail', args=[self.code])

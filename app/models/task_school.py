@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+from typing import Type
 from django.core.validators import MinValueValidator
 from django.db.models import Model, ForeignKey, PROTECT, CharField, FloatField, TextField, IntegerField, BooleanField, Manager
 from django.db.models.signals import pre_save
@@ -10,7 +11,7 @@ from model_utils.managers import QueryManager
 from app.models.load_function import LoadFunction
 
 
-class TaskDepartment(Model):
+class TaskSchool(Model):
     """
     This is the model for tasks that don't belong to a module
     """
@@ -46,7 +47,7 @@ class TaskDepartment(Model):
     )
 
     load_function = ForeignKey(
-        LoadFunction, blank=False, null=False, on_delete=PROTECT,
+        LoadFunction, blank=True, null=True, on_delete=PROTECT,
         help_text="Function by which student load for this task scales",
     )
     students = IntegerField(
@@ -55,7 +56,6 @@ class TaskDepartment(Model):
     )
 
     notes = TextField(blank=True)
-
 
     class Meta:
         ordering = ('is_active', 'name',)
@@ -69,8 +69,8 @@ class TaskDepartment(Model):
         return reverse_lazy('task_department', args=[self.pk])
 
 
-@receiver(pre_save, sender=TaskDepartment)
-def calculate_load_for_task_department(sender: TaskDepartment, **kwargs):
+@receiver(pre_save, sender=TaskSchool)
+def calculate_load_for_task_school(sender: Type[TaskSchool], instance: TaskSchool, **kwargs):
     """
 
     :param sender:
@@ -79,15 +79,11 @@ def calculate_load_for_task_department(sender: TaskDepartment, **kwargs):
     """
     load: float = 0
 
-    if sender.load_function:
+    if instance.load_function:
         try:
-            load += sender.load_function.calculate(sender.students)
+            load += instance.load_function.calculate(instance.students)
         except Exception as calculation_exception:
             raise calculation_exception
 
-    if sender.load_fixed_first:
-        sender.load_calc_first = sender.load_fixed_first + load
-    else:
-        sender.load_calc_first = sender.load_fixed + load
-
-    sender.load = sender.load_fixed + load
+    instance.load = instance.load_fixed + load
+    instance.load_first = instance.load + instance.load_fixed_first

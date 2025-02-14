@@ -10,7 +10,7 @@ from iommi.path import register_path_decoding
 from iommi import register_search_fields
 from iommi.views import crud_views
 
-from app.models import Module, ModuleYear, TaskModule, TaskYearModule
+from app.models import Module, TaskModule, TaskSchool
 
 
 register_path_decoding(module=lambda string, **_: Module.objects.get(code=string))
@@ -41,23 +41,23 @@ class ModulePage(Page):
     #     html.p(
     #     lambda params, **_: format_html(f"<strong>General Notes:</strong> {params.module.notes}"),
     # ))
-    year = Form(
-        auto__model=ModuleYear,
-        instance=lambda params, **_: params.module.get_latest_year(),
-        fields__academic_year__group="row_1",
-        fields__students__group="row_1",
-        fields__credit_hours__group="row_1",
-        fields__lectures__group="row_2",
-        fields__problem_classes__group="row_2",
-        fields__courseworks__group="row_2",
-        fields__synoptic_lectures__group="row_2",
-        fields__exams__group="row_2",
-        fields__dissertation_load_function__group="row_2",
-        fields__exam_mark_fraction__group="row_3",
-        fields__coursework_mark_fraction__group="row_3",
-        fields__notes__group="row_3",
-        auto__exclude=['module', 'academic_year'],
-    )
+    # year = Form(
+    #     auto__model=ModuleYear,
+    #     instance=lambda params, **_: params.module.get_latest_year(),
+    #     fields__academic_year__group="row_1",
+    #     fields__students__group="row_1",
+    #     fields__credit_hours__group="row_1",
+    #     fields__lectures__group="row_2",
+    #     fields__problem_classes__group="row_2",
+    #     fields__courseworks__group="row_2",
+    #     fields__synoptic_lectures__group="row_2",
+    #     fields__exams__group="row_2",
+    #     fields__dissertation_load_function__group="row_2",
+    #     fields__exam_mark_fraction__group="row_3",
+    #     fields__coursework_mark_fraction__group="row_3",
+    #     fields__notes__group="row_3",
+    #     auto__exclude=['module', 'academic_year'],
+    # )
 
     tasks = Table(
         auto__model=TaskModule,
@@ -72,27 +72,27 @@ class ModulePage(Page):
         ),
     )
 
-    module_years = Table(
-        title="Previous Years",
-        auto__model=ModuleYear,
-        auto__exclude=['notes', 'module'],
-        rows=lambda params, **_: ModuleYear.objects.filter(module=params.module),
-        columns__dissertation_load_function__include=lambda params, **_: params.module.has_dissertation,
-        columns__lectures__group="Load",
-        columns__problem_classes__group="Load   ",
-        columns__courseworks__group="Load",
-        columns__synoptic_lectures__group="Load",
-        columns__exams__group="Load",
-        columns__dissertation_load_function__group="Load",
-        columns__exam_mark_fraction__group="Mark Fraction",
-        columns__coursework_mark_fraction__group="Mark Fraction",
-        columns__academic_year__cell__url=lambda row, **_: f'/module_year/{row.pk}',
-    )
+    # module_years = Table(
+    #     title="Previous Years",
+    #     auto__model=ModuleYear,
+    #     auto__exclude=['notes', 'module'],
+    #     rows=lambda params, **_: ModuleYear.objects.filter(module=params.module),
+    #     columns__dissertation_load_function__include=lambda params, **_: params.module.has_dissertation,
+    #     columns__lectures__group="Load",
+    #     columns__problem_classes__group="Load   ",
+    #     columns__courseworks__group="Load",
+    #     columns__synoptic_lectures__group="Load",
+    #     columns__exams__group="Load",
+    #     columns__dissertation_load_function__group="Load",
+    #     columns__exam_mark_fraction__group="Mark Fraction",
+    #     columns__coursework_mark_fraction__group="Mark Fraction",
+    #     columns__academic_year__cell__url=lambda row, **_: f'/module_year/{row.pk}',
+    # )
 
 
 urlpatterns = [
     path('module/<module>/', ModulePage().as_view(), name='module_detail'),
     path('module/', crud_views(model=Module)),
-    path('module/year/', crud_views(model=ModuleYear)),
+    path('school/task/', crud_views(model=TaskSchool)),
     path('module/task/', crud_views(model=TaskModule)),
 ]

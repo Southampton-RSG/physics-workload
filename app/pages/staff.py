@@ -10,39 +10,66 @@ from iommi.path import register_path_decoding
 from iommi import register_search_fields
 from iommi.views import crud_views
 
-from app.models import Staff, StaffYear, Assignment
+from app.pages import BasePage
+from app.models import Staff, AssignmentModule, AssignmentSchool
 
 
-register_path_decoding(staff=lambda string, **_: Staff.objects.get(account=string))
+register_path_decoding(
+    staff=lambda string, **_: Staff.objects.get(account=string)
+)
+# register_search_fields(
+#     model=Staff, search_fields=['name', 'gender', 'academic_group'], allow_non_unique=True
+# )
 
 
-class StaffPage(Page):
+class StaffDetail(BasePage):
     """
 
     """
     title = html.h1(lambda params, **_: f"{params.staff}")
-    form = Form(
+    detail_table = Table(
+        title=None,
         auto__model=Staff,
-        auto__exclude=['user', 'is_active'],
-        fields__account__group='row1',
-        fields__academic_group__group='row1',
-        fields__name__group='row1',
-        instance=lambda params, **_: params.staff,
-        editable=False,
+        auto__include=['account', 'name', 'gender', 'type', 'academic_group'],
+        rows=lambda params, **_: [params.staff],
+        sortable=False,
     )
-    assignments = Table(
-        auto__model=Assignment,
-        rows=lambda params, **_: Assignment.objects.filter(staff_year=params.staff.staffyear_set.latest()),
+    load_table = Table(
+        title=None,
+        auto__model=Staff,
+        auto__include=[
+            'load_calculated_target',
+            'load_calculated_worked',
+            'load_balance',
+        ],
+        columns__fte_fraction__include=lambda params, **_: params.staff.fte_fraction,
+        columns__hours_fixed__include=lambda params, **_: params.staff.hours_fixed,
+        # columns__load_balance_current=Column(
+        #     display_name="Current load balance",
+        #     cell__value=lambda params, **_: params.staff.load_calculated_target - params.staff.load_calculated_actual,
+        #     sortable=False,
+        # ),
+        # columns__load_balance__after="load_balance_current",
+        rows=lambda params, **_: [params.staff],
+        sortable=False,
     )
-
-    staff_years = Table(
-        auto__model=StaffYear,
-        auto__exclude=['notes'],
-        rows=lambda params, **_: StaffYear.objects.filter(staff=params.staff),
-        columns__load_balance=Column(
-
-        )
-    )
+    # form = Form(
+    #     auto__model=Staff,
+    #     auto__exclude=['user', 'is_active'],
+    #     fields__account__group='row1',
+    #     fields__academic_group__group='row1',
+    #     fields__name__group='row1',
+    #     instance=lambda params, **_: params.staff,
+    #     editable=False,
+    # )
+    # module_assignments = Table(
+    #     auto__model=AssignmentModule,
+    #     rows=lambda params, **_: AssignmentModule.objects.filter(staff=params.staff),
+    # )
+    # school_assignments = Table(
+    #     auto__model=AssignmentSchool,
+    #     rows=lambda params, **_: AssignmentSchool.objects.filter(staff=params.staff),
+    # )
 
 #     table_staff = Table(
 #         auto__model=Staff, auto__exclude=['user', 'notes', 'is_active'],
@@ -51,7 +78,40 @@ class StaffPage(Page):
 #     )
 
 
+class StaffList(BasePage):
+    """
+    List of all currently active staff.
+    """
+    groups = Table(
+        auto__model=Staff,
+        auto__include=[
+            'account', 'name', 'gender', 'academic_group', 'load_balance'
+        ],
+        columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
+        columns__name__filter__include=True,
+        columns__account__cell__url=lambda row, **_: row.get_absolute_url(),
+        columns__academic_group__display_name='Group',
+        columns__academic_group__filter__include=True,
+        columns__gender__filter__include=True,
+        columns__assignment_module=Column(
+            display_name="Module",
+            group="Assignments",
+            sortable=False,
+            cell__value=lambda row, **_: row.assignmentmodule_set.count(),
+        ),
+        columns__assignment_school=Column(
+            display_name="School",
+            group="Assignments",
+            sortable=False,
+            cell__value=lambda row, **_: row.assignmentschool_set.count(),
+        ),
+        query_from_indexes=True,
+        query__advanced__include=False,
+    )
+
+
 urlpatterns = [
-    path('staff/<staff>/', StaffPage().as_view(), name='staff_detail'),
-    path('staff/', crud_views(model=Staff)),
+    path('staff/<staff>/edit/', StaffDetail().as_view(), name='staff_edit'),
+    path('staff/<staff>/', StaffDetail().as_view(), name='staff_detail'),
+    path('staff/', StaffList().as_view(), name='staff_list'),
 ]

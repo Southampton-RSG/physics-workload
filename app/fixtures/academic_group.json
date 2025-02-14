@@ -4,6 +4,7 @@
     "pk": 1,
     "fields": {
       "name": "Astronomy & Astrophysics",
+      "code": "A",
       "is_active": 1
     }
   },
@@ -12,6 +13,7 @@
     "pk": 2,
     "fields": {
       "name": "Quantum, Light & Matter",
+      "code": "Q",
       "is_active": 1
     }
   },
@@ -20,6 +22,7 @@
     "pk": 3,
     "fields": {
       "name": "Optoelectronics Research Centre",
+      "code": "O",
       "is_active": 1
     }
   },
@@ -28,6 +31,7 @@
     "pk": 4,
     "fields": {
       "name": "High Energy Physics",
+      "code": "T",
       "is_active": 1
     }
   }

@@ -7,11 +7,11 @@ from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 
 from app.models import (
-    AcademicGroup, AcademicYear,
-    Module, ModuleYear,
-    TaskModule, TaskDepartment,
-    TaskYearDepartment, TaskYearModule, Assignment,
-    StaffYear, Staff,
+    AcademicGroup, Staff, StandardLoad,
+    Module,
+    TaskModule, TaskSchool,
+    AssignmentSchool, AssignmentModule,
+
 )
 
 
@@ -33,10 +33,10 @@ class ModuleAdmin(ModelAdmin):
     pass
 
 
-@admin.register(ModuleYear)
-class ModuleYearAdmin(ModelAdmin):
+@admin.register(AssignmentModule)
+class AssignmentModuleAdmin(ModelAdmin):
     """
-    Admin class for the ModuleYear model.
+    Admin class for the AssignmentModule model.
     Uses the default settings, but here in case it needs expanding.
     """
     pass
@@ -51,34 +51,16 @@ class TaskModuleAdmin(ModelAdmin):
     pass
 
 
-@admin.register(TaskDepartment)
-class TaskDepartmentAdmin(ModelAdmin):
+@admin.register(TaskSchool)
+class TaskSchoolAdmin(ModelAdmin):
     """
-    Admin class for the TaskDepartment model.
+    Admin class for the TaskSchool model.
     Uses the default settings, but here in case it needs expanding.
     """
     pass
 
 
-@admin.register(TaskYearDepartment)
-class TaskYearDepartmentAdmin(ModelAdmin):
-    """
-    Admin class for the TaskYearDepartment model.
-    Uses the default settings, but here in case it needs expanding.
-    """
-    pass
-
-
-@admin.register(TaskYearModule)
-class TaskYearModuleAdmin(ModelAdmin):
-    """
-    Admin class for the TaskYear model.
-    Uses the default settings, but here in case it needs expanding.
-    """
-    pass
-
-
-@admin.register(AcademicYear)
+@admin.register(StandardLoad)
 class AcademicYearAdmin(ModelAdmin):
     """
     Admin class for the AcademicYear model.
@@ -87,10 +69,10 @@ class AcademicYearAdmin(ModelAdmin):
     pass
 
 
-@admin.register(Assignment)
-class AssignmentYearAdmin(ModelAdmin):
+@admin.register(AssignmentSchool)
+class AssignmentSchoolAdmin(ModelAdmin):
     """
-    Admin class for the Assignment model.
+    Admin class for the AssignmentSchool model.
     Uses the default settings, but here in case it needs expanding.
     """
     pass
@@ -100,15 +82,6 @@ class AssignmentYearAdmin(ModelAdmin):
 class StaffAdmin(ModelAdmin):
     """
     Admin class for the Staff model.
-    Uses the default settings, but here in case it needs expanding.
-    """
-    pass
-
-
-@admin.register(StaffYear)
-class StaffYearAdmin(ModelAdmin):
-    """
-    Admin class for the StaffYear model.
     Uses the default settings, but here in case it needs expanding.
     """
     pass

@@ -2,9 +2,10 @@ from django.core.validators import MinValueValidator
 from django.db.models import Model, IntegerField, FloatField, TextField
 from django.urls import reverse_lazy
 from django.conf import settings
+from django.db.models import ObjectDoesNotExist
 
 
-class AcademicYear(Model):
+class StandardLoad(Model):
     """
     Academic year, and the associated standard loads for that year.
 
@@ -77,24 +78,35 @@ class AcademicYear(Model):
         ],
         verbose_name="Staff misc. load per FTE fraction",
     )
+    hours_fte = FloatField(
+        blank=False, null=False,
+        validators=[
+            MinValueValidator(0.0),
+        ],
+        verbose_name="Backstop 'hours per FTE' value",
+    )
+
     notes = TextField(blank=True)
 
     class Meta:
         get_latest_by = 'year'
         ordering = ['-year']
-        verbose_name='Academic Year'
-        verbose_name_plural='Academic Years'
+        verbose_name='Standard Load'
+        verbose_name_plural='Standard Loads'
 
     def __str__(self) -> str:
         return f"{self.year-2000}/{self.year-1999}"
 
-    # def get_absolute_url(self) -> str:
-    #     return reverse_lazy('academic_year_detail', args=[self.pk])
+    def get_absolute_url(self) -> str:
+        return reverse_lazy('standard_load_detail', args=[self.pk])
 
 
-def get_latest_academic_year() -> AcademicYear:
+def get_current_standard_load() -> StandardLoad|None:
+    """
+    Wrapper to get current load in a way that won't crash during DB initialisation when it doesn't exit yet.
+    :return: Gets the current standard load, or None if it's not yet initialised.
+    """
     try:
-        academic_year: AcademicYear = AcademicYear.objects.latest()
-        return academic_year
-    except:
+        return StandardLoad.objects.latest()
+    except ObjectDoesNotExist:
         return None

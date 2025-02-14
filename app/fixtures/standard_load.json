@@ -1,6 +1,6 @@
 [
   {
-    "model": "app.AcademicYear",
+    "model": "app.StandardLoad",
     "pk": 1,
     "fields": {
       "year": 2025,
@@ -12,6 +12,7 @@
       "load_exam_credit": 2,
       "load_exam_marked": 1,
       "load_fte_misc": 50,
+      "hours_fte": 900,
       "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     }
   }

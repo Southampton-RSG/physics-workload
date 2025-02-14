@@ -21,7 +21,7 @@ if not SECRET_KEY:
     SECRET_KEY = ''.join(random.choice( string.ascii_lowercase  ) for i in range( 32 ))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', False)
+DEBUG = os.getenv('DEBUG', True)
 
 # HOSTs List
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -55,10 +55,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'simple_history.middleware.HistoryRequestMiddleware',
-    'app.middlewares.AjaxMiddleware',
+
     'iommi.sql_trace.Middleware',
     'iommi.profiling.Middleware',
+
+    'simple_history.middleware.HistoryRequestMiddleware',
+    'app.middlewares.AjaxMiddleware',
+    
     'iommi.middleware',
 ]
 
@@ -139,6 +142,7 @@ STATIC_URL = '/static/'
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'core/static'),
+    os.path.join(BASE_DIR, 'app/static'),
 )
 #############################################################
 #############################################################
@@ -154,19 +158,46 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #############################################################
 # Settings specific to Iommi:
 #############################################################
-from iommi import LAST
+from iommi import LAST, Asset
 from iommi.evaluate import evaluate_strict
-from iommi.style import Style
-from iommi.style_bootstrap5 import bootstrap5 as imported_style
-IOMMI_DEFAULT_STYLE = Style(
-    imported_style,
+from iommi.style import Style, register_style, validate_styles
+from iommi.style_base import select2_enhanced_forms
+from iommi.style_bootstrap5 import bootstrap5_base
+from iommi.style_font_awesome_6 import font_awesome_6
+from typing import Dict, Any
+
+floating_fields: Dict[str, Any] = {
+    "label__after": "input",
+    "attrs": {
+        "class": {"form-floating": True},
+    }
+}
+
+custom_style: Style = Style(
+    bootstrap5_base,
+    font_awesome_6,
+    # select2_enhanced_forms,
+
+    root__assets__custom_css= Asset.css(attrs__href="/static/css/custom.css"),
     Field={
-        "label__after": "input",
+        "shortcuts":{
+            "text": floating_fields,
+            "textarea": floating_fields,
+            "number": floating_fields,
+            "integer": floating_fields,
+            "choice": floating_fields,
+            "choice_queryset": floating_fields,
+        },
         "input__attrs__placeholder": lambda field, **_: evaluate_strict(
             field.display_name, **field.iommi_evaluate_parameters()
         ),
-    }
+    },
 )
+register_style('teaching_time_tool', custom_style)
+# validate_styles()
+
+IOMMI_DEFAULT_STYLE = custom_style
+IOMMI_DEBUG = True
 
 #############################################################
 # Settings specific to Django Simple History

@@ -1,0 +1,7 @@
+<td>
+    {% for item in value.all %}
+        <a href='{{ item.get_absolute_url }}'>
+            {{ item.name }}
+        </a>{% if not loop.last %}, {% endif %}
+    {% endfor %}
+</td>

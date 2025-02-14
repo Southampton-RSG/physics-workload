@@ -7,17 +7,16 @@ from django.db.models import Model
 from django.db import models
 from django.contrib.auth.models import User
 
-from app.models.academic_year import AcademicYear
+from app.models.standard_load import StandardLoad
 from app.models.module import Module
-from app.models.module_year import ModuleYear
 
 from app.models.load_function import LoadFunction
 from app.models.academic_group import AcademicGroup
-from app.models.task import TaskBase, TaskModule, TaskDepartment
-from app.models.task_year import TaskYearBase, TaskYearDepartment, TaskYearModule
-from app.models.assignment import Assignment
+from app.models.task_school import TaskSchool
+from app.models.task_module import TaskModule
+from app.models.assignment import AssignmentSchool
+from app.models.assignment import AssignmentModule
 from app.models.staff import Staff
-from app.models.staff_year import StaffYear
 
 
 class Transaction(models.Model):

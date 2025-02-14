@@ -6,7 +6,7 @@ from app.models.managers import ActiveManager
 class LoadFunction(Model):
     """
     Evaluatable Python expression that determines the load for a number of students,
-    e.g. for number of tutees or when marking a dissertation..
+    e.g. for number of tutees or when marking a dissertation.
     """
     name = CharField(
         max_length=128, unique=True
@@ -36,5 +36,5 @@ class LoadFunction(Model):
         """
         return students * 1
 
-    def get_absolute_url(self) -> str:
-        return reverse_lazy('dissertation_load_function_detail', args=[self.pk])
+    # def get_absolute_url(self) -> str:
+    #     return reverse_lazy('dissertation_load_function_detail', args=[self.pk])

@@ -10,8 +10,7 @@ from iommi.path import register_path_decoding
 from iommi import register_search_fields
 from iommi.views import crud_views
 
-from app.models import Module, ModuleYear
-from app.models.task import Task
+from app.models import Module, TaskModule, TaskSchool, AssignmentSchool, AssignmentModule
 
 register_path_decoding(module=lambda string, **_: Module.objects.get(code=string))
 # register_search_fields(model=Task, search_fields=['name'], allow_non_unique=True)
