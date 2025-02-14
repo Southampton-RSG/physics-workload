@@ -39,10 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'simple_history',
     'iommi',
 
     'app',  # Enable the inner app
-    'import_export',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
     'app.middlewares.AjaxMiddleware',
     'iommi.sql_trace.Middleware',
     'iommi.profiling.Middleware',
@@ -166,6 +167,12 @@ IOMMI_DEFAULT_STYLE = Style(
         ),
     }
 )
+
+#############################################################
+# Settings specific to Django Simple History
+#############################################################
+# We only want to take a snapshot on year end
+SIMPLE_HISTORY_ENABLED = False
 
 #############################################################
 # Settings specific to this project:

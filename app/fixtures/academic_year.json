@@ -5,7 +5,7 @@
     "fields": {
       "year": 2025,
       "load_lecture": 3.5,
-      "load_lecture_first_time": 6.5,
+      "load_lecture_first": 6.5,
       "load_coursework_set": 2,
       "load_coursework_credit": 2,
       "load_coursework_marked": 0.1667,

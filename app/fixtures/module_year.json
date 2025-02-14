@@ -5,13 +5,7 @@
     "fields": {
       "module": 1,
       "academic_year": 1,
-      "credit_hours": 120,
-      "students": 250,
-      "lectures": 20,
-      "coursework": 2,
-      "exams": 2,
-      "problem_classes": 10,
-      "synoptic_lectures": 2,
+      "credit_hours": 15,
       "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     }
   },
@@ -21,13 +15,15 @@
     "fields": {
       "module": 2,
       "academic_year": 1,
-      "credit_hours": 120,
-      "students": 240,
-      "lectures": 18,
-      "coursework": 3,
-      "exams": 2,
-      "problem_classes": 8,
-      "synoptic_lectures": 1,
+      "credit_hours": 15,
+      "students": 54,
+      "lectures": 33,
+      "coursework": 5,
+      "exams": 0,
+      "problem_classes": 0,
+      "synoptic_lectures": 0,
+      "exam_mark_fraction": 0.75,
+      "coursework_mark_fraction": 0.25,
       "notes": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
     }
   },
@@ -37,30 +33,8 @@
     "fields": {
       "module": 3,
       "academic_year": 1,
-      "credit_hours": 160,
-      "students": 60,
-      "lectures": 0,
-      "coursework": 0,
-      "exams": 0,
-      "problem_classes": 0,
-      "synoptic_lectures": 0,
+      "students": 2,
       "notes": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
-    }
-  },
-  {
-    "model": "app.ModuleYear",
-    "pk": 4,
-    "fields": {
-      "module": 4,
-      "academic_year": 1,
-      "credit_hours": 180,
-      "students": 60,
-      "lectures": 0,
-      "coursework": 0,
-      "exams": 0,
-      "problem_classes": 0,
-      "synoptic_lectures": 0,
-      "notes": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
     }
   }
 ]

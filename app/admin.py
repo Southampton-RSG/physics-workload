@@ -9,7 +9,8 @@ from django.contrib.admin import ModelAdmin
 from app.models import (
     AcademicGroup, AcademicYear,
     Module, ModuleYear,
-    Task, TaskYearGeneral, TaskYearModule, Assignment,
+    TaskModule, TaskDepartment,
+    TaskYearDepartment, TaskYearModule, Assignment,
     StaffYear, Staff,
 )
 
@@ -41,19 +42,28 @@ class ModuleYearAdmin(ModelAdmin):
     pass
 
 
-@admin.register(Task)
-class TaskAdmin(ModelAdmin):
+@admin.register(TaskModule)
+class TaskModuleAdmin(ModelAdmin):
     """
-    Admin class for the Task model.
+    Admin class for the TaskModule model.
     Uses the default settings, but here in case it needs expanding.
     """
     pass
 
 
-@admin.register(TaskYearGeneral)
-class TaskYearGeneralAdmin(ModelAdmin):
+@admin.register(TaskDepartment)
+class TaskDepartmentAdmin(ModelAdmin):
     """
-    Admin class for the TaskYear model.
+    Admin class for the TaskDepartment model.
+    Uses the default settings, but here in case it needs expanding.
+    """
+    pass
+
+
+@admin.register(TaskYearDepartment)
+class TaskYearDepartmentAdmin(ModelAdmin):
+    """
+    Admin class for the TaskYearDepartment model.
     Uses the default settings, but here in case it needs expanding.
     """
     pass

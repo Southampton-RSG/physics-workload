@@ -3,8 +3,6 @@
     "model": "app.TaskYearBase",
     "pk": 1,
     "fields": {
-      "task": 1,
-      "academic_year": 1,
       "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     }
   },
@@ -12,6 +10,7 @@
     "model": "app.TaskYearModule",
     "pk": 1,
     "fields": {
+      "task_module": 1,
       "module_year": 1,
       "lecture_fraction": 1.0,
       "synoptic_lecture_fraction": 1.0
@@ -31,11 +30,10 @@
     "model": "app.TaskYearModule",
     "pk": 3,
     "fields": {
-      "task": 2,
+      "task_module": 2,
       "module_year": 1,
       "exam_fraction": 0.50,
-      "coursework_fraction": 0.50,
-      "problem_class_fraction": 0.50
+      "coursework_fraction": 0.50
     }
   },
   {

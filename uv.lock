@@ -98,6 +98,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-simple-history"
+version = "3.8.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6c/46/4cbf411f9a8e426ed721785beb2cfd37c47cd5462697d92ff29dc6943d38/django_simple_history-3.8.0.tar.gz", hash = "sha256:e70d70fb4cc2af60a50904f1420d5a6440d24efddceba3daeff8b02d269ebdf0", size = 233906 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e2/f0/f09f87199a0b4e21a10314b02e04472a8cc601ead4990e813a0b3cc43f09/django_simple_history-3.8.0-py3-none-any.whl", hash = "sha256:7f8bbdaa5b2c4c1c9a48c89a95ff3389eda6c82cf9de9b09ae99b558205d132f", size = 142593 },
+]
+
+[[package]]
 name = "gunicorn"
 version = "23.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -152,6 +164,7 @@ dependencies = [
     { name = "django-faicon" },
     { name = "django-import-export" },
     { name = "django-model-utils" },
+    { name = "django-simple-history" },
     { name = "gunicorn" },
     { name = "iommi" },
     { name = "parso" },
@@ -172,6 +185,7 @@ requires-dist = [
     { name = "django-faicon", specifier = ">=0.1.0" },
     { name = "django-import-export", specifier = ">=4.3.5" },
     { name = "django-model-utils", specifier = ">=5.0.0" },
+    { name = "django-simple-history", specifier = ">=3.8.0" },
     { name = "gunicorn", specifier = ">=23.0.0" },
     { name = "iommi", specifier = ">=7.9.1" },
     { name = "parso", specifier = ">=0.8.4" },

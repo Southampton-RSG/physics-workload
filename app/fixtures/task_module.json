@@ -1,0 +1,146 @@
+[
+  {
+    "model": "app.TaskBase",
+    "pk": 1,
+    "fields": {
+      "name": "Module Coordinator",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "is_active": 1
+    }
+  },
+  {
+    "model": "app.TaskModule",
+    "pk": 1,
+    "fields": {
+      "module": 1
+    }
+  },
+  {
+    "model": "app.TaskBase",
+    "pk": 2,
+    "fields": {
+      "name": "Deputy",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "is_active": 1
+    }
+  },
+  {
+    "model": "app.TaskModule",
+    "pk": 2,
+    "fields": {
+      "module": 1
+    }
+  },
+  {
+    "model": "app.TaskBase",
+    "pk": 3,
+    "fields": {
+      "name": "Teaching Assistant",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "is_active": 1
+    }
+  },
+  {
+    "model": "app.TaskModule",
+    "pk": 3,
+    "fields": {
+      "module": 1
+    }
+  },
+  {
+    "model": "app.TaskBase",
+    "pk": 4,
+    "fields": {
+      "name": "Computing Lab Coordinator",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "is_active": 1
+    }
+  },
+  {
+    "model": "app.TaskModule",
+    "pk": 4,
+    "fields": {
+      "module": 1
+    }
+  },
+  {
+    "model": "app.TaskBase",
+    "pk": 5,
+    "fields": {
+      "name": "Computing Lab Assessor",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "is_active": 1
+    }
+  },
+  {
+    "model": "app.TaskModule",
+    "pk": 5,
+    "fields": {
+      "module": 1
+    }
+  },
+  {
+    "model": "app.TaskBase",
+    "pk": 6,
+    "fields": {
+      "name": "Module Coordinator",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "is_active": 1
+    }
+  },
+  {
+    "model": "app.TaskModule",
+    "pk": 6,
+    "fields": {
+      "module": 2
+    }
+  },
+  {
+    "model": "app.TaskBase",
+    "pk": 7,
+    "fields": {
+      "name": "Module Deputy",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "is_active": 1
+    }
+  },
+  {
+    "model": "app.TaskModule",
+    "pk": 7,
+    "fields": {
+      "module": 2
+    }
+  },
+  {
+    "model": "app.TaskBase",
+    "pk": 8,
+    "fields": {
+      "name": "Assessor",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "is_active": 1
+    }
+  },
+  {
+    "model": "app.TaskModule",
+    "pk": 8,
+    "fields": {
+      "module": 2
+    }
+  },
+    {
+    "model": "app.TaskBase",
+    "pk": 1,
+    "fields": {
+      "name": "Coordinator",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "is_active": 1
+    }
+  },
+  {
+    "model": "app.TaskModule",
+    "pk": 1,
+    "fields": {
+      "module": 1
+    }
+  }
+]

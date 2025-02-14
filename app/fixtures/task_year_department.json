@@ -3,7 +3,7 @@
     "model": "app.TaskYearBase",
     "pk": 4,
     "fields": {
-      "task": 3,
+      "task_department": 3,
       "academic_year": 1,
       "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     }

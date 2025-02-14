@@ -13,8 +13,8 @@ from app.models.module_year import ModuleYear
 
 from app.models.load_function import LoadFunction
 from app.models.academic_group import AcademicGroup
-from app.models.task import Task
-from app.models.task_year import TaskYearBase, TaskYearScaling, TaskYearModule
+from app.models.task import TaskBase, TaskModule, TaskDepartment
+from app.models.task_year import TaskYearBase, TaskYearDepartment, TaskYearModule
 from app.models.assignment import Assignment
 from app.models.staff import Staff
 from app.models.staff_year import StaffYear

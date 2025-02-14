@@ -70,5 +70,6 @@ class StaffYear(Model):
 
         self.load_actual = load
         self.save()
+
     # def get_absolute_url(self) -> str:
     #     return reverse_lazy('staff_year_detail', args=[self.pk])

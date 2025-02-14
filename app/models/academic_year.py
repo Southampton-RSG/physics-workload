@@ -93,4 +93,8 @@ class AcademicYear(Model):
 
 
 def get_latest_academic_year() -> AcademicYear:
-    return AcademicYear.objects.latest()
+    try:
+        academic_year: AcademicYear = AcademicYear.objects.latest()
+        return academic_year
+    except:
+        return None

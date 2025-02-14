@@ -10,7 +10,7 @@ from iommi.path import register_path_decoding
 from iommi import register_search_fields
 from iommi.views import crud_views
 
-from app.models import Module, ModuleYear, Task, TaskYearModule
+from app.models import Module, ModuleYear, TaskModule, TaskYearModule
 
 
 register_path_decoding(module=lambda string, **_: Module.objects.get(code=string))
@@ -60,9 +60,9 @@ class ModulePage(Page):
     )
 
     tasks = Table(
-        auto__model=Task,
+        auto__model=TaskModule,
         auto__exclude=['module', 'is_active'],
-        rows=lambda params, **_: Task.objects.filter(module=params.module),
+        rows=lambda params, **_: TaskModule.objects.filter(module=params.module),
         sortable=False,
         # columns__is_active__filter__include=True,
         # query__form__fields__is_active__initial=lambda **_: True,
@@ -93,6 +93,6 @@ class ModulePage(Page):
 urlpatterns = [
     path('module/<module>/', ModulePage().as_view(), name='module_detail'),
     path('module/', crud_views(model=Module)),
-    path('module_year/', crud_views(model=ModuleYear)),
-    path('task/', crud_views(model=Task)),
+    path('module/year/', crud_views(model=ModuleYear)),
+    path('module/task/', crud_views(model=TaskModule)),
 ]

@@ -1,13 +1,14 @@
 # -*- encoding: utf-8 -*-
 from typing import Optional, Union, List
-from django.db.models import Model, CharField, BooleanField, TextField, ForeignKey, Index
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import Model, CharField, BooleanField, TextField, ForeignKey, Index, IntegerField, FloatField
 from django.db.models.deletion import PROTECT
-from django.db.models.manager import Manager, QuerySet
-from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.manager import Manager
 from django.urls import reverse_lazy
 from model_utils.managers import QueryManager
 
 from app.models.academic_group import AcademicGroup
+from app.models.academic_year import AcademicYear, get_latest_academic_year
 
 
 class Module(Model):
@@ -23,10 +24,52 @@ class Module(Model):
 
     has_dissertation = BooleanField(default=False)
     has_placement = BooleanField(default=False)
-    is_active = BooleanField(default=True)
 
     description = TextField(blank=True)
 
+    module = ForeignKey(
+        Module, blank=False, null=False, on_delete=PROTECT,
+        related_name='module_years',
+    )
+    academic_year = ForeignKey(
+        AcademicYear, blank=False, null=False, on_delete=PROTECT,
+        default=get_latest_academic_year,
+    )
+    students = IntegerField(
+        null=True, blank=True, default=None, validators=[MinValueValidator(0)],
+    )
+    credit_hours = IntegerField(
+        null=True, blank=True, verbose_name="Credit Hours", validators=[MinValueValidator(0)],
+    )
+
+    lectures = IntegerField(
+        default=0, verbose_name="Lectures", validators=[MinValueValidator(0)],
+    )
+    problem_classes = IntegerField(
+        default=0, verbose_name="Problem Classes", validators=[MinValueValidator(0)],
+    )
+    coursework = IntegerField(
+        default=0, verbose_name="Coursework Prepared", validators=[MinValueValidator(0)],
+    )
+    synoptic_lectures = IntegerField(
+        default=0, verbose_name="Synoptic Lectures", validators=[MinValueValidator(0)],
+    )
+    exams = IntegerField(
+        default=0, verbose_name="Exams", validators=[MinValueValidator(0)],
+    )
+
+    exam_mark_fraction = FloatField(
+        null=True, blank=True, verbose_name="Exam fraction of total mark",
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+    )
+    coursework_mark_fraction = FloatField(
+        null=True, blank=True, verbose_name="Coursework fraction of total mark",
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+    )
+
+    notes = TextField(blank=True)
+
+    is_active = BooleanField(default=True)
     objects_active = QueryManager(is_active=True)
     objects = Manager()
 
@@ -44,20 +87,11 @@ class Module(Model):
     def get_absolute_url(self) -> str:
         return reverse_lazy('module_detail', args=[self.code])
 
-    def get_latest_year(self) -> Optional['ModuleYear']:
+    def get_marked_dissertation_count(self) -> int|None:
         """
-        :return: Returns the most recent occurrence of this module, or None if there isn't one.
+        :return: Returns the total number of module dissertations marked
         """
-        try:
-            return self.module_years.latest()
-        except ObjectDoesNotExist:
-            return None
-
-    def get_latest_year_queryset(self) -> Union[QuerySet, List['ModuleYear']]:
-        """
-        :return: Returns the most recent occurrence of this module as a list (for feeding to Tables) or an empty queryset if not.
-        """
-        try:
-            return [self.module_years.latest()]
-        except ObjectDoesNotExist:
-            return self.module_years.none()
+        if self.has_dissertation:
+            return sum(
+                self.taskmodule_set.values_list('student', flat=True)
+            )
