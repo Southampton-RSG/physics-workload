@@ -1,17 +1,17 @@
-data: school module task assignment
+data: school unit task assignment
 
 
 school:
 	uv run manage.py loaddata standard_load academic_group staff
 
-module: school
-	uv run manage.py loaddata load_function module
+unit: school
+	uv run manage.py loaddata load_function unit
 
-task: module
-	uv run manage.py loaddata task_module task_school
+task: unit
+	uv run manage.py loaddata task
 
 assignment: task
-	uv run manage.py loaddata assignment_school assignment_module
+	uv run manage.py loaddata assignment
 
 clean:
 	-rm -rf app/migrations/*.py
@@ -20,4 +20,8 @@ clean:
 	uv run manage.py makemigrations
 	uv run manage.py migrate
 
-all: clean data
+superuser:
+	export DJANGO_SUPERUSER_PASSWORD=password
+	uv run manage.py createsuperuser --noinput --username admin --email admin@admin.com
+
+all: clean data superuser

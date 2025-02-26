@@ -35,17 +35,26 @@ class Staff(Model):
     )
     notes = TextField(blank=True)
 
+    load_historic_balance = FloatField(
+        default=0,
+        verbose_name='Historic load balance',
+        help_text="Sum of the load balance from previous years.",
+    )
+
     load_calculated_target = FloatField(
         blank=True, null=True, validators=[MinValueValidator(0.0)],
-        help_text="Target load hours",
+        verbose_name='Target load hours',
+        help_text="Load hours calculated for the current year.",
     )
-    load_calculated_worked = FloatField(
+    load_calculated_assigned = FloatField(
         blank=True, null=True, validators=[MinValueValidator(0.0)],
-        help_text="Worked load hours",
+        verbose_name='Assigned load hours',
+        help_text="Load hours assigned for the current year.",
     )
-    load_balance = FloatField(
-        default=0,
-        help_text="Ongoing load balance",
+    load_calculated_balance = FloatField(
+        blank=True, null=True, validators=[MinValueValidator(0.0)],
+        verbose_name='Current load balance',
+        help_text="The current year's target load minus assigned load.",
     )
 
     hours_fixed = IntegerField(

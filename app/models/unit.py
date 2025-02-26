@@ -11,7 +11,7 @@ from app.models.academic_group import AcademicGroup
 from app.models.standard_load import StandardLoad, get_current_standard_load
 
 
-class Module(Model):
+class Unit(Model):
     """
 
     """
@@ -19,7 +19,7 @@ class Module(Model):
     name = CharField(max_length=128, blank=False, unique=True)
     academic_group = ForeignKey(
         AcademicGroup, blank=True, null=True, on_delete=PROTECT,
-        verbose_name='Group', help_text="The group, if any, responsible for this module",
+        verbose_name='Group', help_text="The group, if any, responsible for this unit",
     )
 
     has_dissertation = BooleanField(default=False)
@@ -70,20 +70,20 @@ class Module(Model):
             Index(fields=['code']),
         ]
         ordering = ['name']
-        verbose_name = 'Module'
-        verbose_name_plural = 'Modules'
+        verbose_name = 'Unit'
+        verbose_name_plural = 'Units'
 
     def __str__(self) -> str:
         return f"{self.code} - {self.name}"
 
     def get_absolute_url(self) -> str:
-        return reverse_lazy('module_detail', args=[self.code])
+        return reverse_lazy('unit_detail', args=[self.code])
 
     def get_marked_dissertation_count(self) -> int|None:
         """
-        :return: Returns the total number of module dissertations marked
+        :return: Returns the total number of unit dissertations marked
         """
         if self.has_dissertation:
             return sum(
-                self.taskmodule_set.values_list('student', flat=True)
+                self.task_set.values_list('student', flat=True)
             )

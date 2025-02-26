@@ -8,14 +8,12 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from app.models.standard_load import StandardLoad
-from app.models.module import Module
+from app.models.unit import Unit
 
 from app.models.load_function import LoadFunction
 from app.models.academic_group import AcademicGroup
-from app.models.task_school import TaskSchool
-from app.models.task_module import TaskModule
-from app.models.assignment import AssignmentSchool
-from app.models.assignment import AssignmentModule
+from app.models.task import Task
+from app.models.assignment import Assignment
 from app.models.staff import Staff
 
 

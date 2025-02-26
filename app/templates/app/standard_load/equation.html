@@ -1,0 +1,18 @@
+Load equation for module co-ordinators:
+<ul>
+    <li>Module CATS $C$.</li>
+    <li>Number of students $N_s$.</li>
+    <li>Number of lectures $N_l$, problem classes $N_p$, synoptic lectures $N_{ls}$, coursework $N_{cw}$.</li>
+    <li>Fraction of marks from coursework $M_{cw}$, exams $M_e$.</li>
+    <li>Fraction of marking done by co-ordinator of coursework $F_{cw}$, exams $F_e$.</li>
+    <li>Fixed module-specific adjustment $A$</li>
+</ul>
+
+$$
+\left[ L_lec * (N_l + N_p + N_{ls}) \right] + \\
+\left[ L_{cw, \mathrm{prep}} * N_{cw} \right] \\ +
+\left[ L_{cw, \mathrm{credit}} * M_{cw} * C \right] + \\
+\left[ L_{cw, \mathrm{mark}} * N_{cw} * N_s * F_{cw} * \left( N_{cw} + M_{cw} * C \right) \right] + \\
+\left[ L_{e, \mathrm{credit}} * M_e * C \right] + \\
+\left[ L_{e, \mathrm{mark}} * N_s * F_e \right] + A
+$$

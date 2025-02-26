@@ -10,10 +10,11 @@ from iommi.path import register_path_decoding
 from iommi import register_search_fields
 from iommi.views import crud_views
 
-from app.models import Module, TaskModule, TaskSchool
+from app.pages import BasePage
+from app.models import Unit, Task
 
 
-register_path_decoding(module=lambda string, **_: Module.objects.get(code=string))
+register_path_decoding(unit=lambda string, **_: Unit.objects.get(code=string))
 # register_search_fields(model=Task, search_fields=['name'], allow_non_unique=True)
 
 
@@ -22,22 +23,41 @@ class EditTableNoAdd(EditTable):
         edit_actions__add_row = None
 
 
-class ModulePage(Page):
+class UnitDetail(BasePage):
     """
 
     """
-    title = html.h1(lambda params, **_: f"{params.module}")
-    module = Form(
-        auto__model=Module,
-        instance=lambda params, **_: params.module,
+    pass
+
+
+class UnitEdit(BasePage):
+    """
+
+    """
+    title = html.h1(lambda params, **_: f"{params.unit}")
+    instance = Form(
+        auto__model=Unit,
+        instance=lambda params, **_: params.unit,
         fields__name__group="row_1",
         fields__code__group="row_1",
         fields__academic_group__group="row_1",
         fields__has_dissertation__group='row_2',
         fields__has_placement__group='row_2',
+        fields__lectures__group='row_3',
+        fields__problem_classes__group='row_3',
+        fields__coursework__group='row_3',
+        fields__synoptic_lectures__group='row_3',
+        fields__exams__group='row_3',
+        fields__credit_hours__after='exams',
+        fields__credit_hours__group='row_4',
+        fields__exam_mark_fraction__group='row_4',
+        fields__coursework_mark_fraction__group='row_4',
         auto__exclude=['is_active'],
     )
-
+    # columns__coursework_mark_fraction__display_name = "Coursework",
+    # columns__coursework_mark_fraction__group = "Mark fraction",
+    # columns__exam_mark_fraction__display_name = "Exam",
+    # columns__exam_mark_fraction__group = "Mark fraction",
     #     html.p(
     #     lambda params, **_: format_html(f"<strong>General Notes:</strong> {params.module.notes}"),
     # ))
@@ -60,9 +80,9 @@ class ModulePage(Page):
     # )
 
     tasks = Table(
-        auto__model=TaskModule,
-        auto__exclude=['module', 'is_active'],
-        rows=lambda params, **_: TaskModule.objects.filter(module=params.module),
+        auto__model=Task,
+        auto__exclude=['unit', 'is_active', 'description'],
+        rows=lambda params, **_: Task.objects.filter(unit=params.unit),
         sortable=False,
         # columns__is_active__filter__include=True,
         # query__form__fields__is_active__initial=lambda **_: True,
@@ -89,10 +109,40 @@ class ModulePage(Page):
     #     columns__academic_year__cell__url=lambda row, **_: f'/module_year/{row.pk}',
     # )
 
+class UnitList(BasePage):
+    """
+    List of all currently active modules.
+    """
+    groups = Table(
+        auto__model=Unit,
+        auto__include=[
+            'code', 'name', 'academic_group', 'students',
+        ],
+        columns__code__cell__url=lambda row, **_: row.get_absolute_url(),
+        columns__code__filter__include=True,
+        columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
+        columns__name__filter__include=True,
+        columns__academic_group__cell__url=lambda row, **_: row.academic_group.get_absolute_url() if row.academic_group else None,
+        columns__academic_group__filter__include=True,
+        columns__task_open=Column(
+            display_name="Open",
+            sortable=False,
+            group="Tasks",
+            cell__value=lambda row, **_: 0 #row.task_set.count(),
+        ),
+        columns__task_assigned=Column(
+            display_name="Assigned",
+            sortable=False,
+            group="Tasks",
+            cell__value=lambda row, **_: 0 #sum(row.task_set.values_list('count', flat=True)),
+        ),
+        query_from_indexes=True,
+        query__advanced__include=False,
+    )
+
 
 urlpatterns = [
-    path('module/<module>/', ModulePage().as_view(), name='module_detail'),
-    path('module/', crud_views(model=Module)),
-    path('school/task/', crud_views(model=TaskSchool)),
-    path('module/task/', crud_views(model=TaskModule)),
+    path('unit/<unit>/edit/', UnitEdit().as_view(), name='unit_edit'),
+    path('unit/<unit>/', UnitDetail().as_view(), name='unit_detail'),
+    path('unit/', UnitList().as_view(), name='unit_list'),
 ]

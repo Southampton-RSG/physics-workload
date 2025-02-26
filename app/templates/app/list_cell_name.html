@@ -1,0 +1,11 @@
+<td>
+    {% for item in value.all %}
+        {% if not item.assignment_set.count %}
+            <a href='{{ item.get_absolute_url }}' class="btn btn-sm btn-danger">{{ item.name }} {{item.assignment_set.count}}/{{ item.number_needed }}</a>
+        {% elif item.assignment_set.count == item.number_needed %}
+            <a href='{{ item.get_absolute_url }}' class="btn btn-sm btn-success">{{ item.name }} {{item.assignment_set.count}}/{{ item.number_needed }}</a>
+        {% else %}
+            <a href='{{ item.get_absolute_url }}' class="btn btn-sm btn-warning">{{ item.name }} {{item.assignment_set.count}}/{{ item.number_needed }}</a>
+        {% endif %}
+    {% endfor %}
+</td>

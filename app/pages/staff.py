@@ -11,15 +11,15 @@ from iommi import register_search_fields
 from iommi.views import crud_views
 
 from app.pages import BasePage
-from app.models import Staff, AssignmentModule, AssignmentSchool
+from app.models import Staff, Assignment
 
 
 register_path_decoding(
     staff=lambda string, **_: Staff.objects.get(account=string)
 )
-# register_search_fields(
-#     model=Staff, search_fields=['name', 'gender', 'academic_group'], allow_non_unique=True
-# )
+register_search_fields(
+    model=Staff, search_fields=['name', 'gender', 'academic_group'], allow_non_unique=True
+)
 
 
 class StaffDetail(BasePage):
@@ -39,8 +39,9 @@ class StaffDetail(BasePage):
         auto__model=Staff,
         auto__include=[
             'load_calculated_target',
-            'load_calculated_worked',
-            'load_balance',
+            'load_calculated_assigned',
+            'load_calculated_balance',
+            'load_historic_balance',
         ],
         columns__fte_fraction__include=lambda params, **_: params.staff.fte_fraction,
         columns__hours_fixed__include=lambda params, **_: params.staff.hours_fixed,
@@ -62,14 +63,11 @@ class StaffDetail(BasePage):
     #     instance=lambda params, **_: params.staff,
     #     editable=False,
     # )
-    # module_assignments = Table(
-    #     auto__model=AssignmentModule,
-    #     rows=lambda params, **_: AssignmentModule.objects.filter(staff=params.staff),
-    # )
-    # school_assignments = Table(
-    #     auto__model=AssignmentSchool,
-    #     rows=lambda params, **_: AssignmentSchool.objects.filter(staff=params.staff),
-    # )
+    assignments = Table(
+        auto__model=Assignment,
+        auto__exclude=['notes'],
+        rows=lambda params, **_: Assignment.objects.filter(staff=params.staff),
+    )
 
 #     table_staff = Table(
 #         auto__model=Staff, auto__exclude=['user', 'notes', 'is_active'],
@@ -85,25 +83,16 @@ class StaffList(BasePage):
     groups = Table(
         auto__model=Staff,
         auto__include=[
-            'account', 'name', 'gender', 'academic_group', 'load_balance'
+            'account', 'name', 'gender', 'academic_group', 'load_calculated_balance', 'load_historic_balance'
         ],
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
         columns__name__filter__include=True,
         columns__account__cell__url=lambda row, **_: row.get_absolute_url(),
-        columns__academic_group__display_name='Group',
         columns__academic_group__filter__include=True,
         columns__gender__filter__include=True,
-        columns__assignment_module=Column(
-            display_name="Module",
-            group="Assignments",
-            sortable=False,
-            cell__value=lambda row, **_: row.assignmentmodule_set.count(),
-        ),
-        columns__assignment_school=Column(
-            display_name="School",
-            group="Assignments",
-            sortable=False,
-            cell__value=lambda row, **_: row.assignmentschool_set.count(),
+        columns__assignment=Column(
+            display_name="Assignments", sortable=False,
+            cell__value=lambda row, **_: row.assignment_set.count(),
         ),
         query_from_indexes=True,
         query__advanced__include=False,

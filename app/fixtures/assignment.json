@@ -1,0 +1,10 @@
+[
+  {
+    "model": "app.Assignment",
+    "pk": 1,
+    "fields": {
+      "staff": 2,
+      "task": 6
+    }
+  }
+]

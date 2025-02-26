@@ -11,12 +11,12 @@ from simple_history.models import HistoricalRecords
 
 from app.models.standard_load import StandardLoad, get_current_standard_load
 from app.models.load_function import LoadFunction
-from app.models.module import Module
+from app.models.unit import Unit
 
 
-class TaskModule(Model):
+class Task(Model):
     """
-    This is the model for tasks that belong to a module
+    This is the model for tasks
     """
     name = CharField(max_length=128, blank=False)
     description = TextField(blank=False)
@@ -27,9 +27,10 @@ class TaskModule(Model):
 
     history = HistoricalRecords()
 
-    module = ForeignKey(
-        Module, blank=False, null=False, on_delete=PROTECT,
+    unit = ForeignKey(
+        Unit, on_delete=PROTECT, null=True, blank=True,
     )
+
     number_needed = IntegerField(
         null=False, blank=False, default=1,
         validators=[MinValueValidator(1)],
@@ -50,7 +51,7 @@ class TaskModule(Model):
     )
     students = IntegerField(
         null=True, blank=True,
-        help_text="Number of students for scaling load, if not the whole module",
+        help_text="Number of students for scaling load, if not the whole unit",
     )
 
     coursework_fraction = FloatField(
@@ -74,69 +75,62 @@ class TaskModule(Model):
     )
 
     class Meta:
-        ordering = ('is_active', 'module', 'name',)
-        verbose_name = 'Module Task'
-        verbose_name_plural = 'Module Tasks'
+        ordering = ('is_active', 'unit', 'name',)
+        verbose_name = 'Task'
+        verbose_name_plural = 'Tasks'
 
     def __str__(self):
-       return f"{self.name}"
+        if self.unit:
+            return f"{self.unit} - {self.name}"
+        else:
+            return f"{self.name}"
 
     def get_absolute_url(self) -> str:
-        # return reverse_lazy('task_module_detail', args=[self.pk])
-        return reverse_lazy('module_detail', args=[self.module.pk])
+        return reverse_lazy('unit_detail', args=[self.unit.pk])
 
 
-receiver(pre_save, sender=TaskModule)
-def calculate_load_for_task_year_module(
-        sender: Type[TaskModule], instance: TaskModule, **kwargs
+receiver(pre_save, sender=Task)
+def calculate_load_for_task_year(
+        sender: Type[Task], instance: Task, **kwargs
 ):
     """
 
     :return:
     """
-    if not (instance.coursework_fraction or instance.exam_fraction):
-        load: float = 0
+    load: float = 0
 
-        if instance.load_function:
-            try:
-                load += instance.load_function.calculate(instance.students)
-            except Exception as calculation_exception:
-                raise calculation_exception
-
-        instance.load = instance.load_fixed + load
-        instance.load_first = instance.load + instance.load_fixed_first
-
-    else:
+    if instance.unit and (instance.coursework_fraction or instance.exam_fraction):
+        # ==== IF THIS IS A UNIT CO-ORDINATOR ====
         # SPREADSHEET LOGIC
         standard_load: StandardLoad = get_current_standard_load()
-        module: Module = instance.module
+        unit: Unit = instance.unit
 
         # ($I2+$Q2) = "Number of Lectures/Problem Classes Run by Coordinator" + "Number of Synoptic Lectures"
-        contact_sessions: int = module.lectures + module.synoptic_lectures + module.problem_classes
+        contact_sessions: int = unit.lectures + unit.synoptic_lectures + unit.problem_classes
 
         # (($I2+$Q2)*3.5) or (($I2+$Q2)*6)
         load_lecture: float = contact_sessions * standard_load.load_lecture
         load_lecture_first: float = contact_sessions * standard_load.load_lecture_first
 
         # ($J2*2) = "Coursework (number of items prepared)"
-        load_coursework_set: float = module.coursework * standard_load.load_coursework_set
-        # ($L2*$O2*2) = "Coursework (fraction of module mark)" * "Total Number of CATS"
-        load_coursework_credit: float = module.coursework_mark_fraction * module.credit_hours * standard_load.load_coursework_credit
+        load_coursework_set: float = unit.coursework * standard_load.load_coursework_set
+        # ($L2*$O2*2) = "Coursework (fraction of unit mark)" * "Total Number of CATS"
+        load_coursework_credit: float = unit.coursework_mark_fraction * unit.credit_hours * standard_load.load_coursework_credit
 
-        # ($J2+$L2*$Q2) = "Coursework (number of items prepared)" + "Coursework (fraction of module mark)" * "Total Number of CATS"
+        # ($J2+$L2*$Q2) = "Coursework (number of items prepared)" + "Coursework (fraction of unit mark)" * "Total Number of CATS"
         # (0.1667 * [] * $K2 * $P2) = "Fraction of Coursework marked by coordinator" * "Number of Students"
-        load_coursework_marked: float = (module.coursework + instance.coursework_fraction * module.credit_hours) * \
-            instance.coursework_fraction * module.students * standard_load.load_coursework_marked
+        load_coursework_marked: float = (unit.coursework + instance.coursework_fraction * unit.credit_hours) * \
+            instance.coursework_fraction * unit.students * standard_load.load_coursework_marked
 
-        # ($M2*O2*2) = "Examination (fraction of module mark)" * "Total Number of CATS"
-        load_exam_credit: float = instance.exam_fraction * module.credit_hours * standard_load.load_exam_credit
+        # ($M2*O2*2) = "Examination (fraction of unit mark)" * "Total Number of CATS"
+        load_exam_credit: float = instance.exam_fraction * unit.credit_hours * standard_load.load_exam_credit
 
         # ($P2*$N2*1) = "Number of Students" * "Fraction of Exams Marked by Coordinator"
-        load_exam_marked: float = module.students * instance.exam_fraction * standard_load.load_exam_marked
+        load_exam_marked: float = unit.students * instance.exam_fraction * standard_load.load_exam_marked
 
         load: float = load_coursework_set + load_coursework_credit + \
                       load_exam_credit + load_exam_marked + load_coursework_marked
-        
+
         if instance.load_function:
             load += instance.load_function.calculate(instance.students)
         else:
@@ -145,13 +139,25 @@ def calculate_load_for_task_year_module(
         instance.load_calc_first = load + instance.load_fixed + load_lecture_first + instance.load_fixed_first
         instance.load_calc = load + instance.load_fixed + load_lecture
 
+    else:
+        # ==== IF THIS IS NOT A UNIT CO-ORDINATOR ====
+        # Much simpler logic
+        if instance.load_function:
+            try:
+                load += instance.load_function.calculate(instance.students)
+            except Exception as calculation_exception:
+                raise calculation_exception
 
-class TaskModuleField(ForeignKey):
+        instance.load_calc = instance.load_fixed + load
+        instance.load_calc_first = instance.load + instance.load_fixed_first
+
+
+class TaskField(ForeignKey):
     """
     Semantic model wrapper for the relationship, so Iommi can style it easily:
     https://docs.iommi.rocks/en/latest/semantic_models.html
     """
     def __init__(self, to=None, *args, **kwargs):
         assert to is None
-        to = TaskModule
+        to = Task
         super().__init__(to=to, *args, **kwargs)

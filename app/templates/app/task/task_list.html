@@ -1,0 +1,1 @@
+<a href='{{ item.get_absolute_url }}' class="btn {% 'btn-warning' if item.assignment_set.count == 0 else btn-success">{{ item.name }}</a>

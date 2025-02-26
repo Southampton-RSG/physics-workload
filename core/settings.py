@@ -158,45 +158,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #############################################################
 # Settings specific to Iommi:
 #############################################################
-from iommi import LAST, Asset
-from iommi.evaluate import evaluate_strict
-from iommi.style import Style, register_style, validate_styles
-from iommi.style_base import select2_enhanced_forms
-from iommi.style_bootstrap5 import bootstrap5_base
-from iommi.style_font_awesome_6 import font_awesome_6
-from typing import Dict, Any
+from app.style import base_style
 
-floating_fields: Dict[str, Any] = {
-    "label__after": "input",
-    "attrs": {
-        "class": {"form-floating": True},
-    }
-}
-
-custom_style: Style = Style(
-    bootstrap5_base,
-    font_awesome_6,
-    # select2_enhanced_forms,
-
-    root__assets__custom_css= Asset.css(attrs__href="/static/css/custom.css"),
-    Field={
-        "shortcuts":{
-            "text": floating_fields,
-            "textarea": floating_fields,
-            "number": floating_fields,
-            "integer": floating_fields,
-            "choice": floating_fields,
-            "choice_queryset": floating_fields,
-        },
-        "input__attrs__placeholder": lambda field, **_: evaluate_strict(
-            field.display_name, **field.iommi_evaluate_parameters()
-        ),
-    },
-)
-register_style('teaching_time_tool', custom_style)
-# validate_styles()
-
-IOMMI_DEFAULT_STYLE = custom_style
+IOMMI_DEFAULT_STYLE = base_style
 IOMMI_DEBUG = True
 
 #############################################################

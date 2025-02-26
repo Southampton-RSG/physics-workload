@@ -1,0 +1,14 @@
+.hidden {
+    display: none;
+}
+
+.form-floating .form-label {
+    margin-left: 0.75rem;
+    background: none;
+}
+
+input:disabled {
+    border: 0px;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}

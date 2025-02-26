@@ -1,6 +1,6 @@
 [
   {
-    "model": "app.Module",
+    "model": "app.Unit",
     "pk": 1,
     "fields": {
       "name": "Physics from Evidence I",
@@ -8,11 +8,12 @@
       "is_active": 1,
       "has_dissertation": 0,
       "has_placement": 0,
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "students": 109
     }
   },
   {
-    "model": "app.Module",
+    "model": "app.Unit",
     "pk": 2,
     "fields": {
       "name": "Galaxies",
@@ -21,11 +22,12 @@
       "is_active": 1,
       "has_dissertation": 0,
       "has_placement": 0,
-      "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
+      "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
+      "students": 54
     }
   },
   {
-    "model": "app.Module",
+    "model": "app.Unit",
     "pk": 3,
     "fields": {
       "name": "MPhys with Indsutrial Placement",
@@ -33,7 +35,8 @@
       "is_active": 1,
       "has_dissertation": 0,
       "has_placement": 1,
-      "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+      "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+      "students": 2
     }
   }
 ]

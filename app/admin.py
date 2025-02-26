@@ -1,17 +1,10 @@
 # -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
-
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 
 from app.models import (
     AcademicGroup, Staff, StandardLoad,
-    Module,
-    TaskModule, TaskSchool,
-    AssignmentSchool, AssignmentModule,
-
+    Unit, Task, Assignment,
 )
 
 
@@ -24,55 +17,37 @@ class AcademicGroupAdmin(ModelAdmin):
     pass
 
 
-@admin.register(Module)
-class ModuleAdmin(ModelAdmin):
+@admin.register(Unit)
+class UnitAdmin(ModelAdmin):
     """
-    Admin class for the Module model.
+    Admin class for the Unit model.
     Uses the default settings, but here in case it needs expanding.
     """
     pass
 
 
-@admin.register(AssignmentModule)
-class AssignmentModuleAdmin(ModelAdmin):
+@admin.register(Assignment)
+class AssignmentAdmin(ModelAdmin):
     """
-    Admin class for the AssignmentModule model.
+    Admin class for the Assignment model.
     Uses the default settings, but here in case it needs expanding.
     """
     pass
 
 
-@admin.register(TaskModule)
-class TaskModuleAdmin(ModelAdmin):
+@admin.register(Task)
+class TaskAdmin(ModelAdmin):
     """
-    Admin class for the TaskModule model.
-    Uses the default settings, but here in case it needs expanding.
-    """
-    pass
-
-
-@admin.register(TaskSchool)
-class TaskSchoolAdmin(ModelAdmin):
-    """
-    Admin class for the TaskSchool model.
+    Admin class for the Task model.
     Uses the default settings, but here in case it needs expanding.
     """
     pass
 
 
 @admin.register(StandardLoad)
-class AcademicYearAdmin(ModelAdmin):
+class StandardLoadAdmin(ModelAdmin):
     """
-    Admin class for the AcademicYear model.
-    Uses the default settings, but here in case it needs expanding.
-    """
-    pass
-
-
-@admin.register(AssignmentSchool)
-class AssignmentSchoolAdmin(ModelAdmin):
-    """
-    Admin class for the AssignmentSchool model.
+    Admin class for the StandardLoad model.
     Uses the default settings, but here in case it needs expanding.
     """
     pass

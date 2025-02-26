@@ -16,7 +16,7 @@ from django.views import View
 from django.contrib import messages
 
 from app.forms.academic_group import AcademicGroupForm
-from app.models import AcademicGroup, Module
+from app.models import AcademicGroup, Unit
 from app.utils import set_pagination
 
 
