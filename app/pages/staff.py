@@ -35,6 +35,7 @@ class StaffDetail(BasePage):
         sortable=False,
     )
     load_table = Table(
+
         title=None,
         auto__model=Staff,
         auto__include=[
@@ -43,6 +44,7 @@ class StaffDetail(BasePage):
             'load_calculated_balance',
             'load_historic_balance',
         ],
+
         columns__fte_fraction__include=lambda params, **_: params.staff.fte_fraction,
         columns__hours_fixed__include=lambda params, **_: params.staff.hours_fixed,
         # columns__load_balance_current=Column(

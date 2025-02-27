@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from typing import Type
 
+from django.template.loader import render_to_string
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Model, ForeignKey, PROTECT, CharField, FloatField, TextField, IntegerField, BooleanField, Manager
 from django.db.models.signals import pre_save
@@ -18,6 +19,9 @@ class Task(Model):
     """
     This is the model for tasks
     """
+    icon = "clipboard"
+    url_root = "task"
+
     name = CharField(max_length=128, blank=False)
     description = TextField(blank=False)
 
@@ -29,11 +33,13 @@ class Task(Model):
 
     unit = ForeignKey(
         Unit, on_delete=PROTECT, null=True, blank=True,
+        related_name='task_set',
     )
 
     number_needed = IntegerField(
         null=False, blank=False, default=1,
         validators=[MinValueValidator(1)],
+        verbose_name="Required",
     )
 
     load_fixed = FloatField(
@@ -86,7 +92,42 @@ class Task(Model):
             return f"{self.name}"
 
     def get_absolute_url(self) -> str:
+        # return reverse_lazy('task_detail', args=[self.unit.pk])
         return reverse_lazy('unit_detail', args=[self.unit.pk])
+
+    def get_instance_header(self) -> str:
+        """
+        The header for a page referring to a specific instance of this model
+        :return: The rendered HTML template for this model.
+        """
+        return render_to_string(
+            template_name='app/title.html',
+            context={
+                'icon': self.icon, 'url': self.get_absolute_url(),
+                'text': self
+            }
+        )
+
+    @staticmethod
+    def get_model_url() -> str:
+        """
+        :return: The URL for the view listing all of this model
+        """
+        return reverse_lazy(Task.url_root+'_list')
+
+    @staticmethod
+    def get_model_header() -> str:
+        """
+        The header for a page listing all of this model
+        :return: The HTML template for this model.
+        """
+        return render_to_string(
+            template_name='app/title.html',
+            context={
+                'icon': Task.icon, 'url': Task.get_model_url(),
+                'text': Task._meta.verbose_name_plural.title()
+            }
+        )
 
 
 receiver(pre_save, sender=Task)

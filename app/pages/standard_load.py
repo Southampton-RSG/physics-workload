@@ -6,13 +6,13 @@ from django.urls import path
 from django.utils.html import format_html, mark_safe
 from django.template import Template
 
-from iommi import Page, Table, html, Form, EditTable, Column, Action, Menu, Fragment
+from iommi import Page, Table, html, Form, EditTable, Column, Action, Menu, Fragment, Header
 from iommi.path import register_path_decoding
 from iommi import register_search_fields
 from iommi.views import crud_views
 
 from app.models import AcademicGroup, Staff, Unit, Task, StandardLoad
-from app.pages import BasePage, TitleEdit, TitleCreate, MathJax
+from app.pages import BasePage, HeaderEdit, HeaderCreate, MathJax, HeaderEditSuffix
 from app.style import horizontal_fields_style, floating_fields_style
 from app.assets import mathjax_js
 
@@ -24,10 +24,8 @@ class StandardLoadEdit(BasePage):
     """
     Edit the standard load
     """
-    title = html.h1(
-        lambda params, **_: format_html(
-            params.standard_load.get_title() + " / Edit <i class='text-warning fa-solid fa-square-pen'></i>"
-        )
+    header = HeaderEditSuffix(
+        lambda params, **_: format_html(params.standard_load.get_instance_header())
     )
     detail_factors = Form.edit(
         h_tag=None,
@@ -45,9 +43,9 @@ class StandardLoadDetail(BasePage):
     """
     Shows details of the standard load
     """
-    title = TitleEdit(
+    header = HeaderEdit(
         lambda params, **_: format_html(
-            params.standard_load.get_title()
+            params.standard_load.get_instance_header()
         )
     )
     equation = MathJax(
@@ -78,9 +76,9 @@ class StandardLoadList(BasePage):
     """
     Page listing the standard load over history
     """
-    title = html.h1(
+    header = Header(
         lambda params, **_: format_html(
-            StandardLoad.get_model_title(),
+            StandardLoad.get_model_header(),
         ),
     )
     list = Table(

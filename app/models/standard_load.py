@@ -3,6 +3,7 @@ from django.db.models import Model, IntegerField, FloatField, TextField
 from django.urls import reverse_lazy
 from django.conf import settings
 from django.db.models import ObjectDoesNotExist
+from django.template.loader import render_to_string
 
 
 class StandardLoad(Model):
@@ -107,18 +108,36 @@ class StandardLoad(Model):
         return f"Load {self.year-2000}/{self.year-1999}"
 
     def get_absolute_url(self) -> str:
+        """
+        :return: The URL for the detail view of this particular instance of the model
+        """
         return reverse_lazy(StandardLoad.url_root+'_detail', args=[self.year])
 
-    def get_title(self) -> str:
-        return f"<i class='fa-solid fa-{self.icon}'></i> <a href='{self.get_absolute_url()}'>{self}</a>"
+    def get_instance_header(self) -> str:
+        return render_to_string(
+            template_name='app/title.html',
+            context={
+                'icon': self.icon, 'url': self.get_absolute_url(),
+                'text': self
+            }
+        )
 
     @staticmethod
     def get_model_url() -> str:
+        """
+        :return: The URL for the view listing all of this model
+        """
         return reverse_lazy(StandardLoad.url_root+'_list')
 
     @staticmethod
-    def get_model_title() -> str:
-        return f"<i class='fa-solid fa-{StandardLoad.icon}'></i> <a href='{StandardLoad.get_model_url()}'>{StandardLoad._meta.verbose_name_plural.title()}</a>"
+    def get_model_header() -> str:
+        return render_to_string(
+            template_name='app/title.html',
+            context={
+                'icon': StandardLoad.icon, 'url': StandardLoad.get_model_url(),
+                'text': StandardLoad._meta.verbose_name_plural.title()
+            }
+        )
 
 
 def get_current_standard_load() -> StandardLoad|None:

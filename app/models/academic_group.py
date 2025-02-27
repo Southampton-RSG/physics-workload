@@ -32,7 +32,7 @@ class AcademicGroup(Model):
     def get_absolute_url(self) -> str:
         return reverse_lazy(AcademicGroup.url_root+'_detail', args=[self.code])
 
-    def get_title(self) -> str:
+    def get_instance_header(self) -> str:
         return f"<i class='fa-solid fa-{self.icon}'></i> <a href='{self.get_absolute_url()}'>{self}</a>"
 
     @staticmethod
@@ -40,5 +40,5 @@ class AcademicGroup(Model):
         return reverse_lazy(AcademicGroup.url_root+'_list')
 
     @staticmethod
-    def get_model_title() -> str:
+    def get_model_header() -> str:
         return f"<i class='fa-solid fa-{AcademicGroup.icon}'></i> <a href='{AcademicGroup.get_model_url()}'>{AcademicGroup._meta.verbose_name_plural.title()}</a>"

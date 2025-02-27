@@ -12,9 +12,52 @@ from typing import Dict, Any
 base_style = Style(
     bootstrap5_base,
     font_awesome_6,
+    base_template="app/iommi_base.html",
+    root__assets__custom_base_css=Asset.css(attrs__href="/static/css/custom-base.css"),
+    # Container=dict(
+    #     attrs__class={
+    #         'd-flex': True,
+    #         'flex-column': True,
+    #         'min-vh-100': True,
+    #         'mt-5': False,
+    #         'pt-5': False,
+    #     },
+    #     attrs__style={
+    #         'padding': "4rem",
+    #     }
+    # ),
 )
 register_style('teaching_time_tool', base_style)
 # ------------------------------------------------------------------------------
+
+boolean_button_fields_style: Style = Style(
+    base_style,
+    Field=dict(
+        shortcuts=dict(
+            boolean=dict(
+                attrs__class={
+                    'form-check': False,
+                    'mb-3': False,
+                    'h-100': True,
+                },
+                input__attrs__class={
+                    'form-check-input': False,
+                    'btn-check': True,
+                },
+                label__attrs__class={
+                    'btn': True,
+                    'w-100': True,
+                    'form-label': False,
+                    'form_label': False,
+                    'btn-lg': True,
+                    'btn-outline-primary': True,
+                }
+            ),
+        )
+    )
+)
+register_style('boolean_buttons', boolean_button_fields_style)
+
 
 # ==============================================================================-
 # To get Bootstrap 5 floating fields, we need to add the right class to the form,
@@ -27,9 +70,9 @@ floating_fields: Dict[str, Any] = {
 }
 # Applied on a per-field or per-form basis
 floating_fields_style: Style = Style(
-    base_style,
+    boolean_button_fields_style,
     # select2_enhanced_forms,
-    root__assets__custom_css=Asset.css(attrs__href="/static/css/custom-floating.css"),
+    root__assets__custom_floating_css=Asset.css(attrs__href="/static/css/custom-floating.css"),
     Field=dict(
         shortcuts=dict(
             text=floating_fields,
@@ -57,6 +100,7 @@ horizontal_fields: Dict[str, Any] = {
 # Applied on a per-field or per-form basis, as an object or 'horizontal_fields'
 horizontal_fields_style: Style = Style(
     base_style,
+    root__assets__custom_horizontal_css=Asset.css(attrs__href="/static/css/custom-horizontal.css"),
     Field=dict(
         shortcuts=dict(
             text=horizontal_fields,
@@ -70,6 +114,7 @@ horizontal_fields_style: Style = Style(
 )
 register_style('horizontal_fields', horizontal_fields_style)
 # ------------------------------------------------------------------------------
+
 
 # ==============================================================================
 # validate_styles()

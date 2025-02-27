@@ -1,5 +1,5 @@
 from django.utils.html import format_html, mark_safe
-from iommi import Menu, MenuItem, Page, html, Action, Fragment, LAST, Asset
+from iommi import Menu, MenuItem, Page, html, Action, Fragment, LAST, Asset, Header
 
 from app.assets import mathjax_js
 
@@ -51,10 +51,13 @@ class FooterMenu(Menu):
     )
 
     class Meta:
+        tag = 'footer'
         attrs__class = {
             'fixed-bottom': True,
+            'mt-5': True,
             'justify-content-around': True,
         }
+        after = LAST
 
 
 class BasePage(Page):
@@ -62,26 +65,49 @@ class BasePage(Page):
     The base page with header and footer
     """
     menu = HeaderMenu()
+
     footer = FooterMenu()
 
 
-class TitleEdit(Fragment):
+class HeaderEditSuffix(Header):
     """
-    A title, with a 'edit this model' button after it
+    A header for a model being edited
     """
     class Meta:
-        tag = 'h1'
-        children__edit=html.span(template='app/edit_button.html')
+        children__suffix=html.span(template='app/edit_suffix.html')
+
+
+class HeaderCreateSuffix(Header):
+    """
+    A header for a model being edited
+    """
+    class Meta:
+        children__suffix=html.span(template='app/create_suffix.html')
+
+
+class HeaderDeleteSuffix(Header):
+    """
+    A header for a model being deleted
+    """
+    class Meta:
+        children__suffix=html.span(template='app/delete_suffix.html')
+
+
+class HeaderEdit(Header):
+    """
+    A header, with a 'edit this model' button after it
+    """
+    class Meta:
+        children__button=html.span(template='app/edit_button.html')
         attrs__class={'position-relative': True}
 
 
-class TitleCreate(Fragment):
+class HeaderCreate(Header):
     """
-    A title, with a 'create new' button after it
+    A header, with a 'create new' button after it
     """
     class Meta:
-        tag = 'h1'
-        children__edit=html.span(template='app/create_button.html')
+        children__button=html.span(template='app/create_button.html')
         attrs__class={'position-relative': True}
 
 

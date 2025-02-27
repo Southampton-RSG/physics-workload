@@ -12,7 +12,7 @@ from iommi import register_search_fields
 from iommi.views import crud_views
 
 from app.models import AcademicGroup, Staff, Unit, Task
-from app.pages import BasePage, TitleEdit, TitleCreate
+from app.pages import BasePage, HeaderEdit, HeaderCreate, HeaderEditSuffix, HeaderCreateSuffix, HeaderDeleteSuffix
 
 
 register_path_decoding(academic_group=lambda string, **_: AcademicGroup.objects.get(code=string))
@@ -23,9 +23,9 @@ class AcademicGroupDetail(BasePage):
     Detail view showing group members and their workloads,
     as well as any units and their assignment status.
     """
-    title = TitleEdit(
+    title = HeaderEdit(
         lambda params, **_: format_html(
-            params.academic_group.get_title()
+            params.academic_group.get_instance_header()
         ),
     )
 
@@ -60,11 +60,11 @@ class AcademicGroupDetail(BasePage):
         auto__include=['code', 'name', 'task_set', 'students'],
         columns__code__cell__url=lambda row, **_: row.get_absolute_url(),
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
-        columns__task_set={
-            "display_name": 'Tasks',
-            "cell__template": 'app/list_cell_name.html',
-            "after": 'students',
-        },
+        columns__task_set=dict(
+            display_name='Tasks',
+            cell__template='app/list_cell_name.html',
+            after='students',
+        ),
         rows=lambda params, **_: Unit.objects_active.filter(
             academic_group=params.academic_group
         ),
@@ -77,10 +77,8 @@ class AcademicGroupEdit(BasePage):
     """
     Page showing an academic group to be edited
     """
-    title = html.h1(
-        lambda params, **_: format_html(
-            params.academic_group.get_title()+" / Edit <i class='text-warning fa-solid fa-square-pen'></i>"
-        ),
+    title = HeaderEditSuffix(
+        lambda params, **_: format_html(params.academic_group.get_instance_header()),
     )
     form = Form.edit(
         h_tag=None,
@@ -95,10 +93,8 @@ class AcademicGroupCreate(BasePage):
     """
     Page showing an academic group to be created
     """
-    title = html.h1(
-        lambda params, **_: format_html(
-            AcademicGroup.get_model_title()+" / Create <i class='text-success fa-solid fa-square-plus'></i>"
-        ),
+    title = HeaderCreateSuffix(
+        lambda params, **_: format_html(AcademicGroup.get_model_header()),
     )
     form = Form.create(
         h_tag=None,
@@ -107,14 +103,13 @@ class AcademicGroupCreate(BasePage):
         fields__name__group="row1",
     )
 
+
 class AcademicGroupDelete(BasePage):
     """
     Page showing an academic group to be created
     """
-    title = html.h1(
-        lambda params, **_: format_html(
-            params.academic_group.get_title()+" / Delete <i class=#text-danger fa-solid fa-trash'></i>"
-        ),
+    header = HeaderDeleteSuffix(
+        lambda params, **_: format_html(params.academic_group.get_instance_header()),
     )
     warning = html.p(
         "If this group has been used, edit it and remove the 'active' flag instead."
@@ -126,13 +121,15 @@ class AcademicGroupDelete(BasePage):
         fields__name__group="row1",
     )
 
+
+
 class AcademicGroupList(BasePage):
     """
     Page listing the academic groups
     """
-    title = TitleCreate(
+    title = HeaderCreate(
         lambda params, **_: format_html(
-            AcademicGroup.get_model_title(),
+            AcademicGroup.get_model_header(),
         ),
     )
     list = Table(
