@@ -6,13 +6,13 @@ from django.urls import path
 from django.utils.html import format_html, mark_safe
 from django.template import Template
 
-from iommi import Page, Table, html, Form, EditTable, Column, Action, Menu, Fragment, Header
+from iommi import Page, Table, html, Form, EditTable, Column, Action, Menu, Fragment, Header, Asset
 from iommi.path import register_path_decoding
 from iommi import register_search_fields
 from iommi.views import crud_views
 
 from app.models import AcademicGroup, Staff, Unit, Task, StandardLoad
-from app.pages import BasePage, HeaderEdit, HeaderCreate, MathJax, HeaderEditSuffix
+from app.pages import BasePage, HeaderInstanceDetail, HeaderList, Equations, HeaderInstanceEdit
 from app.style import horizontal_fields_style, floating_fields_style
 from app.assets import mathjax_js
 
@@ -24,8 +24,8 @@ class StandardLoadEdit(BasePage):
     """
     Edit the standard load
     """
-    header = HeaderEditSuffix(
-        lambda params, **_: format_html(params.standard_load.get_instance_header())
+    header = HeaderInstanceEdit(
+        lambda params, **_: format_html(params.standard_load.get_instance_header()),
     )
     detail_factors = Form.edit(
         h_tag=None,
@@ -43,12 +43,12 @@ class StandardLoadDetail(BasePage):
     """
     Shows details of the standard load
     """
-    header = HeaderEdit(
+    header = HeaderInstanceDetail(
         lambda params, **_: format_html(
             params.standard_load.get_instance_header()
         )
     )
-    equation = MathJax(
+    equation = Equations(
         template="app/standard_load/equation.html",
     )
     heading_factors = html.h2(

@@ -1,5 +1,5 @@
 from django.utils.html import format_html, mark_safe
-from iommi import Menu, MenuItem, Page, html, Action, Fragment, LAST, Asset, Header
+from iommi import Menu, MenuItem, Page, html, Action, Fragment, LAST, Asset, Header, Column
 
 from app.assets import mathjax_js
 
@@ -69,7 +69,7 @@ class BasePage(Page):
     footer = FooterMenu()
 
 
-class HeaderEditSuffix(Header):
+class HeaderInstanceEdit(Header):
     """
     A header for a model being edited
     """
@@ -77,7 +77,7 @@ class HeaderEditSuffix(Header):
         children__suffix=html.span(template='app/edit_suffix.html')
 
 
-class HeaderCreateSuffix(Header):
+class HeaderInstanceCreate(Header):
     """
     A header for a model being edited
     """
@@ -85,7 +85,7 @@ class HeaderCreateSuffix(Header):
         children__suffix=html.span(template='app/create_suffix.html')
 
 
-class HeaderDeleteSuffix(Header):
+class HeaderInstanceDelete(Header):
     """
     A header for a model being deleted
     """
@@ -93,7 +93,7 @@ class HeaderDeleteSuffix(Header):
         children__suffix=html.span(template='app/delete_suffix.html')
 
 
-class HeaderEdit(Header):
+class HeaderInstanceDetail(Header):
     """
     A header, with a 'edit this model' button after it
     """
@@ -102,7 +102,7 @@ class HeaderEdit(Header):
         attrs__class={'position-relative': True}
 
 
-class HeaderCreate(Header):
+class HeaderList(Header):
     """
     A header, with a 'create new' button after it
     """
@@ -111,7 +111,7 @@ class HeaderCreate(Header):
         attrs__class={'position-relative': True}
 
 
-class MathJax(Fragment):
+class Equations(Fragment):
     """
     A block of text containing LaTeX equations
     """

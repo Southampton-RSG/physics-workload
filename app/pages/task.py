@@ -1,6 +1,9 @@
 """
 
 """
+import string
+
+from django.template.loader import render_to_string
 from django.urls import path
 from django.utils.html import format_html
 from django.template import Template
@@ -10,11 +13,73 @@ from iommi.path import register_path_decoding
 from iommi import register_search_fields
 from iommi.views import crud_views
 
+
 from app.models import Unit, Task, Assignment
+from app.pages import BasePage, HeaderInstanceDelete, HeaderInstanceEdit, HeaderInstanceDetail
+from app.forms.task import TaskForm
+from app.style import floating_fields_style
 
 register_path_decoding(task=lambda string, **_: Task.objects.get(pk=int(string)))
-# register_search_fields(model=Task, search_fields=['name'], allow_non_unique=True)
+register_search_fields(model=Task, search_fields=['name'], allow_non_unique=True)
 
+
+class TaskDetail(BasePage):
+    """
+    Page for showing task details
+    """
+    header = HeaderInstanceDetail(
+        lambda params, **_: format_html(
+            f"{params.task.get_instance_header()}"
+        )
+    )
+    list = EditTable(
+        auto__model=Assignment,
+        auto__exclude=['notes', 'task'],
+        columns__staff__field=dict(
+            include=True,
+        ),
+        columns__is_first_time__field=dict(
+            include=True,
+        ),
+        columns__is_provisional__field__include=True,
+        rows=lambda params, **_: params.task.assignment_set.all(),
+    )
+    br = html.br()
+
+    form = TaskForm(
+        title="Details",
+        instance=lambda params, **_: params.task,
+        editable=False,
+    )
+
+class TaskEdit(BasePage):
+    """
+    Page for editing a task
+    """
+    header = HeaderInstanceEdit(
+        lambda params, **_: format_html(
+            f"{params.task.get_instance_header()}"
+        )
+    )
+    form = TaskForm.edit(
+        h_tag=None,
+        instance=lambda params, **_: params.task,
+    )
+
+
+class TaskDelete(BasePage):
+    """
+    Page for deleting a task
+    """
+    header = HeaderInstanceDelete(
+        lambda params, **_: format_html(
+            f"{params.task.get_instance_header()}"
+        )
+    )
+    form = TaskForm.delete(
+        h_tag=None,
+        instance=lambda params, **_: params.task,
+    )
 
 # class TaskPage(Page):
 #     """
@@ -70,5 +135,7 @@ register_path_decoding(task=lambda string, **_: Task.objects.get(pk=int(string))
 #
 #
 urlpatterns = [
-    path('task/', crud_views(model=Task)),
+    path('task/<task>/delete/', TaskDelete().as_view(), name='task_delete'),
+    path('task/<task>/edit/', TaskEdit().as_view(), name='task_edit'),
+    path('task/<task>/', TaskDetail().as_view(), name='task_detail'),
 ]

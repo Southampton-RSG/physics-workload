@@ -12,7 +12,7 @@ from iommi import register_search_fields
 from iommi.views import crud_views
 
 from app.models import AcademicGroup, Staff, Unit, Task
-from app.pages import BasePage, HeaderEdit, HeaderCreate, HeaderEditSuffix, HeaderCreateSuffix, HeaderDeleteSuffix
+from app.pages import BasePage, HeaderInstanceDetail, HeaderList, HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete
 
 
 register_path_decoding(academic_group=lambda string, **_: AcademicGroup.objects.get(code=string))
@@ -23,7 +23,7 @@ class AcademicGroupDetail(BasePage):
     Detail view showing group members and their workloads,
     as well as any units and their assignment status.
     """
-    title = HeaderEdit(
+    title = HeaderInstanceDetail(
         lambda params, **_: format_html(
             params.academic_group.get_instance_header()
         ),
@@ -77,7 +77,7 @@ class AcademicGroupEdit(BasePage):
     """
     Page showing an academic group to be edited
     """
-    title = HeaderEditSuffix(
+    title = HeaderInstanceEdit(
         lambda params, **_: format_html(params.academic_group.get_instance_header()),
     )
     form = Form.edit(
@@ -93,7 +93,7 @@ class AcademicGroupCreate(BasePage):
     """
     Page showing an academic group to be created
     """
-    title = HeaderCreateSuffix(
+    title = HeaderInstanceCreate(
         lambda params, **_: format_html(AcademicGroup.get_model_header()),
     )
     form = Form.create(
@@ -108,7 +108,7 @@ class AcademicGroupDelete(BasePage):
     """
     Page showing an academic group to be created
     """
-    header = HeaderDeleteSuffix(
+    header = HeaderInstanceDelete(
         lambda params, **_: format_html(params.academic_group.get_instance_header()),
     )
     warning = html.p(
@@ -127,7 +127,7 @@ class AcademicGroupList(BasePage):
     """
     Page listing the academic groups
     """
-    title = HeaderCreate(
+    title = HeaderList(
         lambda params, **_: format_html(
             AcademicGroup.get_model_header(),
         ),

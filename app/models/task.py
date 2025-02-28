@@ -23,7 +23,6 @@ class Task(Model):
     url_root = "task"
 
     name = CharField(max_length=128, blank=False)
-    description = TextField(blank=False)
 
     is_active = BooleanField(default=True)
     objects_active = QueryManager(is_active=True)
@@ -31,15 +30,15 @@ class Task(Model):
 
     history = HistoricalRecords()
 
-    unit = ForeignKey(
-        Unit, on_delete=PROTECT, null=True, blank=True,
-        related_name='task_set',
-    )
-
     number_needed = IntegerField(
         null=False, blank=False, default=1,
         validators=[MinValueValidator(1)],
         verbose_name="Required",
+    )
+
+    unit = ForeignKey(
+        Unit, on_delete=PROTECT, null=True, blank=True,
+        related_name='task_set',
     )
 
     load_fixed = FloatField(
@@ -70,6 +69,7 @@ class Task(Model):
         verbose_name="Fraction of exams marked",
     )
 
+    description = TextField(blank=False)
     notes = TextField(blank=True)
 
     # === CACHED LOADS ===
@@ -87,13 +87,15 @@ class Task(Model):
 
     def __str__(self):
         if self.unit:
-            return f"{self.unit} - {self.name}"
+            return f"{self.unit.code} - {self.name}"
         else:
             return f"{self.name}"
 
     def get_absolute_url(self) -> str:
-        # return reverse_lazy('task_detail', args=[self.unit.pk])
-        return reverse_lazy('unit_detail', args=[self.unit.pk])
+        """
+        :return: The URL for the detail view of this particular instance of the model
+        """
+        return reverse_lazy('task_detail', args=[self.pk])
 
     def get_instance_header(self) -> str:
         """
