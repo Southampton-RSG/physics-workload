@@ -1,3 +1,4 @@
+from logging import getLogger, DEBUG
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Model, ForeignKey, TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index, Sum
@@ -6,6 +7,8 @@ from model_utils.managers import QueryManager
 
 from app.models.academic_group import AcademicGroup
 from app.models.mixins import ModelIconMixin
+
+logger = getLogger(__name__)
 
 
 class Staff(ModelIconMixin, Model):
@@ -42,17 +45,17 @@ class Staff(ModelIconMixin, Model):
     )
 
     load_calculated_target = FloatField(
-        blank=True, null=True, validators=[MinValueValidator(0.0)],
+        default=0, validators=[MinValueValidator(0.0)],
         verbose_name='Target load hours',
         help_text="Load hours calculated for the current year.",
     )
     load_calculated_assigned = FloatField(
-        blank=True, null=True, validators=[MinValueValidator(0.0)],
+        default=0, validators=[MinValueValidator(0.0)],
         verbose_name='Assigned load hours',
         help_text="Load hours assigned for the current year.",
     )
     load_calculated_balance = FloatField(
-        blank=True, null=True, validators=[MinValueValidator(0.0)],
+        default=0,
         verbose_name='Current load balance',
         help_text="The current year's target load minus assigned load.",
     )
@@ -96,9 +99,13 @@ class Staff(ModelIconMixin, Model):
         """
         :return: The load balance for this staff member.
         """
+        logger.debug(f"{self}: Updating load balance")
+
         load: float = 0
         for assignment in self.assignment_set.all():
+            logger.debug(f"{self}: Adding load for {assignment}: {assignment.get_load()}")
             load += assignment.get_load()
 
-        self.load_calculated_balance = load
+        self.load_calculated_assigned = load
+        self.load_calculated_balance = self.load_calculated_target - self.load_calculated_assigned
         self.save()

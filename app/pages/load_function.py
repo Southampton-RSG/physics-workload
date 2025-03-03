@@ -125,8 +125,10 @@ class LoadFunctionList(BasePage):
     list = Table(
         h_tag=None,
         auto__model=LoadFunction,
-        auto__exclude=['is_active'],
+        auto__exclude=['notes'],
+        columns__is_active__render_column=False,
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
+        columns__expression__cell__template=Template("<td>{{ value | truncatechars:32 }}</td>"),
         columns__modify=create_modify_column(),
     )
 

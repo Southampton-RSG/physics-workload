@@ -51,7 +51,8 @@ class AcademicGroupDetail(BasePage):
         rows=lambda params, **_: Staff.objects_active.filter(academic_group=params.academic_group),
         columns__name__cell__url = lambda row, **_: row.get_absolute_url(),
         page_size=20,
-        h_tag__tag='h2',
+        empty_message="No staff available.",
+        attrs__class={'mb-3': True},
     )
     units = Table(
         auto__model=Unit,
@@ -60,14 +61,15 @@ class AcademicGroupDetail(BasePage):
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
         columns__task_set=dict(
             display_name='Tasks',
-            cell__template='app/list_cell_name.html',
+            cell__template='app/academic_group/assignment_set.html',
             after='students',
         ),
-        rows=lambda params, **_: Unit.objects_active.filter(
+        rows=lambda params, **_: Unit.objects.filter(
             academic_group=params.academic_group
         ),
         page_size=20,
         h_tag__tag='h2',
+        empty_message="No units available.",
     )
 
 

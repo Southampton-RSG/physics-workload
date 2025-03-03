@@ -14,7 +14,7 @@ class Assignment(ModelIconMixin, Model):
     Pairs a Staff member up with the task they're performing.
     """
     icon = 'clipboard'
-    url_root = 'asssignment'
+    url_root = 'assignment'
 
     task = ForeignKey(
         Task, blank=False, null=False, on_delete=PROTECT,
@@ -43,6 +43,12 @@ class Assignment(ModelIconMixin, Model):
 
     def __str__(self) -> str:
         return f"{self.task} - {self.staff} [{self.get_load()}]"
+
+    def get_absolute_url(self) -> str:
+        """
+        :return The absolute URL of the task this assignment belongs to:
+        """
+        return self.task.get_absolute_url()
 
     def get_name_for_staff(self) -> str:
         """:return: The name without the staff member"""

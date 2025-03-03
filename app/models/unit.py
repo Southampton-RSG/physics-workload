@@ -65,9 +65,6 @@ class Unit(ModelIconMixin, Model):
     objects = Manager()
 
     class Meta:
-        indexes = [
-            Index(fields=['code']),
-        ]
         ordering = ['name']
         verbose_name = 'Unit'
         verbose_name_plural = 'Units'

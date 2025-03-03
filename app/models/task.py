@@ -7,7 +7,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Model, ForeignKey, PROTECT, CharField, FloatField, TextField, IntegerField, BooleanField, Manager
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
-from django.urls import reverse_lazy
 from model_utils.managers import QueryManager
 from simple_history.models import HistoricalRecords
 
@@ -106,7 +105,7 @@ class Task(ModelIconMixin, Model):
         """
         if self.unit:
             return render_to_string(
-                template_name='app/header_unit.html',
+                template_name='app/header/header_unit.html',
                 context={
                     'icon': self.icon, 'url': self.get_absolute_url(),
                     'text': self.name,
@@ -115,7 +114,7 @@ class Task(ModelIconMixin, Model):
             )
         else:
             return render_to_string(
-                template_name='app/title.html',
+                template_name='app/header/header.html',
                 context={
                     'icon': self.icon, 'url': self.get_absolute_url(),
                     'text': self
@@ -137,7 +136,7 @@ def calculate_load_for_task(
     Called when the model is being saved, updates the calculated load
     """
     load: float = 0
-    logger.log(msg="Calculating load...", level=DEBUG)
+    logger.debug(f"{instance}: Updating load...")
 
     if instance.unit and (instance.coursework_fraction or instance.exam_fraction):
         # ==== IF THIS IS A UNIT CO-ORDINATOR ====
@@ -162,13 +161,13 @@ def calculate_load_for_task(
 
             # ($J2+$L2*$Q2) = "Coursework (number of items prepared)" + "Coursework (fraction of unit mark)" * "Total Number of CATS"
             # (0.1667 * [] * $K2 * $P2) = "Fraction of Coursework marked by coordinator" * "Number of Students"
-            load_coursework += (unit.coursework + instance.coursework_fraction * unit.credits) * \
+            load_coursework += (unit.coursework + unit.coursework_mark_fraction * unit.credits) * \
                                             instance.coursework_fraction * unit.students * standard_load.load_coursework_marked
 
         load_exam: float = 0
         if instance.exam_fraction:
             # ($M2*O2*2) = "Examination (fraction of unit mark)" * "Total Number of CATS"
-            load_exam += instance.exam_fraction * unit.credits * standard_load.load_exam_credit
+            load_exam += unit.exam_mark_fraction * unit.credits * standard_load.load_exam_credit
 
             # ($P2*$N2*1) = "Number of Students" * "Fraction of Exams Marked by Coordinator"
             load_exam += unit.students * instance.exam_fraction * standard_load.load_exam_marked
@@ -176,7 +175,7 @@ def calculate_load_for_task(
         load: float = load_coursework + load_exam
 
         if instance.load_function:
-            load += instance.load_function.calculate(instance.students)
+            load += instance.load_function.evaluate(instance.students)
         elif instance.students:
             raise Exception("Task has students but no load function")
 
@@ -203,5 +202,9 @@ def apply_updated_load(
     """
     Called after a task is updated - updates the load on all linked staff.
     """
-    for assignment in instance.assignment_set:
+    logger.debug(f"{instance}: Updated load, updating related models")
+
+    for assignment in instance.assignment_set.all():
+        # This could be done as an Update query with aggregation
+        logger.debug(f"{instance}: Updating balance on assigned staff {assignment.staff}")
         assignment.staff.calculate_load_balance()

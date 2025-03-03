@@ -26,7 +26,7 @@ class ModelIconMixin(Model):
         :return:
         """
         return render_to_string(
-            template_name='app/title.html',
+            template_name='app/header/header.html',
             context={
                 'icon': self.icon, 'url': self.get_absolute_url(),
                 'text': text if text else self
@@ -43,7 +43,7 @@ class ModelIconMixin(Model):
     @classmethod
     def get_model_header(cls) -> str:
         return render_to_string(
-            template_name='app/title.html',
+            template_name='app/header/header.html',
             context={
                 'icon': cls.icon, 'url': cls.get_model_url(),
                 'text': cls._meta.verbose_name_plural.title()

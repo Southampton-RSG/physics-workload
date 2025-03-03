@@ -15,6 +15,8 @@ from app.pages import BasePage, HeaderList, HeaderInstanceDetail, HeaderInstance
     HeaderInstanceDelete, create_modify_column
 from app.models import Unit, Task, Assignment
 from app.style import floating_fields_style
+from app.tables.task import TaskTable
+from app.tables.unit import UnitTable
 
 
 register_path_decoding(unit=lambda string, **_: Unit.objects.get(code=string))
@@ -43,38 +45,16 @@ class UnitDetail(BasePage):
     """
     View a unit and its associated tasks
     """
-    header = Header(
-        lambda params, **_: format_html(
-            f"{params.unit.get_instance_header()}",
-        ),
+    header = HeaderInstanceDetail(
+        lambda params, **_: params.unit.get_instance_header()
     )
-    tasks = Table(
+    tasks = TaskTable(
         h_tag=HeaderList,
-        attrs__class={'mb-5': True},
-        auto__model=Task,
-        auto__include=[
-            'name', 'number_needed', 'students',
-            'load_calc', 'load_calc_first', 'assignment_set'
-        ],
-        rows=lambda params, **_: params.unit.task_set.all(),
-        sortable=False,
-        columns__load_calc=dict(
-            group='Load',
-            display_name='Normal',
-        ),
-        columns__load_calc_first=dict(
-            group='Load',
-            display_name='First time',
-        ),
-        columns__assignment_set=dict(
-            cell__template='app/unit/assignment_set.html',
-        ),
-        columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
-        columns__modify=create_modify_column(),
+        columns__unit__include=False,
+        rows=lambda params, **_: TaskTable.annotate_query_set(params.unit.task_set.all()),
     )
     form = UnitForm(
         title="Details",
-        h_tag=HeaderInstanceDetail,
         instance=lambda params, **_: params.unit,
         fields__lectures__include=lambda params, **_: params.unit.lectures,
         fields__problem_classes__include=lambda params, **_: params.unit.problem_classes,
@@ -127,68 +107,8 @@ class UnitList(BasePage):
             Unit.get_model_header()
         )
     )
-    list = Table(
-        auto__model=Unit,
-        auto__include=['code', 'name', 'academic_group', 'task_set', 'students'],
-        columns__code=dict(
-            cell__url=lambda row, **_: row.get_absolute_url(),
-            filter__include=True,
-        ),
-        columns__name=dict(
-            cell__url=lambda row, **_: row.get_absolute_url(),
-            filter__include=True,
-        ),
-        columns__task_open=Column(
-            display_name='Open',
-            group='Tasks',
-            filter__include=True,
-            after='students',
-        ),
-        columns__task_set=dict(
-            display_name='List',
-            group='Tasks',
-            cell__template='app/unit/task_set.html',
-            after='task_open',
-        ),
-        columns__task_provisional=Column(),
-        query=dict(
-            filters=dict(
-                task_open__value_to_q=lambda value_string_or_f, **_: Q(
-                    task_open__gte=int(value_string_or_f)
-                ),
-                task_has_any_provisional__value_to_q=lambda value_string_or_f, **_: Q(
-                    task_provisional__gte=1 if value_string_or_f == '1' else 0
-                ),
-            ),
-            form=dict(
-                fields__task_open=Field.integer(
-                    display_name='Open Tasks',
-                    input__attrs__type='number',
-                ),
-                fields__task_has_any_provisional=Field.boolean(
-                    display_name=format_html(
-                        "Has Any Provisional <i class='fa-solid fa-clipboard-question'></i>",
-                    )
-                ),
-                actions__reset=Action.button(display_name='Clear Filter', attrs__type='reset'),
-            ),
-        ),
-        rows=lambda params, **_: Unit.objects_active.annotate(
-            assignment_count=Count('task_set__assignment_set'),
-            task_count=Sum('task_set__number_needed'),
-            task_open=Sum('task_set__number_needed')-Count('task_set__assignment_set'),
-            task_provisional=Subquery(
-                Assignment.objects.filter(
-                    is_provisional=True,
-                    task__unit__pk=OuterRef('pk')
-                ),
-                output_field=IntegerField(),
-            ),
-        ),
-        page_size=20,
-        h_tag=None,
-        query__advanced__include=False,
-        iommi_style=floating_fields_style,
+    list = UnitTable(
+        rows=UnitTable.annotate_query_set(Unit.objects.all()),
     )
 
 

@@ -52,15 +52,15 @@ class StandardLoad(ModelIconMixin, Model):
         validators=[
             MinValueValidator(0.0),
         ],
-        verbose_name="Load hours per coursework credit hour",
-        help_text=r"$L_{cw, \mathrm{credit}}$",
+        verbose_name="Load hours per coursework CATS",
+        help_text=r"$L_{cw, \mathrm{cats}}$",
     )
     load_coursework_marked = FloatField(
         blank=False, null=False,
         validators=[
             MinValueValidator(0.0),
         ],
-        verbose_name="Load hours per (coursework plus coursework credit hour) marked",
+        verbose_name="Load hours per (coursework plus coursework CATS) marked",
         help_text=r"$L_{cw, \mathrm{mark}}$",
     )
 
@@ -69,8 +69,8 @@ class StandardLoad(ModelIconMixin, Model):
         validators=[
             MinValueValidator(0.0),
         ],
-        verbose_name="Load hours per exam credit hour",
-        help_text=r"$L_{e, \mathrm{credit}}$",
+        verbose_name="Load hours per exam CATS",
+        help_text=r"$L_{e, \mathrm{cats}}$",
     )
     load_exam_marked = FloatField(
         blank=False, null=False,

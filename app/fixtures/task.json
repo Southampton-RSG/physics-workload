@@ -6,7 +6,7 @@
       "name": "Coordinator",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       "is_active": 1,
-      "unit": 1,
+      "unit": "PHYS2022",
       "load_fixed": 200,
       "load_fixed_first": 50,
       "notes": "CK20120719: update of load structure after discussion with MK – [OLDER NOTES: 1st and subseq loads updated jmf 20090730, following reported hours for 08/09 by mk (current coordinator); note that 3 deputies are needed according to MK (CK 20110901); PDB20180731: Added 10hfor deputy (80h ->90h) accepting suggestion from VA."
@@ -19,7 +19,7 @@
       "name": "Deputy",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       "is_active": 1,
-      "unit": 1,
+      "unit": "PHYS2022",
       "load_fixed": 120,
       "notes": "CK20120719: new structure is that there are 3 staff deputies at 60 hrs each; 2 Mayflowers or equivalent at 120 hrs each; and 2 mayflowers (ideally) or PG/PDRA support at 75 hrs each – if the latter are not assigned here, they need to be assigned via PG demonstrating pool"
     }
@@ -31,7 +31,7 @@
       "name": "Teaching Assistant",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       "is_active": 1,
-      "unit": 1,
+      "unit": "PHYS2022",
       "load_fixed": 120
     }
   },
@@ -42,7 +42,7 @@
       "name": "Computing Lab Coordinator",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       "is_active": 1,
-      "unit": 1,
+      "unit": "PHYS2022",
       "load_fixed": 150,
       "load_fixed_first": 35,
       "notes": "PDB: reviewed under request of DW: increased to 150h"
@@ -55,7 +55,7 @@
       "name": "Computing Lab Assessor",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       "is_active": 1,
-      "unit": 1,
+      "unit": "PHYS2022",
       "load_fixed": 15
     }
   },
@@ -66,10 +66,10 @@
       "name": "Coordinator",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       "is_active": 1,
-      "unit": 2,
+      "unit": "PHYS2013",
       "load_fixed": 9,
       "coursework_fraction": 1.0,
-      "exam_fraction": 0.75
+      "exam_fraction": 1.0
     }
   },
   {
@@ -79,7 +79,7 @@
       "name": "Deputy",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       "is_active": 1,
-      "unit": 2,
+      "unit": "PHYS2013",
       "load_fixed": 15
     }
   },
@@ -90,7 +90,7 @@
       "name": "Assessor",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       "is_active": 1,
-      "unit": 2,
+      "unit": "PHYS2013",
       "load_fixed": 15
     }
   },
@@ -101,7 +101,7 @@
       "name": "Coordinator",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       "is_active": 1,
-      "unit": 3,
+      "unit": "PHYS6027",
       "load_fixed": 100,
       "load_fixed_first": 50
     }
@@ -113,7 +113,7 @@
       "name": "Deputy",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       "is_active": 1,
-      "unit": 3,
+      "unit": "PHYS6027",
       "load_fixed": 25
     }
   },

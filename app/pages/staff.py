@@ -79,17 +79,23 @@ class StaffList(BasePage):
         h_tag=None,
         auto__model=Staff,
         auto__include=[
-            'account', 'name', 'gender', 'academic_group', 'load_calculated_balance', 'load_historic_balance'
+            'account', 'name', 'gender', 'academic_group', 'is_active',
+            'load_calculated_balance', 'load_historic_balance', 'assignment_set',
         ],
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
         columns__name__filter__include=True,
         columns__account__cell__url=lambda row, **_: row.get_absolute_url(),
         columns__academic_group__filter__include=True,
-        columns__gender__filter__include=True,
-        columns__gender__render_column=False,
-        columns__assignment=Column(
-            display_name="Assignments", sortable=False,
-            cell__value=lambda row, **_: row.assignment_set.count(),
+        columns__gender=dict(
+            filter__include=True,
+            render_column=False,
+        ),
+        columns__assignment_set=dict(
+            cell__template='app/staff/assignment_set.html',
+        ),
+        columns__is_active=dict(
+            render_column=False,
+            filter__include=True,
         ),
         columns__modify=create_modify_column(),
         query=dict(
@@ -98,6 +104,11 @@ class StaffList(BasePage):
                 fields__gender=Field.choice(
                     display_name='Gender',
                     choices=lambda params, **_: ['']+list(set(Staff.objects.values_list('gender', flat=True)))
+                ),
+                fields__is_active=Field.boolean(
+                    display_name='Active Only',
+                    initial=True,
+                    iommi_style='boolean_buttons',
                 ),
                 actions__reset=Action.button(display_name='Clear Filter', attrs__type='reset'),
             ),

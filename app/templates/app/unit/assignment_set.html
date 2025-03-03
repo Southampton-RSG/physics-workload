@@ -1,25 +1,29 @@
 <td>
-    {% for item in value.all %}
-        {% if item.is_provisional and item.is_first_time %}
-            <a href='{{ item.get_absolute_url }}' class="btn btn-sm btn-success-outline">
-                {{ item.staff.name }}
-                <i class="fa fa-clipboard-question"></i>
+    {% for assignment in value.all %}
+        {% if assignment.is_provisional and assignment.is_first_time %}
+            <a href='{{ assignment.get_absolute_url }}' class="btn btn-sm btn-outline-success">
+                {{ assignment.staff }}
+                <i class="fa fa-clipboard-user"></i>
                 <i class="fa fa-plus"></i>
             </a>
 
-        {% elif item.is_provisional %}
-            <a href='{{ item.get_absolute_url }}' class="btn btn-sm btn-primary-outline">
-                {{ item.staff.name }} <i class="fa fa-clipboard-question"></i>
+        {% elif assignment.is_provisional %}
+            <a href='{{ assignment.get_absolute_url }}' class="btn btn-sm btn-outline-primary">
+                {{ assignment.staff }}
+                <i class="fa-solid fa-clipboard-user"></i>
             </a>
 
-        {% elif item.is_first_time %}
-            <a href='{{ item.get_absolute_url }}' class="btn btn-sm btn-success">
-                {{ item.staff.name }} <i class="fa fa-clipboard-user fa-plus"></i>
+        {% elif assignment.is_first_time %}
+            <a href='{{ assignment.get_absolute_url }}' class="btn btn-sm btn-success">
+                {{ assignment.staff }}
+                <i class="fa-solid fa-clipboard-check"></i>
+                <i class="fa-solid fa-plus"></i>
             </a>
 
         {% else %}
-            <a href='{{ item.get_absolute_url }}' class="btn btn-sm btn-primary">
-                {{ item.staff.name }} <i class="fa fa-clipboard-check"></i>
+            <a href='{{ assignment.get_absolute_url }}' class="btn btn-sm btn-primary">
+                {{ assignment.staff }}
+                <i class="fa-solid fa-clipboard-check"></i>
             </a>
         {% endif %}
     {% endfor %}

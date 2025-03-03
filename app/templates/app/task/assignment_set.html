@@ -7,17 +7,17 @@
                 <i class="fa fa-plus"></i>
             </a>
 
-        {% elif assignment.is_provisional %}
-        <a href='{{ assignment.get_absolute_url }}' class='btn btn-sm btn-outline-primary'>
-            {{ assignment.task }} [{{ assignment.get_load }}]
-            <i class="fa-solid fa-clipboard-user"></i>
-        </a>
-
         {% elif assignment.is_first_time %}
             <a href='{{ assignment.get_absolute_url }}' class='btn btn-sm btn-success'>
                 {{ assignment.task }} [{{ assignment.get_load }}]
                 <i class="fa-solid fa-clipboard-check"></i>
                 <i class="fa-solid fa-plus"></i>
+            </a>
+
+        {% elif assignment.is_provisional %}
+            <a href='{{ assignment.get_absolute_url }}' class='btn btn-sm btn-outline-primary'>
+                {{ assignment.task }} [{{ assignment.get_load }}]
+                <i class="fa-solid fa-clipboard-user"></i>
             </a>
 
         {% else %}

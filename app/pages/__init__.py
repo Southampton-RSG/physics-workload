@@ -12,7 +12,7 @@ class HeaderMenu(Menu):
     home = MenuItem(
         url='/',
         display_name=format_html(
-            '<i class="fa-solid fa-scale"></i>'
+            '<i class="fa-solid fa-scale-balanced"></i>'
         ),
     )
     groups_list = MenuItem(
@@ -28,14 +28,16 @@ class HeaderMenu(Menu):
         url='/task/', display_name="Tasks"
     )
     load_functions = MenuItem(
-        url='/function/', display_name='Load Functions'
+        url='/function/', display_name='Functions'
     )
     standard_loads = MenuItem(
-        url='/load/', display_name='Standard Loads'
+        url='/load/', display_name='Standards'
     )
 
     class Meta:
-        attrs__class = {'fixed-top': True}
+        attrs__class = {
+            'fixed-top': True,
+        }
 
 
 class FooterMenu(Menu):
@@ -95,10 +97,28 @@ class HeaderInstanceDelete(Header):
 
 class HeaderInstanceDetail(Header):
     """
-    A header, with a 'edit this model' button after it
+    A header, with edit and delete buttons after it
     """
     class Meta:
-        children__button=html.span(template='app/modify_button.html')
+        children__button=html.span(template='app/header/modify_button.html')
+        attrs__class={'position-relative': True}
+
+
+class HeaderInstanceDetailEdit(Header):
+    """
+    A header, with *only* an 'edit this model' button after it
+    """
+    class Meta:
+        children__button=html.span(template='app/header/edit_button.html')
+        attrs__class={'position-relative': True}
+
+
+class HeaderInstanceDetailDelete(Header):
+    """
+    A header, with *only* a 'delete this model' button after it
+    """
+    class Meta:
+        children__button=html.span(template='app/header/delete_button.html')
         attrs__class={'position-relative': True}
 
 
@@ -107,7 +127,7 @@ class HeaderList(Header):
     A header, with a 'create new' button after it
     """
     class Meta:
-        children__button=html.span(template='app/create_button.html')
+        children__button=html.span(template='app/header/create_button.html')
         attrs__class={'position-relative': True}
 
 

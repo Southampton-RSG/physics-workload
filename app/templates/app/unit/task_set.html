@@ -6,40 +6,42 @@
                 {% if task.number_needed > 1 %}
                     {{task.assignment_set.count}}/{{ task.number_needed }}
                 {% endif %}
+                <i class="fa-solid fa-clipboard-question"></i>
             </a>
 
         {% elif task.assignment_set.count == task.number_needed %}
             {% if task.has_any_first_time and task.has_any_provisional %}
-                <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-success-outline">
+                <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-outline-success">
                     {{ task.name }}
-                    {% for assignment in task.assignment_set %}
+                    {% for assignment in task.assignment_set.all %}
                         {% if assignment.is_provisional %}
-                            <i class="fa-solid fa-clipboard-question"></i>
-                        {% elif assignment.is_first_time %}
                             <i class="fa-solid fa-clipboard-user"></i>
                         {% else %}
                             <i class="fa-solid fa-clipboard-check"></i>
                         {% endif %}
+                        {% if assignment.is_first_time %}
+                            <i class="fa-solid fa-plus"></i>
+                        {% endif %}
+
                     {% endfor %}
                 </a>
 
             {% elif task.has_any_first_time %}
                 <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-success">
-                    {{ item.name }}
-                    {% for assignment in task.assignment_set %}
-                        {% if assignment.is_provisional %}
-                            <i class="fa-solid fa-clipboard-question"></i>
-                        {% else %}
-                            <i class="fa-solid fa-clipboard-check"></i>
+                    {{ task.name }}
+                    {% for assignment in task.assignment_set.all %}
+                        <i class="fa-solid fa-clipboard-check"></i>
+                        {% if assignment.is_first_time %}
+                            <i class="fa-solid fa-plus"></i>
                         {% endif %}
                     {% endfor %}
                 </a>
 
             {% elif task.has_any_provisional %}
-                <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-primary-outline">
+                <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-outline-primary">
                     {{ task.name }}
-                    {% for assignment in task.assignment_set %}
-                        {% if item.is_first_time %}
+                    {% for assignment in task.assignment_set.all %}
+                        {% if assignment.is_provisional %}
                             <i class="fa-solid fa-clipboard-user"></i>
                         {% else %}
                             <i class="fa-solid fa-clipboard-check"></i>
@@ -55,8 +57,9 @@
             {% endif %}
 
         {% else %}
-            <a href='{{ item.get_absolute_url }}' class="btn btn-sm btn-warning">
+            <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-warning">
                 {{ task.name }} {{task.assignment_set.count}}/{{ task.number_needed }}
+                <i class="fa-solid fa-clipboard-question"></i>
             </a>
         {% endif %}
     {% endfor %}

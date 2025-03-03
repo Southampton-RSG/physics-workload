@@ -3,8 +3,36 @@
     "model": "app.Assignment",
     "pk": 1,
     "fields": {
-      "staff": 2,
+      "staff": "aa1a23",
       "task": 6
+    }
+  },
+  {
+    "model": "app.Assignment",
+    "pk": 2,
+    "fields": {
+      "staff": "bb1b23",
+      "task": 7,
+      "is_provisional": 1
+    }
+  },
+  {
+    "model": "app.Assignment",
+    "pk": 3,
+    "fields": {
+      "staff": "ff1f23",
+      "task": 8,
+      "is_first_time": 1
+    }
+  },
+  {
+    "model": "app.Assignment",
+    "pk": 4,
+    "fields": {
+      "staff": "ff1f23",
+      "task": 9,
+      "is_provisional": 1,
+      "is_first_time": 1
     }
   }
 ]

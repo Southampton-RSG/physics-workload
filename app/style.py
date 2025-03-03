@@ -71,7 +71,8 @@ floating_fields_style: Style = Style(
         input__attrs__placeholder=lambda field, **_: evaluate_strict(
             field.display_name, **field.iommi_evaluate_parameters()
         ),
-    )
+    ),
+    Query__form__fields__freetext_search=floating_fields,
 )
 register_style('floating_fields', floating_fields_style)
 # ------------------------------------------------------------------------------

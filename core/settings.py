@@ -180,7 +180,7 @@ HOURS_MAXIMUM_VALUE: int = 2000
 # We want to log errors to disk, but skip the static requests.
 # ==============================================================================
 from logging import LogRecord
-LOG_DIRECTORY = PROJECT_DIR / "../logs"
+LOG_DIRECTORY = Path("/home/smangham/projects/physics-workload/logs")
 
 def skip_static_records(record: LogRecord) -> bool:
     """
@@ -193,54 +193,38 @@ def skip_static_records(record: LogRecord) -> bool:
 
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'skip_static_requests': {
-            "()": "django.utils.log.CallbackFilter",
-            "callback": skip_static_records,
+    "version": 1,  # the dictConfig format version
+    "disable_existing_loggers": False,  # retain the default loggers
+    "handlers": {
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": LOG_DIRECTORY / "general.log",
+            "formatter": "verbose",
+        },
+        "file_app": {
+            "class": "logging.FileHandler",
+            "filename": LOG_DIRECTORY / "app.log",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "": {
+            "level": "DEBUG",
+            "handlers": ["file"],
+        },
+        "app": {
+            "level": "DEBUG",
+            "handlers": ["file_app"],
         },
     },
     "formatters": {
         "verbose": {
-            "format": "{asctime} {levelname} {name} {module} {process:d} {thread:d} {message}",
+            "format": "{name} {levelname} {asctime} {module} {process:d} {thread:d} {message}",
             "style": "{",
         },
         "simple": {
-            "format": "{asctime} {levelname} {message}",
+            "format": "{levelname} {message}",
             "style": "{",
-        },
-    },
-    'handlers': {
-        'server_log': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'formatter': 'verbose',
-            'filters': ['skip_static_requests'],
-            'filename': LOG_DIRECTORY / "django.server.log",
-            'maxBytes': 2*1024*1024,
-            'backupCount': 5,
-        },
-        'app_log': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'formatter': 'verbose',
-            'filename': LOG_DIRECTORY / "django.app.log",
-            'maxBytes': 2 * 1024 * 1024,
-            'backupCount': 5,
-        },
-        'console': {
-            'class': 'logging.StreamHandler',
-            'filters': ['skip_static_requests'],
-            'formatter': 'simple',
-        }
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['server_log', 'console'],
-            'level': 'INFO',
-        },
-        'app': {
-            'handlers': ['app_log', 'console'],
-            'level': 'INFO',
         },
     },
 }

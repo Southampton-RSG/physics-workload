@@ -15,8 +15,9 @@ from iommi import register_search_fields
 
 
 from app.models import Unit, Task, Assignment, Staff
-from app.pages import BasePage, HeaderInstanceDelete, HeaderInstanceEdit, HeaderInstanceDetail
+from app.pages import BasePage, HeaderInstanceDelete, HeaderInstanceEdit, HeaderInstanceDetail, HeaderList, create_modify_column, HeaderInstanceCreate
 from app.forms.task import TaskForm
+from app.tables.task import TaskTable
 from app.style import floating_fields_style
 
 
@@ -58,7 +59,8 @@ class TaskDetail(BasePage):
         ),
 
         columns__staff=Column.choice_queryset(
-              choices=lambda params, **_: TaskDetail.filter_staff(params.task),
+            cell__url=lambda row, **_: row.staff.get_absolute_url() if hasattr(row, 'staff') else '',
+            choices=lambda params, **_: TaskDetail.filter_staff(params.task),
         #     choices=lambda params, **_: Staff.objects.filter(
         #         pk__in=params.task.assignment_set.values_list('staff__pk', flat=True)
         #     )
@@ -85,9 +87,7 @@ class TaskEdit(BasePage):
     Page for editing a task
     """
     header = HeaderInstanceEdit(
-        lambda params, **_: format_html(
-            f"{params.task.get_instance_header()}"
-        )
+        lambda params, **_: params.task.get_instance_header()
     )
     form = TaskForm.edit(
         h_tag=None,
@@ -95,6 +95,21 @@ class TaskEdit(BasePage):
         fields__load_calc__include=False,
         instance=lambda params, **_: params.task,
         extra__redirect_to='..',
+    )
+
+
+class TaskCreate(BasePage):
+    """
+    Page for creating a task
+    """
+    header = HeaderInstanceCreate(
+        lambda params, **_: Task.get_model_header()
+    )
+    form = TaskForm.create(
+        h_tag=None,
+        fields__unit__include=False,
+        fields__load_calc_first__include=False,
+        fields__load_calc__include=False,
     )
 
 
@@ -113,8 +128,22 @@ class TaskDelete(BasePage):
     )
 
 
+class TaskList(BasePage):
+    """
+    Page for listing tasks
+    """
+    header = HeaderList(
+        lambda params, **_: Task.get_model_header(),
+    )
+    list = TaskTable(
+        rows=TaskTable.annotate_query_set(Task.objects.all()),
+    )
+
+
 urlpatterns = [
+    path('task/create/', TaskCreate().as_view(), name='task_create'),
     path('task/<task>/delete/', TaskDelete().as_view(), name='task_delete'),
     path('task/<task>/edit/', TaskEdit().as_view(), name='task_edit'),
     path('task/<task>/', TaskDetail().as_view(), name='task_detail'),
+    path('task/', TaskList().as_view(), name='task_list'),
 ]

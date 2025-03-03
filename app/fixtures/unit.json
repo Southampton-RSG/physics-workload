@@ -1,7 +1,6 @@
 [
   {
     "model": "app.Unit",
-    "pk": 1,
     "fields": {
       "name": "Physics from Evidence I",
       "code": "PHYS2022",
@@ -15,14 +14,17 @@
   },
   {
     "model": "app.Unit",
-    "pk": 2,
     "fields": {
       "name": "Galaxies",
       "code": "PHYS2013",
-      "academic_group": 1,
+      "academic_group": "A",
       "is_active": 1,
       "has_dissertation": 0,
       "has_placement": 0,
+      "lectures": 33,
+      "coursework": 5,
+      "coursework_mark_fraction": 0.25,
+      "exam_mark_fraction": 0.75,
       "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
       "students": 54,
       "credits": 15
@@ -30,7 +32,6 @@
   },
   {
     "model": "app.Unit",
-    "pk": 3,
     "fields": {
       "name": "MPhys with Indsutrial Placement",
       "code": "PHYS6027",

@@ -29,8 +29,6 @@ class LoadFunction(ModelIconMixin, Model):
     objects_active = ActiveManager()
     objects = Manager()
 
-
-
     plot_minimum = IntegerField(
         null=True, blank=True, help_text="If provided, range to plot function over.",
         validators=[MinValueValidator(1)],
