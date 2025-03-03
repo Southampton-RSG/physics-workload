@@ -8,8 +8,6 @@ from django.template import Template
 
 from iommi import Page, Table, html, Form, EditTable, Column, Action, Menu, Fragment
 from iommi.path import register_path_decoding
-from iommi import register_search_fields
-from iommi.views import crud_views
 
 from app.models import AcademicGroup, Staff, Unit, Task
 from app.pages import BasePage, HeaderInstanceDetail, HeaderList, HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete
@@ -23,7 +21,7 @@ class AcademicGroupDetail(BasePage):
     Detail view showing group members and their workloads,
     as well as any units and their assignment status.
     """
-    title = HeaderInstanceDetail(
+    header = HeaderInstanceDetail(
         lambda params, **_: format_html(
             params.academic_group.get_instance_header()
         ),
@@ -36,7 +34,7 @@ class AcademicGroupDetail(BasePage):
             'load_historic_balance', 'assignment_set'
         ],
         columns__load_calculated_assigned=dict(
-            display_name='Actual',
+            display_name='Assigned',
             group='Current year load',
         ),
         columns__load_calculated_target=dict(
@@ -48,7 +46,7 @@ class AcademicGroupDetail(BasePage):
             group='Current year load',
         ),
         columns__assignment_set={
-            "cell__template": 'app/list_cell_staff.html',
+            "cell__template": 'app/academic_group/assignment_set.html',
         },
         rows=lambda params, **_: Staff.objects_active.filter(academic_group=params.academic_group),
         columns__name__cell__url = lambda row, **_: row.get_absolute_url(),
@@ -77,7 +75,7 @@ class AcademicGroupEdit(BasePage):
     """
     Page showing an academic group to be edited
     """
-    title = HeaderInstanceEdit(
+    header = HeaderInstanceEdit(
         lambda params, **_: format_html(params.academic_group.get_instance_header()),
     )
     form = Form.edit(
@@ -93,7 +91,7 @@ class AcademicGroupCreate(BasePage):
     """
     Page showing an academic group to be created
     """
-    title = HeaderInstanceCreate(
+    header = HeaderInstanceCreate(
         lambda params, **_: format_html(AcademicGroup.get_model_header()),
     )
     form = Form.create(

@@ -1,17 +1,21 @@
-from logging import Manager
-
+from django.template.loader import render_to_string
 from django.db.models import Model, ForeignKey, PROTECT, TextField, BooleanField, Index
+
 from django.urls import reverse_lazy
 from app.models.task import Task
 from app.models.staff import Staff
+from app.models.unit import Unit
+from app.models.mixins import ModelIconMixin
 from app.models.standard_load import get_current_standard_load
 
 
-
-class Assignment(Model):
+class Assignment(ModelIconMixin, Model):
     """
     Pairs a Staff member up with the task they're performing.
     """
+    icon = 'clipboard'
+    url_root = 'asssignment'
+
     task = ForeignKey(
         Task, blank=False, null=False, on_delete=PROTECT,
         related_name='assignment_set',
@@ -38,22 +42,17 @@ class Assignment(Model):
         verbose_name_plural = 'Assignments'
 
     def __str__(self) -> str:
-        return f"{self.task} - {self.staff} [{self.load}]"
+        return f"{self.task} - {self.staff} [{self.get_load()}]"
 
     def get_name_for_staff(self) -> str:
         """:return: The name without the staff member"""
-        return f"{self.task} [{self.load}]"
+        return f"{self.task} [{self.get_load()}]"
 
-    @property
-    def load(self) -> float:
+    def get_load(self) -> float:
         """
         :return: Returns the load for this assignment, with the first-time multiplier if appropriate
         """
         if self.is_first_time:
-            return self.task.load_first
+            return self.task.load_calc_first
         else:
-            return self.task.load
-
-    def get_absolute_url(self) -> str:
-        return ''
-        #return reverse_lazy('assignment_department_detail', args=[self.pk])
+            return self.task.load_calc

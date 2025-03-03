@@ -22,4 +22,7 @@ dependencies = [
     "django-model-utils>=5.0.0",
     "parso>=0.8.4",
     "django-simple-history>=3.8.0",
+    "simpleeval>=1.0.3",
+    "django-plotly-dash>=2.4.5",
+    "dash-bootstrap-templates>=2.1.0",
 ]

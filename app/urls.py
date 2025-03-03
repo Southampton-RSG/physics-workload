@@ -11,9 +11,11 @@ from app.pages.main import IndexPage
 from app.pages.basic import PrivacyPage
 from app.pages.task import urlpatterns as task_urlpatterns
 from app.pages.standard_load import urlpatterns as standard_load_urlpatterns
+from app.pages.load_function import urlpatterns as load_function_urlpatterns
 
 urlpatterns = [
     # The home page
     path('', IndexPage().as_view(), name='home'),
     path('privacy/', PrivacyPage().as_view(), name='privacy'),
-] + unit_urlpatterns + academic_group_urlpatterns + staff_urlpatterns + task_urlpatterns + standard_load_urlpatterns
+] + unit_urlpatterns + academic_group_urlpatterns + staff_urlpatterns + \
+              task_urlpatterns + standard_load_urlpatterns + load_function_urlpatterns

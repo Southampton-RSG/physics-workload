@@ -12,7 +12,7 @@ class HeaderMenu(Menu):
     home = MenuItem(
         url='/',
         display_name=format_html(
-            '<i class="fa-solid fa-sun"></i>'
+            '<i class="fa-solid fa-scale"></i>'
         ),
     )
     groups_list = MenuItem(
@@ -98,7 +98,7 @@ class HeaderInstanceDetail(Header):
     A header, with a 'edit this model' button after it
     """
     class Meta:
-        children__button=html.span(template='app/edit_button.html')
+        children__button=html.span(template='app/modify_button.html')
         attrs__class={'position-relative': True}
 
 
@@ -125,3 +125,26 @@ class ColOpts(dict):
         self, display_name=None, group=None, cell_value=None, **kwargs
     ):
         super().__init__(**kwargs)
+
+
+class ColumnModify(Column):
+    class Meta:
+        # include=lambda request, **_: request.user.is_staff,
+        cell__value=lambda row, **_: row.get_absolute_url(),
+        cell__template='app/modify_row.html',
+        header__attrs__class={'text-center': True},
+        after=LAST,
+
+def create_modify_column(**kwargs) -> Column:
+    """
+    :return:
+    """
+    return Column(
+        # include=lambda request, **_: request.user.is_staff,
+        cell__value=lambda row, **_: row.get_absolute_url(),
+        cell__template='app/modify_row.html',
+        cell__attrs__class={'text-center': True},
+        header__attrs__class={'text-center': True},
+        sortable=False,
+        after=LAST,
+    )

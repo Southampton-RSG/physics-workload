@@ -1,0 +1,31 @@
+<td>
+    {% for item in value.all %}
+        {% if item.is_provisional and item.is_first_time %}
+            <a href='{{ item.get_absolute_url }}' class='btn btn-sm btn-success-outline'>
+                {{ item.task }} [{{ item.get_load }}]
+                <i class="fa-solid fa-clipboard-question"></i>
+                <i class="fa fa-plus"></i>
+            </a>{% if not forloop.last %},{% endif %}
+
+        {% elif item.is_first_time %}
+            <a href='{{ item.get_absolute_url }}' class='btn btn-sm btn-success'>
+                {{ item.task }} [{{ item.get_load }}]
+                <i class="fa-solid fa-clipboard-user"></i>
+                <i class="fa fa-plus"></i>
+            </a>{% if not forloop.last %},{% endif %}
+
+        {% elif item.is_provisional %}
+            <a href='{{ item.get_absolute_url }}' class='btn btn-sm btn-primary-outline'>
+                {{ item.task }} [{{ item.get_load }}]
+                <i class="fa-solid fa-clipboard-question"></i>
+            </a>{% if not forloop.last %},{% endif %}
+
+        {% else %}
+            <a href='{{ item.get_absolute_url }}' class='btn btn-sm btn-primary'>
+                {{ item.task }} [{{ item.get_load }}]
+                <i class="fa-solid fa-clipboard-check"></i>
+            </a>{% if not forloop.last %},{% endif %}
+
+        {% endif %}
+    {% endfor %}
+</td>

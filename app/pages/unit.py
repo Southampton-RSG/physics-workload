@@ -1,7 +1,7 @@
 """
 
 """
-from django.db.models import Count, Sum, Q
+from django.db.models import Count, Sum, Q, Case, When, Subquery, OuterRef
 from django.urls import path
 from django.utils.html import format_html
 from django.template.loader import render_to_string
@@ -10,9 +10,10 @@ from iommi import Table, html, Form, Column, Field, LAST, Header, Asset, Action
 from iommi.path import register_path_decoding
 
 from app.forms.task import TaskForm
+from app.forms.unit import UnitForm
 from app.pages import BasePage, HeaderList, HeaderInstanceDetail, HeaderInstanceEdit, HeaderInstanceCreate, \
-    HeaderInstanceDelete
-from app.models import Unit, Task
+    HeaderInstanceDelete, create_modify_column
+from app.models import Unit, Task, Assignment
 from app.style import floating_fields_style
 
 
@@ -30,7 +31,6 @@ class UnitTaskCreate(BasePage):
             )
         ),
     )
-
     form = TaskForm.create(
         h_tag=None,
         fields__unit=Field.non_rendered(
@@ -48,22 +48,21 @@ class UnitDetail(BasePage):
             f"{params.unit.get_instance_header()}",
         ),
     )
-
     tasks = Table(
         h_tag=HeaderList,
         attrs__class={'mb-5': True},
         auto__model=Task,
         auto__include=[
             'name', 'number_needed', 'students',
-            'load', 'load_first', 'assignment_set'
+            'load_calc', 'load_calc_first', 'assignment_set'
         ],
         rows=lambda params, **_: params.unit.task_set.all(),
         sortable=False,
-        columns__load=dict(
+        columns__load_calc=dict(
             group='Load',
             display_name='Normal',
         ),
-        columns__load_first=dict(
+        columns__load_calc_first=dict(
             group='Load',
             display_name='First time',
         ),
@@ -71,37 +70,22 @@ class UnitDetail(BasePage):
             cell__template='app/unit/assignment_set.html',
         ),
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
-        columns__modify=Column(
-            # include=lambda request, **_: request.user.is_staff,
-            cell__value=lambda row, **_: row.get_absolute_url(),
-            cell__template='app/modify_row.html',
-            cell__attrs__class={'text-center': True},
-            header__attrs__class={'text-center': True},
-            after=LAST,
-        ),
+        columns__modify=create_modify_column(),
     )
-
-    form = Form(
+    form = UnitForm(
         title="Details",
         h_tag=HeaderInstanceDetail,
-        auto__model=Unit, instance=lambda params, **_: params.unit,
-        auto__exclude=['is_active', 'task_set'],
-        fields__code__group="Basics",
-        fields__name__group="Basics",
-        fields__academic_group__group="Basics",
-        fields__students__group='Basics',
-        fields__lectures__group = 'Sessions',
-        fields__problem_classes__group = 'Sessions',
-        fields__coursework__group = 'Sessions',
-        fields__synoptic_lectures__group = 'Sessions',
-        fields__exams__group='Sessions',
-        fields__credit_hours__group='Credit',
-        fields__exam_mark_fraction__group='Credit',
-        fields__coursework_mark_fraction__group='Credit',
-        fields__has_dissertation__group='Credit',
-        fields__has_placement__group='Credit',
+        instance=lambda params, **_: params.unit,
+        fields__lectures__include=lambda params, **_: params.unit.lectures,
+        fields__problem_classes__include=lambda params, **_: params.unit.problem_classes,
+        fields__coursework__include=lambda params, **_: params.unit.coursework,
+        fields__synoptic_lectures__include=lambda params, **_: params.unit.synoptic_lectures,
+        fields__exams__include=lambda params, **_: params.unit.exams,
+        fields__exam_mark_fraction__include=lambda params, **_: params.unit.exam_mark_fraction,
+        fields__coursework_mark_fraction__include=lambda params, **_: params.unit.coursework_mark_fraction,
+        fields__has_dissertation__include=lambda params, **_: params.unit.has_dissertation,
+        fields__has_placement__include=lambda params, **_: params.unit.has_placement,
         editable=False,
-        iommi_style=floating_fields_style,
     )
 
 
@@ -114,44 +98,10 @@ class UnitEdit(BasePage):
             f"{params.unit.get_instance_header()}"
         )
     )
-
-    form = Form.edit(
+    form = UnitForm.edit(
         h_tag=None,
-        auto__model=Unit, instance=lambda params, **_: params.unit,
-        auto__exclude=['is_active', 'task_set'],
-        fields__code__group="Basics",
-        fields__name__group="Basics",
-        fields__academic_group__group="Basics",
-        fields__students__group='Basics',
-        fields__lectures__group = 'Sessions',
-        fields__problem_classes__group = 'Sessions',
-        fields__coursework__group = 'Sessions',
-        fields__synoptic_lectures__group = 'Sessions',
-        fields__exams__group='Sessions',
-        fields__credit_hours__group='Credit',
-        fields__exam_mark_fraction__group='Credit',
-        fields__coursework_mark_fraction__group='Credit',
-        fields__has_dissertation__group='Credit',
-        fields__has_placement__group='Credit',
-        iommi_style='floating_fields'
+        instance=lambda params, **_: params.unit,
     )
-
-    # module_years = Table(
-    #     title="Previous Years",
-    #     auto__model=ModuleYear,
-    #     auto__exclude=['notes', 'module'],
-    #     rows=lambda params, **_: ModuleYear.objects.filter(module=params.module),
-    #     columns__dissertation_load_function__include=lambda params, **_: params.module.has_dissertation,
-    #     columns__lectures__group="Load",
-    #     columns__problem_classes__group="Load   ",
-    #     columns__courseworks__group="Load",
-    #     columns__synoptic_lectures__group="Load",
-    #     columns__exams__group="Load",
-    #     columns__dissertation_load_function__group="Load",
-    #     columns__exam_mark_fraction__group="Mark Fraction",
-    #     columns__coursework_mark_fraction__group="Mark Fraction",
-    #     columns__academic_year__cell__url=lambda row, **_: f'/module_year/{row.pk}',
-    # )
 
 
 class UnitCreate(BasePage):
@@ -163,26 +113,8 @@ class UnitCreate(BasePage):
             Unit.get_model_header()
         ),
     )
-
-    form = Form.create(
+    form = UnitForm.create(
         h_tag=None,
-        auto__model=Unit,
-        auto__exclude=['is_active', 'task_set'],
-        fields__code__group="row1",
-        fields__name__group="row1",
-        fields__academic_group__group="row1",
-        fields__has_dissertation__group='row2',
-        fields__has_placement__group='row2',
-        fields__students__group='row2',
-        fields__credit_hours__group = 'row2',
-        fields__lectures__group = 'row3',
-        fields__problem_classes__group = 'row3',
-        fields__coursework__group = 'row3',
-        fields__synoptic_lectures__group = 'row3',
-        fields__exams__group='row3',
-        fields__exam_mark_fraction__group='row4',
-        fields__coursework_mark_fraction__group='row4',
-        iommi_style=floating_fields_style,
     )
 
 
@@ -195,7 +127,6 @@ class UnitList(BasePage):
             Unit.get_model_header()
         )
     )
-
     list = Table(
         auto__model=Unit,
         auto__include=['code', 'name', 'academic_group', 'task_set', 'students'],
@@ -216,15 +147,16 @@ class UnitList(BasePage):
         columns__task_set=dict(
             display_name='List',
             group='Tasks',
-            cell__template='app/list_cell_name.html',
+            cell__template='app/unit/task_set.html',
             after='task_open',
         ),
+        columns__task_provisional=Column(),
         query=dict(
             filters=dict(
                 task_open__value_to_q=lambda value_string_or_f, **_: Q(
                     task_open__gte=int(value_string_or_f)
                 ),
-                task_provisional__value_to_q=lambda value_string_or_f, **_: Q(
+                task_has_any_provisional__value_to_q=lambda value_string_or_f, **_: Q(
                     task_provisional__gte=1 if value_string_or_f == '1' else 0
                 ),
             ),
@@ -233,9 +165,9 @@ class UnitList(BasePage):
                     display_name='Open Tasks',
                     input__attrs__type='number',
                 ),
-                fields__task_provisional=Field.boolean(
+                fields__task_has_any_provisional=Field.boolean(
                     display_name=format_html(
-                        "Has Provisional <i class='fa-solid fa-clipboard-question'></i>",
+                        "Has Any Provisional <i class='fa-solid fa-clipboard-question'></i>",
                     )
                 ),
                 actions__reset=Action.button(display_name='Clear Filter', attrs__type='reset'),
@@ -245,7 +177,13 @@ class UnitList(BasePage):
             assignment_count=Count('task_set__assignment_set'),
             task_count=Sum('task_set__number_needed'),
             task_open=Sum('task_set__number_needed')-Count('task_set__assignment_set'),
-            task_provisional=Count('task_set__assignment_set__is_provisional'),
+            task_provisional=Subquery(
+                Assignment.objects.filter(
+                    is_provisional=True,
+                    task__unit__pk=OuterRef('pk')
+                ),
+                output_field=IntegerField(),
+            ),
         ),
         page_size=20,
         h_tag=None,

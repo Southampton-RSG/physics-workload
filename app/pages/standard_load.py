@@ -98,6 +98,5 @@ class StandardLoadList(BasePage):
 urlpatterns = [
     path('load/<standard_load>/edit/', StandardLoadEdit().as_view(), name='standard_load_edit'),
     path('load/<standard_load>/', StandardLoadDetail().as_view(), name='standard_load_detail'),
-    # path('group/', AcademicGroupList().as_view(), name='academic_group_list'),
     path('load/', StandardLoadList().as_view(), name='standard_load_list'),
 ]

@@ -1,10 +1,11 @@
 # -*- encoding: utf-8 -*-
+from logging import getLogger, DEBUG
 from typing import Type
 
 from django.template.loader import render_to_string
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Model, ForeignKey, PROTECT, CharField, FloatField, TextField, IntegerField, BooleanField, Manager
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.urls import reverse_lazy
 from model_utils.managers import QueryManager
@@ -13,14 +14,29 @@ from simple_history.models import HistoricalRecords
 from app.models.standard_load import StandardLoad, get_current_standard_load
 from app.models.load_function import LoadFunction
 from app.models.unit import Unit
+from app.models.mixins import ModelIconMixin
+
+# Set up logging for this file
+logger = getLogger(__name__)
 
 
-class Task(Model):
+class Task(ModelIconMixin, Model):
     """
     This is the model for tasks
     """
     icon = "clipboard"
     url_root = "task"
+
+    # === CACHED LOADS ===
+    load_calc = FloatField(
+        default=0.0, validators=[MinValueValidator(0.0)], blank=False, null=False,
+        verbose_name="Calculated Load"
+    )
+    load_calc_first = FloatField(
+        default=0.0, validators=[MinValueValidator(0.0)], blank=False, null=False,
+        verbose_name="Calculated Load (first time)"
+    )
+
 
     name = CharField(max_length=128, blank=False)
 
@@ -72,14 +88,6 @@ class Task(Model):
     description = TextField(blank=False)
     notes = TextField(blank=True)
 
-    # === CACHED LOADS ===
-    load = FloatField(
-        default=0.0, validators=[MinValueValidator(0.0)], blank=False, null=False,
-    )
-    load_first = FloatField(
-        default=0.0, validators=[MinValueValidator(0.0)], blank=False, null=False,
-    )
-
     class Meta:
         ordering = ('is_active', 'unit', 'name',)
         verbose_name = 'Task'
@@ -91,56 +99,45 @@ class Task(Model):
         else:
             return f"{self.name}"
 
-    def get_absolute_url(self) -> str:
-        """
-        :return: The URL for the detail view of this particular instance of the model
-        """
-        return reverse_lazy('task_detail', args=[self.pk])
-
     def get_instance_header(self) -> str:
         """
-        The header for a page referring to a specific instance of this model
+        Overrides the default instance header to include the unit, with link, if present.
         :return: The rendered HTML template for this model.
         """
-        return render_to_string(
-            template_name='app/title.html',
-            context={
-                'icon': self.icon, 'url': self.get_absolute_url(),
-                'text': self
-            }
-        )
+        if self.unit:
+            return render_to_string(
+                template_name='app/header_unit.html',
+                context={
+                    'icon': self.icon, 'url': self.get_absolute_url(),
+                    'text': self.name,
+                    'unit_text': self.unit.code, 'unit_url': self.unit.get_absolute_url(),
+                }
+            )
+        else:
+            return render_to_string(
+                template_name='app/title.html',
+                context={
+                    'icon': self.icon, 'url': self.get_absolute_url(),
+                    'text': self
+                }
+            )
 
-    @staticmethod
-    def get_model_url() -> str:
-        """
-        :return: The URL for the view listing all of this model
-        """
-        return reverse_lazy(Task.url_root+'_list')
+    def has_any_provisional(self) -> bool:
+        return any(self.assignment_set.values_list('is_provisional', flat=True))
 
-    @staticmethod
-    def get_model_header() -> str:
-        """
-        The header for a page listing all of this model
-        :return: The HTML template for this model.
-        """
-        return render_to_string(
-            template_name='app/title.html',
-            context={
-                'icon': Task.icon, 'url': Task.get_model_url(),
-                'text': Task._meta.verbose_name_plural.title()
-            }
-        )
+    def has_any_first_time(self) -> bool:
+        return any(self.assignment_set.values_list('is_first_time', flat=True))
 
 
-receiver(pre_save, sender=Task)
-def calculate_load_for_task_year(
+@receiver(pre_save, sender=Task)
+def calculate_load_for_task(
         sender: Type[Task], instance: Task, **kwargs
 ):
     """
-
-    :return:
+    Called when the model is being saved, updates the calculated load
     """
     load: float = 0
+    logger.log(msg="Calculating load...", level=DEBUG)
 
     if instance.unit and (instance.coursework_fraction or instance.exam_fraction):
         # ==== IF THIS IS A UNIT CO-ORDINATOR ====
@@ -155,29 +152,33 @@ def calculate_load_for_task_year(
         load_lecture: float = contact_sessions * standard_load.load_lecture
         load_lecture_first: float = contact_sessions * standard_load.load_lecture_first
 
-        # ($J2*2) = "Coursework (number of items prepared)"
-        load_coursework_set: float = unit.coursework * standard_load.load_coursework_set
-        # ($L2*$O2*2) = "Coursework (fraction of unit mark)" * "Total Number of CATS"
-        load_coursework_credit: float = unit.coursework_mark_fraction * unit.credit_hours * standard_load.load_coursework_credit
+        load_coursework: float = 0
+        if unit.coursework and instance.coursework_fraction:
+            # ($J2*2) = "Coursework (number of items prepared)"
+            load_coursework += unit.coursework * standard_load.load_coursework_set
 
-        # ($J2+$L2*$Q2) = "Coursework (number of items prepared)" + "Coursework (fraction of unit mark)" * "Total Number of CATS"
-        # (0.1667 * [] * $K2 * $P2) = "Fraction of Coursework marked by coordinator" * "Number of Students"
-        load_coursework_marked: float = (unit.coursework + instance.coursework_fraction * unit.credit_hours) * \
-            instance.coursework_fraction * unit.students * standard_load.load_coursework_marked
+            # ($L2*$O2*2) = "Coursework (fraction of unit mark)" * "Total Number of CATS"
+            load_coursework += unit.coursework_mark_fraction * unit.credits * standard_load.load_coursework_credit
 
-        # ($M2*O2*2) = "Examination (fraction of unit mark)" * "Total Number of CATS"
-        load_exam_credit: float = instance.exam_fraction * unit.credit_hours * standard_load.load_exam_credit
+            # ($J2+$L2*$Q2) = "Coursework (number of items prepared)" + "Coursework (fraction of unit mark)" * "Total Number of CATS"
+            # (0.1667 * [] * $K2 * $P2) = "Fraction of Coursework marked by coordinator" * "Number of Students"
+            load_coursework += (unit.coursework + instance.coursework_fraction * unit.credits) * \
+                                            instance.coursework_fraction * unit.students * standard_load.load_coursework_marked
 
-        # ($P2*$N2*1) = "Number of Students" * "Fraction of Exams Marked by Coordinator"
-        load_exam_marked: float = unit.students * instance.exam_fraction * standard_load.load_exam_marked
+        load_exam: float = 0
+        if instance.exam_fraction:
+            # ($M2*O2*2) = "Examination (fraction of unit mark)" * "Total Number of CATS"
+            load_exam += instance.exam_fraction * unit.credits * standard_load.load_exam_credit
 
-        load: float = load_coursework_set + load_coursework_credit + \
-                      load_exam_credit + load_exam_marked + load_coursework_marked
+            # ($P2*$N2*1) = "Number of Students" * "Fraction of Exams Marked by Coordinator"
+            load_exam += unit.students * instance.exam_fraction * standard_load.load_exam_marked
+
+        load: float = load_coursework + load_exam
 
         if instance.load_function:
             load += instance.load_function.calculate(instance.students)
-        else:
-            raise Exception("Task has no load function")
+        elif instance.students:
+            raise Exception("Task has students but no load function")
 
         instance.load_calc_first = load + instance.load_fixed + load_lecture_first + instance.load_fixed_first
         instance.load_calc = load + instance.load_fixed + load_lecture
@@ -187,20 +188,20 @@ def calculate_load_for_task_year(
         # Much simpler logic
         if instance.load_function:
             try:
-                load += instance.load_function.calculate(instance.students)
+                load += instance.load_function.evaluate(instance.students)
             except Exception as calculation_exception:
                 raise calculation_exception
 
         instance.load_calc = instance.load_fixed + load
-        instance.load_calc_first = instance.load + instance.load_fixed_first
+        instance.load_calc_first = instance.load_calc + instance.load_fixed_first
 
 
-class TaskField(ForeignKey):
+@receiver(post_save, sender=Task)
+def apply_updated_load(
+        sender: Type[Task], instance: Task, **kwargs
+):
     """
-    Semantic model wrapper for the relationship, so Iommi can style it easily:
-    https://docs.iommi.rocks/en/latest/semantic_models.html
+    Called after a task is updated - updates the load on all linked staff.
     """
-    def __init__(self, to=None, *args, **kwargs):
-        assert to is None
-        to = Task
-        super().__init__(to=to, *args, **kwargs)
+    for assignment in instance.assignment_set:
+        assignment.staff.calculate_load_balance()

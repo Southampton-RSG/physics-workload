@@ -1,0 +1,63 @@
+<td>
+    {% for task in value.all %}
+        {% if not task.assignment_set.count %}
+            <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-danger">
+                {{ task.name }}
+                {% if task.number_needed > 1 %}
+                    {{task.assignment_set.count}}/{{ task.number_needed }}
+                {% endif %}
+            </a>
+
+        {% elif task.assignment_set.count == task.number_needed %}
+            {% if task.has_any_first_time and task.has_any_provisional %}
+                <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-success-outline">
+                    {{ task.name }}
+                    {% for assignment in task.assignment_set %}
+                        {% if assignment.is_provisional %}
+                            <i class="fa-solid fa-clipboard-question"></i>
+                        {% elif assignment.is_first_time %}
+                            <i class="fa-solid fa-clipboard-user"></i>
+                        {% else %}
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        {% endif %}
+                    {% endfor %}
+                </a>
+
+            {% elif task.has_any_first_time %}
+                <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-success">
+                    {{ item.name }}
+                    {% for assignment in task.assignment_set %}
+                        {% if assignment.is_provisional %}
+                            <i class="fa-solid fa-clipboard-question"></i>
+                        {% else %}
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        {% endif %}
+                    {% endfor %}
+                </a>
+
+            {% elif task.has_any_provisional %}
+                <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-primary-outline">
+                    {{ task.name }}
+                    {% for assignment in task.assignment_set %}
+                        {% if item.is_first_time %}
+                            <i class="fa-solid fa-clipboard-user"></i>
+                        {% else %}
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        {% endif %}
+                    {% endfor %}
+                </a>
+
+            {% else %}
+                <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-primary">
+                    {{ task.name }}
+                    <i class="fa-solid fa-clipboard-check"></i>
+                </a>
+            {% endif %}
+
+        {% else %}
+            <a href='{{ item.get_absolute_url }}' class="btn btn-sm btn-warning">
+                {{ task.name }} {{task.assignment_set.count}}/{{ task.number_needed }}
+            </a>
+        {% endif %}
+    {% endfor %}
+</td>

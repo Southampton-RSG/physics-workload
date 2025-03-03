@@ -1,5 +1,0 @@
-<td>
-    {% for item in value.all %}
-        <a href='{{ item.get_absolute_url }}'>{{ item.get_name_for_staff }}</a>{% if not forloop.last %},{% endif %}
-    {% endfor %}
-</td>

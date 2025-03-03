@@ -6,7 +6,7 @@ Copyright (c) 2019 - present AppSeed.us
 import os, random, string
 
 from dotenv import load_dotenv
-from unipath import Path
+from pathlib import Path
 import dj_database_url
 
 load_dotenv()
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     'simple_history',
     'iommi',
+    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
 
     'app',  # Enable the inner app
 ]
@@ -61,7 +62,7 @@ MIDDLEWARE = [
 
     'simple_history.middleware.HistoryRequestMiddleware',
     'app.middlewares.AjaxMiddleware',
-    
+
     'iommi.middleware',
 ]
 
@@ -119,19 +120,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = 'en-uk'
+TIME_ZONE = 'GMT'
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 #############################################################
-# SRC: https://devcenter.heroku.com/articles/django-assets
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Static files (CSS, JavaScript, Images)
@@ -170,8 +165,82 @@ IOMMI_DEBUG = True
 SIMPLE_HISTORY_ENABLED = False
 
 #############################################################
+# Settings specific to Django Plotly Dash
+#############################################################
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+#############################################################
 # Settings specific to this project:
 #############################################################
 YEAR_MINIMUM_VALUE: int = 2000
 HOURS_MAXIMUM_VALUE: int = 2000
 
+# ==============================================================================
+# LOGGING:
+# We want to log errors to disk, but skip the static requests.
+# ==============================================================================
+from logging import LogRecord
+LOG_DIRECTORY = PROJECT_DIR / "../logs"
+
+def skip_static_records(record: LogRecord) -> bool:
+    """
+    Skip log messages to the static file directory.
+
+    :param record:
+    :return:
+    """
+    return (hasattr(record, 'message') and not 'GET /static/' in record.message)
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'skip_static_requests': {
+            "()": "django.utils.log.CallbackFilter",
+            "callback": skip_static_records,
+        },
+    },
+    "formatters": {
+        "verbose": {
+            "format": "{asctime} {levelname} {name} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{asctime} {levelname} {message}",
+            "style": "{",
+        },
+    },
+    'handlers': {
+        'server_log': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'verbose',
+            'filters': ['skip_static_requests'],
+            'filename': LOG_DIRECTORY / "django.server.log",
+            'maxBytes': 2*1024*1024,
+            'backupCount': 5,
+        },
+        'app_log': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'verbose',
+            'filename': LOG_DIRECTORY / "django.app.log",
+            'maxBytes': 2 * 1024 * 1024,
+            'backupCount': 5,
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'filters': ['skip_static_requests'],
+            'formatter': 'simple',
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['server_log', 'console'],
+            'level': 'INFO',
+        },
+        'app': {
+            'handlers': ['app_log', 'console'],
+            'level': 'INFO',
+        },
+    },
+}

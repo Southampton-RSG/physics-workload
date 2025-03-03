@@ -12,13 +12,11 @@ from typing import Dict, Any
 base_style = Style(
     bootstrap5_base,
     font_awesome_6,
-    select2_enhanced_forms,
     base_template="app/iommi_base.html",
     root__assets__custom_base_css=Asset.css(attrs__href="/static/css/custom-base.css"),
 )
 register_style('teaching_time_tool', base_style)
 # ------------------------------------------------------------------------------
-
 boolean_button_fields_style: Style = Style(
     base_style,
     Field=dict(
@@ -103,6 +101,10 @@ horizontal_fields_style: Style = Style(
 register_style('horizontal_fields', horizontal_fields_style)
 # ------------------------------------------------------------------------------
 
+select2_fields_mixin_style: Style = Style(
+    select2_enhanced_forms,
+    Form__assets__custom_select2_css=Asset.css(attrs__href="/static/css/custom-select.css"),
+)
 
 # ==============================================================================
 # validate_styles()

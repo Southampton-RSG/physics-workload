@@ -1,23 +1,25 @@
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models import Model, ForeignKey, TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index
+from django.db.models import Model, ForeignKey, TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index, Sum
 from django.db.models.deletion import PROTECT, SET_NULL
-from django.urls import reverse_lazy
 from model_utils.managers import QueryManager
 
 from app.models.academic_group import AcademicGroup
+from app.models.mixins import ModelIconMixin
 
 
-
-class Staff(Model):
+class Staff(ModelIconMixin, Model):
     """
-
+    Member of staff; not necessarily a current user.
     """
+    icon = 'user'
+    url_root = 'staff'
+
     user = ForeignKey(
         settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=SET_NULL,
     )
     account = CharField(
-        max_length=16, unique=True, blank=False,
+        max_length=16, unique=True, blank=False, primary_key=True
     )
     name = CharField(
         max_length=128, blank=False,
@@ -31,10 +33,8 @@ class Staff(Model):
         help_text="Single-letter code"
     )
     type = CharField(
-        max_length=16, blank=False,
+        max_length=16, blank=True,
     )
-    notes = TextField(blank=True)
-
     load_historic_balance = FloatField(
         default=0,
         verbose_name='Historic load balance',
@@ -73,6 +73,9 @@ class Staff(Model):
     )
 
     is_active = BooleanField(default=True)
+
+    notes = TextField(blank=True)
+
     objects_active = QueryManager(is_active=True)
     objects = Manager()
 
@@ -89,5 +92,13 @@ class Staff(Model):
     def __str__(self):
         return f"{self.name}"
 
-    def get_absolute_url(self) -> str:
-        return reverse_lazy('staff_detail', args=[self.account])
+    def calculate_load_balance(self):
+        """
+        :return: The load balance for this staff member.
+        """
+        load: float = 0
+        for assignment in self.assignment_set.all():
+            load += assignment.get_load()
+
+        self.load_calculated_balance = load
+        self.save()
