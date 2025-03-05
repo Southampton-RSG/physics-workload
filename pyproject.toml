@@ -25,4 +25,6 @@ dependencies = [
     "simpleeval>=1.0.3",
     "django-plotly-dash>=2.4.5",
     "dash-bootstrap-templates>=2.1.0",
+    "python-ldap>=3.4.4",
+    "django-auth-ldap>=5.1.0",
 ]

@@ -155,16 +155,29 @@ class ColumnModify(Column):
         header__attrs__class={'text-center': True},
         after=LAST,
 
-def create_modify_column(**kwargs) -> Column:
-    """
-    :return:
-    """
-    return Column(
-        # include=lambda request, **_: request.user.is_staff,
-        cell__value=lambda row, **_: row.get_absolute_url(),
-        cell__template='app/modify_row.html',
-        cell__attrs__class={'text-center': True},
-        header__attrs__class={'text-center': True},
-        sortable=False,
-        after=LAST,
-    )
+    @staticmethod
+    def create(**kwargs) -> Column:
+        """
+        :return:
+        """
+        return Column(
+            # include=lambda request, **_: request.user.is_staff,
+            cell__value=lambda row, **_: row.get_absolute_url(),
+            cell__template='app/modify_row.html',
+            cell__attrs__class={'text-center': True},
+            header__attrs__class={'text-center': True},
+            sortable=False,
+            after=LAST,
+        )
+
+
+from iommi import register_search_fields
+from app.models.staff import Staff
+from app.models.task import Task
+
+register_search_fields(
+     model=Staff, search_fields=['name', 'gender', 'academic_group'], allow_non_unique=True,
+)
+register_search_fields(
+    model=Task, search_fields=['name'], allow_non_unique=True
+)

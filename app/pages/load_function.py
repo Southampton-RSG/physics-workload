@@ -19,7 +19,7 @@ from app.pages import BasePage
 from app.models import LoadFunction
 
 from app.assets import mathjax_js
-from app.pages import HeaderInstanceDelete, HeaderInstanceDetail, HeaderInstanceEdit, HeaderList, create_modify_column
+from app.pages import HeaderInstanceDelete, HeaderInstanceDetail, HeaderInstanceEdit, HeaderList, ColumnModify, HeaderInstanceCreate
 from app.style import floating_fields_style
 
 
@@ -57,6 +57,7 @@ class LoadFunctionEdit(BasePage):
         auto__model=LoadFunction, instance=lambda params, **_: params.load_function,
         fields__plot_minimum__group="Plot",
         fields__plot_maximum__group="Plot",
+        fields__is_active__group="Plot",
         iommi_style=floating_fields_style,
         editable=True,
         assets=mathjax_js,
@@ -79,8 +80,14 @@ class LoadFunctionDetail(BasePage):
     detail = Form(
         auto__model=LoadFunction, instance=lambda params, **_: params.load_function,
         auto__exclude=['name', 'is_active'],
-        fields__plot_minimum__group="Plot",
-        fields__plot_maximum__group="Plot",
+        fields__plot_minimum=dict(
+            group="Plot",
+            include=lambda params, **_: params.load_function.plot_minimum,
+        ),
+        fields__plot_maximum=dict(
+            group="Plot",
+            include=lambda params, **_: params.load_function.plot_maximum,
+        ),
         iommi_style=floating_fields_style,
         editable=False,
     )
@@ -129,7 +136,7 @@ class LoadFunctionList(BasePage):
         columns__is_active__render_column=False,
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
         columns__expression__cell__template=Template("<td>{{ value | truncatechars:32 }}</td>"),
-        columns__modify=create_modify_column(),
+        columns__modify=ColumnModify.create(),
     )
 
 def get_load_function_data(request, load_function):

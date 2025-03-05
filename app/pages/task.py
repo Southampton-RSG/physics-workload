@@ -4,29 +4,23 @@
 import string
 from logging import getLogger
 
-from django.template.loader import render_to_string
 from django.urls import path
 from django.utils.html import format_html
-from django.template import Template
 
 from iommi import Page, Table, html, Form, EditTable, Column, Field, EditColumn
 from iommi.path import register_path_decoding
 from iommi import register_search_fields
 
-
 from app.models import Unit, Task, Assignment, Staff
-from app.pages import BasePage, HeaderInstanceDelete, HeaderInstanceEdit, HeaderInstanceDetail, HeaderList, create_modify_column, HeaderInstanceCreate
+from app.pages import BasePage, HeaderInstanceDelete, HeaderInstanceEdit, HeaderInstanceDetail, HeaderList, ColumnModify, HeaderInstanceCreate
 from app.forms.task import TaskForm
 from app.tables.task import TaskTable
-from app.style import floating_fields_style
 
 
 # Set up logging for this file
 logger = getLogger(__name__)
 
-
 register_path_decoding(task=lambda string, **_: Task.objects.get(pk=int(string)))
-register_search_fields(model=Task, search_fields=['name'], allow_non_unique=True)
 
 
 class TaskDetail(BasePage):
@@ -57,7 +51,6 @@ class TaskDetail(BasePage):
             render_column=False,
             field__parsed_data=lambda params, **_: params.task,
         ),
-
         columns__staff=Column.choice_queryset(
             cell__url=lambda row, **_: row.staff.get_absolute_url() if hasattr(row, 'staff') else '',
             choices=lambda params, **_: TaskDetail.filter_staff(params.task),
@@ -68,9 +61,7 @@ class TaskDetail(BasePage):
         columns__delete=EditColumn.delete(),
         rows=lambda params, **_: params.task.assignment_set.all(),
     )
-
     br = html.br()
-
     form = TaskForm(
         title="Details",
         auto__model=Task, instance=lambda params, **_: params.task,
@@ -81,6 +72,7 @@ class TaskDetail(BasePage):
         fields__students__include=lambda params, **_: params.task.students,
         editable=False,
     )
+
 
 class TaskEdit(BasePage):
     """
@@ -118,9 +110,7 @@ class TaskDelete(BasePage):
     Page for deleting a task
     """
     header = HeaderInstanceDelete(
-        lambda params, **_: format_html(
-            f"{params.task.get_instance_header()}"
-        )
+        lambda params, **_: params.task.get_instance_header()
     )
     form = TaskForm.delete(
         h_tag=None,

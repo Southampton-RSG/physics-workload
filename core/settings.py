@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     'simple_history',
     'iommi',
@@ -99,8 +100,12 @@ DATABASES = {
     }
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
+################################################################################
+# DJANGO CORE - AUTHENTICATION
+# Password validators: https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
+################################################################################
+import ldap
+from django_auth_ldap.config import LDAPSearch, GroupOfNamesType, NestedActiveDirectoryGroupType
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -117,16 +122,36 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/3.0/topics/i18n/
+AUTHENTICATION_BACKENDS = [
+    'django_auth_ldap.backend.LDAPBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
+################################################################################
+# DJANGO AUTH LDAP
+################################################################################
+AUTH_LDAP_SERVER_URI = "ldap://nlbldap.soton.ac.uk"
+AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = True
+AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn", "email": "mail"}
+AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=User,dc=soton,dc=ac,dc=uk",
+    ldap.SCOPE_SUBTREE, "(sAMAccountName=%(user)s)")
+AUTH_LDAP_GROUP_SEARCH = LDAPSearch("OU=Groups,dc=soton,dc=ac,dc=uk",
+    ldap.SCOPE_SUBTREE, "(objectClass=group)")
+AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
+
+################################################################################
+# DJANGO CORE - INTERNATIONALISATION
+# https://docs.djangoproject.com/en/3.0/topics/i18n/
+################################################################################
 LANGUAGE_CODE = 'en-uk'
 TIME_ZONE = 'GMT'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-#############################################################
+################################################################################
+# DJANGO CORE - DIRECTORIES
+################################################################################
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Static files (CSS, JavaScript, Images)
@@ -139,46 +164,45 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'core/static'),
     os.path.join(BASE_DIR, 'app/static'),
 )
-#############################################################
-#############################################################
 
+################################################################################
+# DJANGO CORE - DATABASE
+################################################################################
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = '/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-#############################################################
-# Settings specific to Iommi:
-#############################################################
+################################################################################
+# DJANGO CORE - SITES:
+################################################################################
+SITE_ID = 1
+
+################################################################################
+# IOMMI
+################################################################################
 from app.style import base_style
 
 IOMMI_DEFAULT_STYLE = base_style
 IOMMI_DEBUG = True
 
-#############################################################
-# Settings specific to Django Simple History
-#############################################################
+################################################################################
+# DJANGO SIMPLE HISTORY
+################################################################################
 # We only want to take a snapshot on year end
 SIMPLE_HISTORY_ENABLED = False
 
-#############################################################
-# Settings specific to Django Plotly Dash
-#############################################################
+################################################################################
+# DJANGO PLOTLY DASH
+################################################################################
+# Allow embedding plots as iframes
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
-#############################################################
-# Settings specific to this project:
-#############################################################
-YEAR_MINIMUM_VALUE: int = 2000
-HOURS_MAXIMUM_VALUE: int = 2000
-
-# ==============================================================================
-# LOGGING:
-# We want to log errors to disk, but skip the static requests.
-# ==============================================================================
+################################################################################
+# DJANGO CORE - LOGGING
+################################################################################
 from logging import LogRecord
 LOG_DIRECTORY = Path("/home/smangham/projects/physics-workload/logs")
 
@@ -228,3 +252,9 @@ LOGGING = {
         },
     },
 }
+
+################################################################################
+# Settings specific to this project:
+################################################################################
+YEAR_MINIMUM_VALUE: int = 2000
+HOURS_MAXIMUM_VALUE: int = 2000

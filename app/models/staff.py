@@ -1,4 +1,4 @@
-from logging import getLogger, DEBUG
+from logging import getLogger
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Model, ForeignKey, TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index, Sum
@@ -6,12 +6,12 @@ from django.db.models.deletion import PROTECT, SET_NULL
 from model_utils.managers import QueryManager
 
 from app.models.academic_group import AcademicGroup
-from app.models.mixins import ModelIconMixin
+from app.models.mixins import ModelCommonMixin
 
 logger = getLogger(__name__)
 
 
-class Staff(ModelIconMixin, Model):
+class Staff(ModelCommonMixin, Model):
     """
     Member of staff; not necessarily a current user.
     """
@@ -46,17 +46,17 @@ class Staff(ModelIconMixin, Model):
 
     load_calculated_target = FloatField(
         default=0, validators=[MinValueValidator(0.0)],
-        verbose_name='Target load hours',
+        verbose_name='Load target',
         help_text="Load hours calculated for the current year.",
     )
     load_calculated_assigned = FloatField(
         default=0, validators=[MinValueValidator(0.0)],
-        verbose_name='Assigned load hours',
+        verbose_name='Load assigned',
         help_text="Load hours assigned for the current year.",
     )
     load_calculated_balance = FloatField(
         default=0,
-        verbose_name='Current load balance',
+        verbose_name='Load balance',
         help_text="The current year's target load minus assigned load.",
     )
 
@@ -93,7 +93,18 @@ class Staff(ModelIconMixin, Model):
         ]
 
     def __str__(self):
-        return f"{self.name}"
+        """
+        Default rendering of a staff member shows their load balance
+        :return: Their name plus load balance.
+        """
+        return f"{self.name} [{self.load_calculated_balance:.0f}]"
+
+    def get_instance_header(self) -> str:
+        """
+        Creates a header for staff, without their load balance in.
+        :return: A header with just the name
+        """
+        return super().get_instance_header(text=self.name)
 
     def calculate_load_balance(self):
         """

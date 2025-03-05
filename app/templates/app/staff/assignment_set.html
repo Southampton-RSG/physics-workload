@@ -1,31 +1,5 @@
 <td>
     {% for assignment in value.all %}
-        {% if assignment.is_provisional and assignment.is_first_time %}
-            <a href='{{ assignment.get_absolute_url }}' class='btn btn-sm btn-outline-success'>
-                {{ assignment.task }} [{{ assignment.get_load }}]
-                <i class="fa-solid fa-clipboard-user"></i>
-                <i class="fa fa-plus"></i>
-            </a>
-
-        {% elif assignment.is_provisional %}
-        <a href='{{ assignment.get_absolute_url }}' class='btn btn-sm btn-outline-primary'>
-            {{ assignment.task }} [{{ assignment.get_load }}]
-            <i class="fa-solid fa-clipboard-user"></i>
-        </a>
-
-        {% elif assignment.is_first_time %}
-            <a href='{{ assignment.get_absolute_url }}' class='btn btn-sm btn-success'>
-                {{ assignment.task }} [{{ assignment.get_load }}]
-                <i class="fa-solid fa-clipboard-check"></i>
-                <i class="fa-solid fa-plus"></i>
-            </a>
-
-        {% else %}
-            <a href='{{ assignment.get_absolute_url }}' class='btn btn-sm btn-primary'>
-                {{ assignment.task }} [{{ assignment.get_load }}]
-                <i class="fa-solid fa-clipboard-check"></i>
-            </a>
-
-        {% endif %}
+        {% include "app/assignment/assignment.html" with assignment=assignment assignment_name=assignment.get_name_without_staff %}
     {% endfor %}
 </td>

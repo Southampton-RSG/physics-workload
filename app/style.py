@@ -53,6 +53,11 @@ floating_fields: Dict[str, Any] = {
     "label__after": "input",
     "attrs": {
         "class": {"form-floating": True},
+    },
+    "non_editable_input": {
+        "attrs": {
+            "class": {'form-control': False, 'form-control-plaintext': True, 'form-select': False},
+        }
     }
 }
 # Applied on a per-field or per-form basis
@@ -67,6 +72,7 @@ floating_fields_style: Style = Style(
             integer=floating_fields,
             choice=floating_fields,
             choice_queryset=floating_fields,
+            select=floating_fields,
         ),
         input__attrs__placeholder=lambda field, **_: evaluate_strict(
             field.display_name, **field.iommi_evaluate_parameters()

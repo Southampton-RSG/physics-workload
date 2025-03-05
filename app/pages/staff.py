@@ -3,20 +3,19 @@ Handles the views for the Academic Groups
 """
 from django.urls import path
 
-from iommi import Table, Column, Action, Field
+from iommi import Table, Column, Action, Field, EditTable, EditColumn
 from iommi.path import register_path_decoding
 
-from app.pages import BasePage, HeaderInstanceDetail, HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, HeaderList, create_modify_column
-from app.models import Staff, Assignment
+from app.pages import BasePage, HeaderInstanceDetail, HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, HeaderList, ColumnModify
+from app.models import Staff, Assignment, AcademicGroup
 from app.style import floating_fields_style, boolean_button_fields_style
 from app.forms.staff import StaffForm
+from app.tables.staff import StaffTable
+
 
 register_path_decoding(
     staff=lambda string, **_: Staff.objects.get(account=string)
 )
-# register_search_fields(
-#     model=Staff, search_fields=['name', 'gender', 'academic_group'], allow_non_unique=True
-#)
 
 
 class StaffDelete(BasePage):
@@ -42,8 +41,20 @@ class StaffEdit(BasePage):
     )
     form = StaffForm.edit(
         h_tag=None,
-        instance=lambda params, **_: params.staff,
+        auto__instance=lambda params, **_: params.staff,
         fields__is_active__include=True,
+    )
+
+
+class StaffCreate(BasePage):
+    """
+
+    """
+    header = HeaderInstanceCreate(
+        lambda params, **_: Staff.get_model_header()
+    )
+    form = StaffForm.create(
+        h_tag=None,
     )
 
 
@@ -56,16 +67,24 @@ class StaffDetail(BasePage):
     )
     form = StaffForm(
         h_tag=None,
-        instance=lambda params, **_: params.staff,
-        iommi_style=floating_fields_style,
+        auto__instance=lambda params, **_: params.staff,
+        fields__hours_fixed__include=lambda params, **_: params.staff.hours_fixed,
+        fields__fte_fraction__include = lambda params, **_: params.staff.fte_fraction,
         editable=False,
     )
-    assignments = Table(
+    assignments = EditTable(
         auto__model=Assignment,
         auto__exclude=['notes'],
+        columns__task__field__include=True,
+        columns__is_first_time__field__include=True,
+        columns__is_provisional__field__include=True,
+        columns__staff=EditColumn.hardcoded(
+            render_column=False,
+            field__parsed_data=lambda params, **_: params.staff,
+        ),
         rows=lambda params, **_: Assignment.objects.filter(staff=params.staff),
+        columns__delete=EditColumn.delete(),
     )
-
 
 
 class StaffList(BasePage):
@@ -75,49 +94,13 @@ class StaffList(BasePage):
     header = HeaderList(
         lambda params, **_: Staff.get_model_header()
     )
-    list = Table(
+    list = StaffTable(
         h_tag=None,
-        auto__model=Staff,
-        auto__include=[
-            'account', 'name', 'gender', 'academic_group', 'is_active',
-            'load_calculated_balance', 'load_historic_balance', 'assignment_set',
-        ],
-        columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
-        columns__name__filter__include=True,
-        columns__account__cell__url=lambda row, **_: row.get_absolute_url(),
-        columns__academic_group__filter__include=True,
-        columns__gender=dict(
-            filter__include=True,
-            render_column=False,
-        ),
-        columns__assignment_set=dict(
-            cell__template='app/staff/assignment_set.html',
-        ),
-        columns__is_active=dict(
-            render_column=False,
-            filter__include=True,
-        ),
-        columns__modify=create_modify_column(),
-        query=dict(
-            advanced__include=False,
-            form=dict(
-                fields__gender=Field.choice(
-                    display_name='Gender',
-                    choices=lambda params, **_: ['']+list(set(Staff.objects.values_list('gender', flat=True)))
-                ),
-                fields__is_active=Field.boolean(
-                    display_name='Active Only',
-                    initial=True,
-                    iommi_style='boolean_buttons',
-                ),
-                actions__reset=Action.button(display_name='Clear Filter', attrs__type='reset'),
-            ),
-        ),
-        iommi_style=floating_fields_style,
     )
 
 
 urlpatterns = [
+    path('staff/create/', StaffCreate().as_view(), name='staff_create'),
     path('staff/<staff>/delete/', StaffDelete().as_view(), name='staff_delete'),
     path('staff/<staff>/edit/', StaffEdit().as_view(), name='staff_edit'),
     path('staff/<staff>/', StaffDetail().as_view(), name='staff_detail'),

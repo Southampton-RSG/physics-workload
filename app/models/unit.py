@@ -1,15 +1,16 @@
 # -*- encoding: utf-8 -*-
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models import Model, CharField, BooleanField, TextField, ForeignKey, Index, IntegerField, FloatField, CheckConstraint, Q, F
+from django.db.models import Model, CharField, BooleanField, TextField, ForeignKey, IntegerField, FloatField, CheckConstraint, Q, F
 from django.db.models.deletion import PROTECT
 from django.db.models.manager import Manager
 from model_utils.managers import QueryManager
 
 from app.models.academic_group import AcademicGroup
-from app.models.mixins import ModelIconMixin
+from app.models.mixins import ModelCommonMixin
 
 
-class Unit(ModelIconMixin, Model):
+class Unit(ModelCommonMixin, Model):
     """
     Academic unit, e.g. PHYS!001
     """
@@ -88,3 +89,15 @@ class Unit(ModelIconMixin, Model):
             return sum(
                 self.task_set.values_list('student', flat=True)
             )
+
+    def has_access(self, user: AbstractUser) -> bool:
+        """
+        Only users assigned to a unit can see the details
+        :param user: The user
+        :return: True if the user is assigned to a task in this unit
+        """
+        for task in self.task_set.all():
+            if user.staff in task.assignment_set.values_list('staff', flat=True):
+                return True
+
+        return False

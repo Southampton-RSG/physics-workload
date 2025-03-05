@@ -4,10 +4,10 @@ from django.urls import reverse_lazy
 from django.conf import settings
 from django.db.models import ObjectDoesNotExist
 
-from app.models.mixins import ModelIconMixin
+from app.models.mixins import ModelCommonMixin
 
 
-class StandardLoad(ModelIconMixin, Model):
+class StandardLoad(ModelCommonMixin, Model):
     """
     Standard loads for an academic year
     """

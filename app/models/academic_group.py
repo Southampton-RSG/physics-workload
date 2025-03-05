@@ -1,11 +1,12 @@
+from django.contrib.auth.models import AbstractUser
 from django.db.models import Model, CharField, BooleanField, Manager
 from django.urls import reverse_lazy
 
 from app.models.managers import ActiveManager
-from app.models.mixins import ModelIconMixin
+from app.models.mixins import ModelCommonMixin
 
 
-class AcademicGroup(ModelIconMixin, Model):
+class AcademicGroup(ModelCommonMixin, Model):
     """
     Academic group, e.g. Astro, Theory, QLM...
 
@@ -29,3 +30,11 @@ class AcademicGroup(ModelIconMixin, Model):
 
     def __str__(self):
         return self.name
+
+    def has_access(self, user: AbstractUser) -> bool:
+        """
+        Only users assigned to a task can see the details
+        :param user: The user
+        :return: True if the user is assigned to this task
+        """
+        return self == user.staff.academic_group

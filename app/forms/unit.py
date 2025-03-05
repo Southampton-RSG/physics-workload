@@ -13,6 +13,7 @@ class UnitForm(Form):
         fields__code__group = "Basics"
         fields__name__group = "Basics"
         fields__academic_group__group = "Basics"
+        fields__academic_group__non_editable_input__template='app/choice_url.html'
         fields__students__group = 'Basics'
         fields__lectures__group = 'Sessions'
         fields__problem_classes__group = 'Sessions'

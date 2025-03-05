@@ -3,12 +3,12 @@ from django.db.models import Model, CharField, TextField, BooleanField, Manager,
 from django.utils.html import format_html
 
 from app.models.managers import ActiveManager
-from app.models.mixins import ModelIconMixin
+from app.models.mixins import ModelCommonMixin
 
 from simpleeval import simple_eval
 
 
-class LoadFunction(ModelIconMixin, Model):
+class LoadFunction(ModelCommonMixin, Model):
     """
     Evaluatable Python expression that determines the load for a number of students,
     e.g. for number of tutees or when marking a dissertation.

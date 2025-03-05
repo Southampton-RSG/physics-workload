@@ -2,6 +2,7 @@
 from logging import getLogger, DEBUG
 from typing import Type
 
+from django.contrib.auth.models import AbstractUser
 from django.template.loader import render_to_string
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Model, ForeignKey, PROTECT, CharField, FloatField, TextField, IntegerField, BooleanField, Manager
@@ -13,13 +14,13 @@ from simple_history.models import HistoricalRecords
 from app.models.standard_load import StandardLoad, get_current_standard_load
 from app.models.load_function import LoadFunction
 from app.models.unit import Unit
-from app.models.mixins import ModelIconMixin
+from app.models.mixins import ModelCommonMixin
 
 # Set up logging for this file
 logger = getLogger(__name__)
 
 
-class Task(ModelIconMixin, Model):
+class Task(ModelCommonMixin, Model):
     """
     This is the model for tasks
     """
@@ -35,7 +36,6 @@ class Task(ModelIconMixin, Model):
         default=0.0, validators=[MinValueValidator(0.0)], blank=False, null=False,
         verbose_name="Calculated Load (first time)"
     )
-
 
     name = CharField(max_length=128, blank=False)
 
@@ -78,7 +78,6 @@ class Task(ModelIconMixin, Model):
         default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
         verbose_name="Fraction of coursework marked",
     )
-
     exam_fraction = FloatField(
         default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
         verbose_name="Fraction of exams marked",
@@ -93,10 +92,22 @@ class Task(ModelIconMixin, Model):
         verbose_name_plural = 'Tasks'
 
     def __str__(self):
+        """
+        :return: The name, with unit if it's a unit, with first-time load if valid
+        """
+        text = f"{self.name}"
         if self.unit:
-            return f"{self.unit.code} - {self.name}"
+            text = f"{self.unit.code} - "+text
+
+        if self.load_calc != self.load_calc_first:
+            text += f" [{self.load_calc:.0f} / {self.load_calc_first:.0f}]"
         else:
-            return f"{self.name}"
+            text += f" [{self.load_calc:.0f}]"
+
+        return text
+
+    def get_name(self):
+        return f"{self.unit.code} - {self.name}"
 
     def get_instance_header(self) -> str:
         """
@@ -126,6 +137,14 @@ class Task(ModelIconMixin, Model):
 
     def has_any_first_time(self) -> bool:
         return any(self.assignment_set.values_list('is_first_time', flat=True))
+
+    def has_access(self, user: AbstractUser) -> bool:
+        """
+        Only users assigned to a task can see the details
+        :param user: The user
+        :return: True if the user is assigned to this task
+        """
+        return user.staff in self.assignment_set.values_list('staff', flat=True)
 
 
 @receiver(pre_save, sender=Task)

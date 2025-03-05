@@ -1,8 +1,10 @@
-data: school unit task assignment
+data: site school unit task assignment
 
+site:
+	uv run manage.py loaddata site.json
 
 school:
-	uv run manage.py loaddata standard_load academic_group staff
+	uv run manage.py loaddata site standard_load academic_group staff
 
 unit: school
 	uv run manage.py loaddata load_function unit

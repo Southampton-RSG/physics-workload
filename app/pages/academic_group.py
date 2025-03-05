@@ -1,19 +1,20 @@
 """
 Handles the views for the Academic Groups
 """
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Q, F
 from django.urls import path
-from django.utils.html import format_html, mark_safe
-from django.template import Template
 
 from iommi import Page, Table, html, Form, EditTable, Column, Action, Menu, Fragment
 from iommi.path import register_path_decoding
 
+from app.auth import has_access_decoder
 from app.models import AcademicGroup, Staff, Unit, Task
 from app.pages import BasePage, HeaderInstanceDetail, HeaderList, HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete
 
 
-register_path_decoding(academic_group=lambda string, **_: AcademicGroup.objects.get(code=string))
+register_path_decoding(
+    academic_group=has_access_decoder(AcademicGroup, "You must be a member of this Group to view it."),
+)
 
 
 class AcademicGroupDetail(BasePage):
@@ -22,9 +23,7 @@ class AcademicGroupDetail(BasePage):
     as well as any units and their assignment status.
     """
     header = HeaderInstanceDetail(
-        lambda params, **_: format_html(
-            params.academic_group.get_instance_header()
-        ),
+        lambda params, **_: params.academic_group.get_instance_header()
     )
 
     staff = Table(
@@ -61,11 +60,13 @@ class AcademicGroupDetail(BasePage):
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
         columns__task_set=dict(
             display_name='Tasks',
-            cell__template='app/academic_group/assignment_set.html',
+            cell__template='app/academic_group/task_set.html',
             after='students',
         ),
         rows=lambda params, **_: Unit.objects.filter(
             academic_group=params.academic_group
+        ).annotate(
+            assignment_open=Sum('task_set__number_needed') - Count('task_set__assignment_set'),
         ),
         page_size=20,
         h_tag__tag='h2',
@@ -78,7 +79,7 @@ class AcademicGroupEdit(BasePage):
     Page showing an academic group to be edited
     """
     header = HeaderInstanceEdit(
-        lambda params, **_: format_html(params.academic_group.get_instance_header()),
+        lambda params, **_: params.academic_group.get_instance_header()
     )
     form = Form.edit(
         h_tag=None,
@@ -94,7 +95,7 @@ class AcademicGroupCreate(BasePage):
     Page showing an academic group to be created
     """
     header = HeaderInstanceCreate(
-        lambda params, **_: format_html(AcademicGroup.get_model_header()),
+        lambda params, **_: AcademicGroup.get_model_header()
     )
     form = Form.create(
         h_tag=None,
@@ -109,7 +110,7 @@ class AcademicGroupDelete(BasePage):
     Page showing an academic group to be created
     """
     header = HeaderInstanceDelete(
-        lambda params, **_: format_html(params.academic_group.get_instance_header()),
+        lambda params, **_: params.academic_group.get_instance_header(),
     )
     warning = html.p(
         "If this group has been used, edit it and remove the 'active' flag instead."
@@ -122,15 +123,12 @@ class AcademicGroupDelete(BasePage):
     )
 
 
-
 class AcademicGroupList(BasePage):
     """
     Page listing the academic groups
     """
     title = HeaderList(
-        lambda params, **_: format_html(
-            AcademicGroup.get_model_header(),
-        ),
+        lambda params, **_: AcademicGroup.get_model_header(),
     )
     list = Table(
         h_tag=None,

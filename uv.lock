@@ -223,6 +223,19 @@ wheels = [
 ]
 
 [[package]]
+name = "django-auth-ldap"
+version = "5.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "python-ldap" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/91/e4/2e8781840cc54f719be3241e16640524a9aabf94a599f5e083b0115042ce/django_auth_ldap-5.1.0.tar.gz", hash = "sha256:9c607e8d9c53cf2a0ccafbe0acfc33eb1d1fd474c46ec52d30aee0dca1da9668", size = 55059 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/11/47/f3492884addbb17672cc9a6053381162010d6e40ccd8440dedf22f72bc7f/django_auth_ldap-5.1.0-py3-none-any.whl", hash = "sha256:a5f7bdb54b2ab80e4e9eb080cd3e06e89e4c9d2d534ddb39b66cd970dd6d3536", size = 20833 },
+]
+
+[[package]]
 name = "django-faicon"
 version = "0.1.0"
 source = { registry = "https://pypi.org/simple" }
@@ -503,6 +516,7 @@ dependencies = [
     { name = "dash-bootstrap-templates" },
     { name = "dj-database-url" },
     { name = "django" },
+    { name = "django-auth-ldap" },
     { name = "django-faicon" },
     { name = "django-import-export" },
     { name = "django-model-utils" },
@@ -513,6 +527,7 @@ dependencies = [
     { name = "parso" },
     { name = "pycodestyle" },
     { name = "python-dotenv" },
+    { name = "python-ldap" },
     { name = "pytz" },
     { name = "simpleeval" },
     { name = "sqlparse" },
@@ -527,6 +542,7 @@ requires-dist = [
     { name = "dash-bootstrap-templates", specifier = ">=2.1.0" },
     { name = "dj-database-url", specifier = ">=2.3.0" },
     { name = "django", specifier = ">=5.1.5" },
+    { name = "django-auth-ldap", specifier = ">=5.1.0" },
     { name = "django-faicon", specifier = ">=0.1.0" },
     { name = "django-import-export", specifier = ">=4.3.5" },
     { name = "django-model-utils", specifier = ">=5.0.0" },
@@ -537,6 +553,7 @@ requires-dist = [
     { name = "parso", specifier = ">=0.8.4" },
     { name = "pycodestyle", specifier = ">=2.12.1" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
+    { name = "python-ldap", specifier = ">=3.4.4" },
     { name = "pytz", specifier = ">=2025.1" },
     { name = "simpleeval", specifier = ">=1.0.3" },
     { name = "sqlparse", specifier = ">=0.5.3" },
@@ -555,6 +572,27 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/9c/80/761c14012d6daf18e12b6d1e4f6b218e999bcceb694d7a9b180154f9e4db/plotly-6.0.0.tar.gz", hash = "sha256:c4aad38b8c3d65e4a5e7dd308b084143b9025c2cc9d5317fc1f1d30958db87d3", size = 8111782 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0e/77/a946f38b57fb88e736c71fbdd737a1aebd27b532bda0779c137f357cf5fc/plotly-6.0.0-py3-none-any.whl", hash = "sha256:f708871c3a9349a68791ff943a5781b1ec04de7769ea69068adcd9202e57653a", size = 14805949 },
+]
+
+[[package]]
+name = "pyasn1"
+version = "0.6.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ba/e9/01f1a64245b89f039897cb0130016d79f77d52669aae6ee7b159a6c4c018/pyasn1-0.6.1.tar.gz", hash = "sha256:6f580d2bdd84365380830acf45550f2511469f673cb4a5ae3857a3170128b034", size = 145322 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c8/f1/d6a797abb14f6283c0ddff96bbdd46937f64122b8c925cab503dd37f8214/pyasn1-0.6.1-py3-none-any.whl", hash = "sha256:0d632f46f2ba09143da3a8afe9e33fb6f92fa2320ab7e886e2d0f7672af84629", size = 83135 },
+]
+
+[[package]]
+name = "pyasn1-modules"
+version = "0.4.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyasn1" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1d/67/6afbf0d507f73c32d21084a79946bfcfca5fbc62a72057e9c23797a737c9/pyasn1_modules-0.4.1.tar.gz", hash = "sha256:c28e2dbf9c06ad61c71a075c7e0f9fd0f1b0bb2d2ad4377f240d33ac2ab60a7c", size = 310028 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/77/89/bc88a6711935ba795a679ea6ebee07e128050d6382eaa35a0a47c8032bdc/pyasn1_modules-0.4.1-py3-none-any.whl", hash = "sha256:49bfa96b45a292b711e986f222502c1c9a5e1f4e568fc30e2574a6c7d07838fd", size = 181537 },
 ]
 
 [[package]]
@@ -583,6 +621,16 @@ sdist = { url = "https://files.pythonhosted.org/packages/bc/57/e84d88dfe0aec03b7
 wheels = [
     { url = "https://files.pythonhosted.org/packages/6a/3e/b68c118422ec867fa7ab88444e1274aa40681c606d59ac27de5a5588f082/python_dotenv-1.0.1-py3-none-any.whl", hash = "sha256:f7b63ef50f1b690dddf550d03497b66d609393b40b564ed0d674909a68ebf16a", size = 19863 },
 ]
+
+[[package]]
+name = "python-ldap"
+version = "3.4.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyasn1" },
+    { name = "pyasn1-modules" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fd/8b/1eeb4025dc1d3ac2f16678f38dec9ebdde6271c74955b72db5ce7a4dbfbd/python-ldap-3.4.4.tar.gz", hash = "sha256:7edb0accec4e037797705f3a05cbf36a9fde50d08c8f67f2aef99a2628fab828", size = 377889 }
 
 [[package]]
 name = "pytz"

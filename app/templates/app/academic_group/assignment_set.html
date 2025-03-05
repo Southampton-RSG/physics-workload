@@ -1,31 +1,12 @@
 <td>
     {% for assignment in value.all %}
-        {% if assignment.is_provisional and assignment.is_first_time %}
-            <a href='{{ assignment.get_absolute_url }}' class='btn btn-sm btn-outline-success'>
-                {{ assignment.task }} [{{ assignment.get_load }}]
-                <i class="fa-solid fa-clipboard-user"></i>
-                <i class="fa fa-plus"></i>
-            </a>
-
-        {% elif assignment.is_provisional %}
-        <a href='{{ assignment.get_absolute_url }}' class='btn btn-sm btn-outline-primary'>
-            {{ assignment.task }} [{{ assignment.get_load }}]
-            <i class="fa-solid fa-clipboard-user"></i>
-        </a>
-
-        {% elif assignment.is_first_time %}
-            <a href='{{ assignment.get_absolute_url }}' class='btn btn-sm btn-success'>
-                {{ assignment.task }} [{{ assignment.get_load }}]
-                <i class="fa-solid fa-clipboard-check"></i>
-                <i class="fa-solid fa-plus"></i>
-            </a>
-
-        {% else %}
-            <a href='{{ assignment.get_absolute_url }}' class='btn btn-sm btn-primary'>
-                {{ assignment.task }} [{{ assignment.get_load }}]
-                <i class="fa-solid fa-clipboard-check"></i>
-            </a>
-
-        {% endif %}
+        {% include "app/assignment/assignment.html" with assignment=assignment assignment_name=assignment.task.name %}
     {% endfor %}
+    {% if row.assignment_open > 0 %}
+        <a href="{{ row.get_absolute_url }}" class="btn btn-sm btn-outline-danger">
+            {% if row.assignment_open > 1 %}{{ row.assignment_open }}{% endif %}
+            Unassigned [{{ row.load_calc|floatformat:0 }}{% if assignment.task.load_calc != row.load_calc_first %} / {{ row.load_calc_first|floatformat:0 }}{% endif %}s]
+            <i class="fa-solid fa-clipboard-question"></i>
+        </a>
+    {% endif %}
 </td>
