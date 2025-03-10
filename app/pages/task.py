@@ -12,7 +12,9 @@ from iommi.path import register_path_decoding
 from iommi import register_search_fields
 
 from app.models import Unit, Task, Assignment, Staff
-from app.pages import BasePage, HeaderInstanceDelete, HeaderInstanceEdit, HeaderInstanceDetail, HeaderList, ColumnModify, HeaderInstanceCreate
+from app.pages import BasePage, ColumnModify
+from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
+    HeaderInstanceDetail, HeaderList
 from app.forms.task import TaskForm
 from app.tables.task import TaskTable
 

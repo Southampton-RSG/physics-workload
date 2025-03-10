@@ -1,8 +1,11 @@
 from logging import getLogger
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models import Model, ForeignKey, TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index, Sum
+from django.db.models import (
+    Model, ForeignKey, TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index, CheckConstraint, Q
+)
 from django.db.models.deletion import PROTECT, SET_NULL
+from django.utils.html import format_html
 from model_utils.managers import QueryManager
 
 from app.models.academic_group import AcademicGroup
@@ -22,7 +25,8 @@ class Staff(ModelCommonMixin, Model):
         settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=SET_NULL,
     )
     account = CharField(
-        max_length=16, unique=True, blank=False, primary_key=True
+        max_length=16, unique=True, blank=False, primary_key=True,
+        help_text=format_html("Active Directory account e.g. <tt>js1a25</tt>")
     )
     name = CharField(
         max_length=128, blank=False,
@@ -61,14 +65,16 @@ class Staff(ModelCommonMixin, Model):
     )
 
     hours_fixed = IntegerField(
-        blank=True, null=True, verbose_name="Fixed hours (non-FTE)",
+        blank=True, null=True, verbose_name="Fixed teaching hours",
+        help_text="Must be empty if staff are FTE fraction.",
         validators=[
             MinValueValidator(0),
             MaxValueValidator(settings.HOURS_MAXIMUM_VALUE),
         ],
     )
     fte_fraction = FloatField(
-        blank=True, null=True, verbose_name="FTE fraction",
+        blank=True, null=True, verbose_name="FTE fraction teaching",
+        help_text="Must be empty if staff are fixed-hours.",
         validators=[
             MinValueValidator(0),
             MaxValueValidator(1),
@@ -90,6 +96,16 @@ class Staff(ModelCommonMixin, Model):
             Index(fields=['name']),
             Index(fields=['gender']),
             Index(fields=['academic_group']),
+        ]
+        constraints = [
+            CheckConstraint(
+                check=(
+                    Q(fte_fraction__gt=0) & Q(fixed_hours__isnull=0) | \
+                    (Q(fte_fraction__isnull=True) & Q(fixed_hours__gt=0))
+                 ),
+                name='fixed_or_fte',
+                violation_error_message="Staff must be fixed or FTE; please leave one field blank."
+            )
         ]
 
     def __str__(self):

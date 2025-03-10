@@ -19,7 +19,9 @@ from app.pages import BasePage
 from app.models import LoadFunction
 
 from app.assets import mathjax_js
-from app.pages import HeaderInstanceDelete, HeaderInstanceDetail, HeaderInstanceEdit, HeaderList, ColumnModify, HeaderInstanceCreate
+from app.pages import ColumnModify
+from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
+    HeaderInstanceDetail, HeaderList
 from app.style import floating_fields_style
 
 

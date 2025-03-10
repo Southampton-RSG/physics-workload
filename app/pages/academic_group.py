@@ -9,8 +9,9 @@ from iommi.path import register_path_decoding
 
 from app.auth import has_access_decoder
 from app.models import AcademicGroup, Staff, Unit, Task
-from app.pages import BasePage, HeaderInstanceDetail, HeaderList, HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete
-
+from app.pages import BasePage
+from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
+    HeaderInstanceDetail, HeaderList
 
 register_path_decoding(
     academic_group=has_access_decoder(AcademicGroup, "You must be a member of this Group to view it."),

@@ -11,8 +11,9 @@ from iommi.path import register_path_decoding
 
 from app.forms.task import TaskForm
 from app.forms.unit import UnitForm
-from app.pages import BasePage, HeaderList, HeaderInstanceDetail, HeaderInstanceEdit, HeaderInstanceCreate, \
-    HeaderInstanceDelete, ColumnModify
+from app.pages import BasePage, ColumnModify
+from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
+    HeaderInstanceDetail, HeaderList
 from app.models import Unit, Task, Assignment
 from app.style import floating_fields_style
 from app.tables.task import TaskTable

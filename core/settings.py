@@ -1,31 +1,26 @@
 # -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
-
 import os, random, string
-
-from dotenv import load_dotenv
 from pathlib import Path
-import dj_database_url
+from decouple import AutoConfig, Csv
 
-load_dotenv()
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJECT_DIR = Path(__file__).parent
+# Load settings.ini from the customisations dir
+config = AutoConfig()
+
+
+PROJECT_DIR = Path(__file__).parent  # physics-workload/core/
+BASE_DIR = Path(__file__).parent.parent  # physics-workload/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY', default='None')
 if not SECRET_KEY:
     SECRET_KEY = ''.join(random.choice( string.ascii_lowercase  ) for i in range( 32 ))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', True)
+DEBUG = config('DEBUG', default=True, cast=bool)
 
 # HOSTs List
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
 # Add here your deployment HOSTS
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:5085', 'http://127.0.0.1:8000', 'http://127.0.0.1:5085']
 
@@ -43,6 +38,7 @@ INSTALLED_APPS = [
     'simple_history',
     'iommi',
     'django_plotly_dash.apps.DjangoPlotlyDashConfig',
+    'django_auth_adfs',
 
     'app',  # Enable the inner app
 ]
@@ -70,7 +66,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'core.urls'
 LOGIN_REDIRECT_URL = "home"  # Route defined in app/urls.py
 LOGOUT_REDIRECT_URL = "home"  # Route defined in app/urls.py
-TEMPLATE_DIR = os.path.join(BASE_DIR, "core/templates")  # ROOT dir for templates
+TEMPLATE_DIR = BASE_DIR / "core" / "templates"  # ROOT dir for templates
 
 TEMPLATES = [
     {
@@ -96,7 +92,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -104,9 +100,6 @@ DATABASES = {
 # DJANGO CORE - AUTHENTICATION
 # Password validators: https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 ################################################################################
-import ldap
-from django_auth_ldap.config import LDAPSearch, GroupOfNamesType, NestedActiveDirectoryGroupType
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -123,21 +116,33 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
 ################################################################################
-# DJANGO AUTH LDAP
+# DJANGO AUTH ADFS
 ################################################################################
-AUTH_LDAP_SERVER_URI = "ldap://nlbldap.soton.ac.uk"
-AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = True
-AUTH_LDAP_USER_ATTR_MAP = {"first_name": "givenName", "last_name": "sn", "email": "mail"}
-AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=User,dc=soton,dc=ac,dc=uk",
-    ldap.SCOPE_SUBTREE, "(sAMAccountName=%(user)s)")
-AUTH_LDAP_GROUP_SEARCH = LDAPSearch("OU=Groups,dc=soton,dc=ac,dc=uk",
-    ldap.SCOPE_SUBTREE, "(objectClass=group)")
-AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
+LOGIN_URL = '/login'
+adfs_client_id = config('ADFS_CLIENT_ID', default="None")
+adfs_client_secret = config('ADFS_CLIENT_SECRET', default="None")
+adfs_tenant_id = config('ADFS_TENANT_ID', default="None")
+
+AUTH_ADFS = {
+    'AUDIENCE': adfs_client_id,
+    'CLIENT_ID': adfs_client_id,
+    'CLIENT_SECRET': adfs_client_secret,
+    'CLAIM_MAPPING': {
+        'first_name': 'given_name', 'last_name': 'family_name', 'email': 'email'
+    },
+    'GROUPS_CLAIM': 'roles',
+    'MIRROR_GROUPS': True,
+    'USERNAME_CLAIM': 'upn',
+    'TENANT_ID': adfs_tenant_id,
+    'RELYING_PARTY_ID': adfs_client_id,
+}
+AUTHENTICATION_BACKENDS += [
+    'django_auth_adfs.backend.AdfsAuthCodeBackend',
+]
 
 ################################################################################
 # DJANGO CORE - INTERNATIONALISATION
@@ -152,17 +157,15 @@ USE_TZ = True
 ################################################################################
 # DJANGO CORE - DIRECTORIES
 ################################################################################
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'core/static'),
-    os.path.join(BASE_DIR, 'app/static'),
+    BASE_DIR / 'core/static',
+    BASE_DIR /'app/static',
 )
 
 ################################################################################
@@ -186,7 +189,7 @@ SITE_ID = 1
 from app.style import base_style
 
 IOMMI_DEFAULT_STYLE = base_style
-IOMMI_DEBUG = True
+IOMMI_DEBUG = config("DEBUG_IOMMI", default=False, cast=bool)
 
 ################################################################################
 # DJANGO SIMPLE HISTORY
@@ -204,7 +207,7 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # DJANGO CORE - LOGGING
 ################################################################################
 from logging import LogRecord
-LOG_DIRECTORY = Path("/home/smangham/projects/physics-workload/logs")
+LOG_DIRECTORY = BASE_DIR / 'logs'
 
 def skip_static_records(record: LogRecord) -> bool:
     """
@@ -213,7 +216,7 @@ def skip_static_records(record: LogRecord) -> bool:
     :param record:
     :return:
     """
-    return (hasattr(record, 'message') and not 'GET /static/' in record.message)
+    return hasattr(record, 'message') and not 'GET /static/' in record.message
 
 
 LOGGING = {

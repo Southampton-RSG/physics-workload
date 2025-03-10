@@ -12,7 +12,8 @@ from iommi import register_search_fields
 from iommi.views import crud_views
 
 from app.models import AcademicGroup, Staff, Unit, Task, StandardLoad
-from app.pages import BasePage, HeaderInstanceDetail, HeaderList, Equations, HeaderInstanceEdit
+from app.pages import BasePage, Equations
+from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceDetail, HeaderList
 from app.style import horizontal_fields_style, floating_fields_style
 from app.assets import mathjax_js
 

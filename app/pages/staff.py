@@ -6,7 +6,9 @@ from django.urls import path
 from iommi import Table, Column, Action, Field, EditTable, EditColumn
 from iommi.path import register_path_decoding
 
-from app.pages import BasePage, HeaderInstanceDetail, HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, HeaderList, ColumnModify
+from app.pages import BasePage, ColumnModify
+from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
+    HeaderInstanceDetail, HeaderList
 from app.models import Staff, Assignment, AcademicGroup
 from app.style import floating_fields_style, boolean_button_fields_style
 from app.forms.staff import StaffForm
