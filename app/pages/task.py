@@ -8,11 +8,8 @@ from django.urls import path
 from django.utils.html import format_html
 
 from iommi import Page, Table, html, Form, EditTable, Column, Field, EditColumn
-from iommi.path import register_path_decoding
-from iommi import register_search_fields
 
 from app.models import Unit, Task, Assignment, Staff
-from app.pages import BasePage, ColumnModify
 from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
     HeaderInstanceDetail, HeaderList
 from app.forms.task import TaskForm
@@ -22,10 +19,8 @@ from app.tables.task import TaskTable
 # Set up logging for this file
 logger = getLogger(__name__)
 
-register_path_decoding(task=lambda string, **_: Task.objects.get(pk=int(string)))
 
-
-class TaskDetail(BasePage):
+class TaskDetail(Page):
     """
     Page for showing task details
     """
@@ -45,7 +40,7 @@ class TaskDetail(BasePage):
 
     list = EditTable(
         auto__model=Assignment,
-        auto__exclude=['notes'],
+        auto__exclude=['notes', 'load_calc'],
         columns__staff__field__include=True,
         columns__is_first_time__field__include=True,
         columns__is_provisional__field__include=True,
@@ -76,7 +71,7 @@ class TaskDetail(BasePage):
     )
 
 
-class TaskEdit(BasePage):
+class TaskEdit(Page):
     """
     Page for editing a task
     """
@@ -92,7 +87,7 @@ class TaskEdit(BasePage):
     )
 
 
-class TaskCreate(BasePage):
+class TaskCreate(Page):
     """
     Page for creating a task
     """
@@ -107,7 +102,7 @@ class TaskCreate(BasePage):
     )
 
 
-class TaskDelete(BasePage):
+class TaskDelete(Page):
     """
     Page for deleting a task
     """
@@ -120,7 +115,7 @@ class TaskDelete(BasePage):
     )
 
 
-class TaskList(BasePage):
+class TaskList(Page):
     """
     Page for listing tasks
     """

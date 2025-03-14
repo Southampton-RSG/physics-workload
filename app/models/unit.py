@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Model, CharField, BooleanField, TextField, ForeignKey, IntegerField, FloatField, CheckConstraint, Q, F

@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.template.loader import render_to_string
-from django.urls import reverse_lazy
+from django.urls import reverse
 from django.db.models import Model
 from django.http import HttpRequest
 
@@ -36,7 +36,7 @@ class ModelCommonMixin(Model):
         """
         :return: The URL for the detail view of this particular instance of the model
         """
-        return reverse_lazy(type(self).url_root+'_detail', args=[self.pk])
+        return reverse(type(self).url_root+'_detail', args=[self.pk])
 
     def get_instance_header(self, text: str|None = None) -> str:
         """
@@ -58,7 +58,7 @@ class ModelCommonMixin(Model):
         Equivalent to `get_absolute_url()` for model list.
         :return: The URL for the view listing all of this model
         """
-        return reverse_lazy(cls.url_root+'_list')
+        return reverse(cls.url_root+'_list')
 
     @classmethod
     def get_model_header(cls) -> str:

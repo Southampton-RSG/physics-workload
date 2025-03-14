@@ -2,7 +2,7 @@ from logging import getLogger
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import (
-    Model, ForeignKey, TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index, CheckConstraint, Q
+    Model, ForeignKey, TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index, CheckConstraint, Q, Sum
 )
 from django.db.models.deletion import PROTECT, SET_NULL
 from django.utils.html import format_html
@@ -10,6 +10,7 @@ from model_utils.managers import QueryManager
 
 from app.models.academic_group import AcademicGroup
 from app.models.mixins import ModelCommonMixin
+from app.models.standard_load import get_current_standard_load
 
 logger = getLogger(__name__)
 
@@ -48,17 +49,17 @@ class Staff(ModelCommonMixin, Model):
         help_text="Sum of the load balance from previous years.",
     )
 
-    load_calculated_target = FloatField(
+    load_calc_target = FloatField(
         default=0, validators=[MinValueValidator(0.0)],
         verbose_name='Load target',
         help_text="Load hours calculated for the current year.",
     )
-    load_calculated_assigned = FloatField(
+    load_calc_assigned = FloatField(
         default=0, validators=[MinValueValidator(0.0)],
         verbose_name='Load assigned',
         help_text="Load hours assigned for the current year.",
     )
-    load_calculated_balance = FloatField(
+    load_calc_balance = FloatField(
         default=0,
         verbose_name='Load balance',
         help_text="The current year's target load minus assigned load.",
@@ -99,10 +100,10 @@ class Staff(ModelCommonMixin, Model):
         ]
         constraints = [
             CheckConstraint(
-                check=(
-                    Q(fte_fraction__gt=0) & Q(fixed_hours__isnull=0) | \
-                    (Q(fte_fraction__isnull=True) & Q(fixed_hours__gt=0))
-                 ),
+                check=
+                    (Q(fte_fraction__gt=0) & Q(hours_fixed__isnull=True)) |
+                    (Q(fte_fraction__isnull=True) & Q(hours_fixed__gt=0))
+                ,
                 name='fixed_or_fte',
                 violation_error_message="Staff must be fixed or FTE; please leave one field blank."
             )
@@ -113,7 +114,7 @@ class Staff(ModelCommonMixin, Model):
         Default rendering of a staff member shows their load balance
         :return: Their name plus load balance.
         """
-        return f"{self.name} [{self.load_calculated_balance:.0f}]"
+        return f"{self.name} [{self.load_calc_balance:.0f}]"
 
     def get_instance_header(self) -> str:
         """
@@ -128,11 +129,12 @@ class Staff(ModelCommonMixin, Model):
         """
         logger.debug(f"{self}: Updating load balance")
 
-        load: float = 0
-        for assignment in self.assignment_set.all():
-            logger.debug(f"{self}: Adding load for {assignment}: {assignment.get_load()}")
-            load += assignment.get_load()
+        load: float = self.assignment_set.aggregate(Sum('load_calc'))['load_calc']
 
-        self.load_calculated_assigned = load
-        self.load_calculated_balance = self.load_calculated_target - self.load_calculated_assigned
+        if self.fte_fraction:
+            # If a full-time employee, get a misc load allowance proportional to FTE fraction
+            load += get_current_standard_load().load_fte_misc * self.fte_fraction
+
+        self.load_calc_assigned = load
+        self.load_calc_balance = self.load_calc_target - self.load_calc_assigned
         self.save()

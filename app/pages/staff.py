@@ -3,24 +3,16 @@ Handles the views for the Academic Groups
 """
 from django.urls import path
 
-from iommi import Table, Column, Action, Field, EditTable, EditColumn
-from iommi.path import register_path_decoding
+from iommi import EditTable, EditColumn, Page
 
-from app.pages import BasePage, ColumnModify
 from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
     HeaderInstanceDetail, HeaderList
-from app.models import Staff, Assignment, AcademicGroup
-from app.style import floating_fields_style, boolean_button_fields_style
+from app.models import Staff, Assignment
 from app.forms.staff import StaffForm
 from app.tables.staff import StaffTable
 
 
-register_path_decoding(
-    staff=lambda string, **_: Staff.objects.get(account=string)
-)
-
-
-class StaffDelete(BasePage):
+class StaffDelete(Page):
     """
 
     """
@@ -34,7 +26,7 @@ class StaffDelete(BasePage):
     )
 
 
-class StaffEdit(BasePage):
+class StaffEdit(Page):
     """
 
     """
@@ -48,7 +40,7 @@ class StaffEdit(BasePage):
     )
 
 
-class StaffCreate(BasePage):
+class StaffCreate(Page):
     """
 
     """
@@ -60,9 +52,9 @@ class StaffCreate(BasePage):
     )
 
 
-class StaffDetail(BasePage):
+class StaffDetail(Page):
     """
-
+    View showing the detail of a staff member
     """
     header = HeaderInstanceDetail(
         lambda params, **_: params.staff.get_instance_header()
@@ -89,7 +81,7 @@ class StaffDetail(BasePage):
     )
 
 
-class StaffList(BasePage):
+class StaffList(Page):
     """
     List of all currently active staff.
     """

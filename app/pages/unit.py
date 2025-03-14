@@ -1,29 +1,24 @@
 """
 
 """
-from django.db.models import Count, Sum, Q, Case, When, Subquery, OuterRef
 from django.urls import path
 from django.utils.html import format_html
 from django.template.loader import render_to_string
 
-from iommi import Table, html, Form, Column, Field, LAST, Header, Asset, Action
-from iommi.path import register_path_decoding
+from iommi import Page, Field, Header
 
 from app.forms.task import TaskForm
 from app.forms.unit import UnitForm
-from app.pages import BasePage, ColumnModify
 from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
     HeaderInstanceDetail, HeaderList
-from app.models import Unit, Task, Assignment
-from app.style import floating_fields_style
+from app.pages.task import TaskDetail, TaskEdit, TaskDelete
+from app.models import Unit
 from app.tables.task import TaskTable
 from app.tables.unit import UnitTable
 
 
-register_path_decoding(unit=lambda string, **_: Unit.objects.get(code=string))
 
-
-class UnitTaskCreate(BasePage):
+class UnitTaskCreate(Page):
     """
     Create a task associated with a unit
     """
@@ -42,7 +37,7 @@ class UnitTaskCreate(BasePage):
     )
 
 
-class UnitDetail(BasePage):
+class UnitDetail(Page):
     """
     View a unit and its associated tasks
     """
@@ -74,7 +69,34 @@ class UnitDetail(BasePage):
     )
 
 
-class UnitEdit(BasePage):
+class UnitDelete(Page):
+    """
+    View a unit and its associated tasks
+    """
+    header = HeaderInstanceDelete(
+        lambda params, **_: params.unit.get_instance_header()
+    )
+    form = UnitForm.delete(
+        h_tag=None,
+        instance=lambda params, **_: params.unit,
+        fields__is_active__include=True,
+        fields__name__include=False,
+        fields__code__include=False,
+        fields__lectures__include=lambda params, **_: params.unit.lectures,
+        fields__problem_classes__include=lambda params, **_: params.unit.problem_classes,
+        fields__coursework__include=lambda params, **_: params.unit.coursework,
+        fields__synoptic_lectures__include=lambda params, **_: params.unit.synoptic_lectures,
+        fields__exams__include=lambda params, **_: params.unit.exams,
+        fields__exam_mark_fraction__include=lambda params, **_: params.unit.exam_mark_fraction,
+        fields__coursework_mark_fraction__include=lambda params, **_: params.unit.coursework_mark_fraction,
+        fields__has_dissertation__include=lambda params, **_: params.unit.has_dissertation,
+        fields__has_placement__include=lambda params, **_: params.unit.has_placement,
+        editable=False,
+    )
+
+
+
+class UnitEdit(Page):
     """
     Edit a unit's details
     """
@@ -89,7 +111,7 @@ class UnitEdit(BasePage):
     )
 
 
-class UnitCreate(BasePage):
+class UnitCreate(Page):
     """
     Page showing a unit to be created
     """
@@ -103,7 +125,7 @@ class UnitCreate(BasePage):
     )
 
 
-class UnitList(BasePage):
+class UnitList(Page):
     """
     List of all currently active modules.
     """
@@ -119,6 +141,9 @@ urlpatterns = [
     path('unit/create/', UnitCreate().as_view(), name='unit_create'),
     path('unit/<unit>/create/', UnitTaskCreate().as_view(), name='unit_task_create'),
     path('unit/<unit>/edit/', UnitEdit().as_view(), name='unit_edit'),
+    path('unit/<unit>/<task>/edit/', TaskEdit().as_view(), name='unit_task_edit'),
+    path('unit/<unit>/<task>/delete/', TaskDelete().as_view(), name='unit_task_delete'),
+    path('unit/<unit>/<task>/', TaskDetail().as_view(), name='unit_task_detail'),
     path('unit/<unit>/', UnitDetail().as_view(), name='unit_detail'),
     path('unit/', UnitList().as_view(), name='unit_list'),
 ]

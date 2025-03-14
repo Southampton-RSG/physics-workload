@@ -12,7 +12,9 @@ from typing import Dict, Any
 base_style = Style(
     bootstrap5_base,
     font_awesome_6,
-    base_template="app/iommi_base.html",
+    select2_enhanced_forms,
+    MainMenu__template="app/main_menu/main_menu.html",
+    # base_template="app/iommi_base.html",
     root__assets__custom_base_css=Asset.css(attrs__href="/static/css/custom-base.css"),
 )
 register_style('teaching_time_tool', base_style)
@@ -106,12 +108,3 @@ horizontal_fields_style: Style = Style(
     )
 )
 register_style('horizontal_fields', horizontal_fields_style)
-# ------------------------------------------------------------------------------
-
-select2_fields_mixin_style: Style = Style(
-    select2_enhanced_forms,
-    Form__assets__custom_select2_css=Asset.css(attrs__href="/static/css/custom-select.css"),
-)
-
-# ==============================================================================
-# validate_styles()

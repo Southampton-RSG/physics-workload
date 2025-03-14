@@ -5,20 +5,13 @@ from django.db.models import Count, Sum, Q, F
 from django.urls import path
 
 from iommi import Page, Table, html, Form, EditTable, Column, Action, Menu, Fragment
-from iommi.path import register_path_decoding
 
-from app.auth import has_access_decoder
-from app.models import AcademicGroup, Staff, Unit, Task
-from app.pages import BasePage
+from app.models import AcademicGroup, Staff, Unit
 from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
     HeaderInstanceDetail, HeaderList
 
-register_path_decoding(
-    academic_group=has_access_decoder(AcademicGroup, "You must be a member of this Group to view it."),
-)
 
-
-class AcademicGroupDetail(BasePage):
+class AcademicGroupDetail(Page):
     """
     Detail view showing group members and their workloads,
     as well as any units and their assignment status.
@@ -30,18 +23,18 @@ class AcademicGroupDetail(BasePage):
     staff = Table(
         auto__model=Staff,
         auto__include=[
-            'name', 'load_calculated_target', 'load_calculated_assigned', 'load_calculated_balance',
+            'name', 'load_calc_target', 'load_calc_assigned', 'load_calc_balance',
             'load_historic_balance', 'assignment_set'
         ],
-        columns__load_calculated_assigned=dict(
+        columns__load_calc_assigned=dict(
             display_name='Assigned',
             group='Current year load',
         ),
-        columns__load_calculated_target=dict(
+        columns__load_calc_target=dict(
             display_name='Target',
             group='Current year load',
         ),
-        columns__load_calculated_balance=dict(
+        columns__load_calc_balance=dict(
             display_name='Balance',
             group='Current year load',
         ),
@@ -75,7 +68,7 @@ class AcademicGroupDetail(BasePage):
     )
 
 
-class AcademicGroupEdit(BasePage):
+class AcademicGroupEdit(Page):
     """
     Page showing an academic group to be edited
     """
@@ -86,12 +79,13 @@ class AcademicGroupEdit(BasePage):
         h_tag=None,
         auto__model=AcademicGroup, instance=lambda params, **_: params.academic_group,
         fields__code__group="row1",
+        fields__short_name__group="row1",
         fields__name__group="row1",
         extra__redirect_to='..',
     )
 
 
-class AcademicGroupCreate(BasePage):
+class AcademicGroupCreate(Page):
     """
     Page showing an academic group to be created
     """
@@ -102,11 +96,12 @@ class AcademicGroupCreate(BasePage):
         h_tag=None,
         auto__model=AcademicGroup,
         fields__code__group="row1",
+        fields__short_name__group="row1",
         fields__name__group="row1",
     )
 
 
-class AcademicGroupDelete(BasePage):
+class AcademicGroupDelete(Page):
     """
     Page showing an academic group to be created
     """
@@ -120,11 +115,12 @@ class AcademicGroupDelete(BasePage):
         h_tag=None,
         auto__model=AcademicGroup, instance=lambda params, **_: params.academic_group,
         fields__code__group="row1",
+        fields__short_name__group="row1",
         fields__name__group="row1",
     )
 
 
-class AcademicGroupList(BasePage):
+class AcademicGroupList(Page):
     """
     Page listing the academic groups
     """

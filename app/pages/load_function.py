@@ -2,11 +2,9 @@
 Handles the views for the Load Functions Groups
 """
 from django.urls import path
-from django.utils.html import format_html
 from django.template import Template
 
 from iommi import Page, Table, html, Form, EditTable, Column, Field, Fragment
-from iommi.path import register_path_decoding
 
 from plotly.graph_objs import Layout, Figure, Scatter
 from plotly.graph_objs.layout import XAxis, YAxis
@@ -15,27 +13,21 @@ from plotly.offline import plot
 from dash_bootstrap_templates import load_figure_template
 load_figure_template('bootstrap_dark')
 
-from app.pages import BasePage
 from app.models import LoadFunction
 
 from app.assets import mathjax_js
-from app.pages import ColumnModify
+from app.pages.components.tables import ColumnModify
 from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
     HeaderInstanceDetail, HeaderList
 from app.style import floating_fields_style
 
 
-register_path_decoding(
-    load_function=lambda string, **_: LoadFunction.objects.get(pk=int(string))
-)
-
-
-class LoadFunctionDelete(BasePage):
+class LoadFunctionDelete(Page):
     """
     Delete the load function
     """
     header = HeaderInstanceDelete(
-        lambda params, **_: format_html(params.load_function.get_instance_header()),
+        lambda params, **_: params.load_function.get_instance_header(),
     )
     detail_factors = Form.delete(
         h_tag=None,
@@ -47,12 +39,26 @@ class LoadFunctionDelete(BasePage):
     )
 
 
-class LoadFunctionEdit(BasePage):
+class LoadFunctionCreate(Page):
+    header = HeaderInstanceCreate(
+        lambda params, **_: params.load_function.get_model_header(),
+    )
+    form = Form.create(
+        h_tag=None, auto__model=LoadFunction,
+        auto__exclude=['is_active'],
+        fields__plot_minimum__group="Plot",
+        fields__plot_maximum__group="Plot",
+        iommi_style=floating_fields_style,
+        editable=True,
+    )
+
+
+class LoadFunctionEdit(Page):
     """
     Edit the standard load
     """
     header = HeaderInstanceEdit(
-        lambda params, **_: format_html(params.load_function.get_instance_header()),
+        lambda params, **_: params.load_function.get_instance_header(),
     )
     detail_factors = Form.edit(
         h_tag=None,
@@ -70,14 +76,12 @@ class LoadFunctionEdit(BasePage):
     )
 
 
-class LoadFunctionDetail(BasePage):
+class LoadFunctionDetail(Page):
     """
     Shows details of the standard load
     """
     header = HeaderInstanceDetail(
-        lambda params, **_: format_html(
-            params.load_function.get_instance_header()
-        )
+        lambda params, **_: params.load_function.get_instance_header()
     )
     detail = Form(
         auto__model=LoadFunction, instance=lambda params, **_: params.load_function,
@@ -122,14 +126,12 @@ class LoadFunctionDetail(BasePage):
         return plot(figure, output_type='div')
 
 
-class LoadFunctionList(BasePage):
+class LoadFunctionList(Page):
     """
     Page listing the standard load over history
     """
     header = HeaderList(
-        lambda params, **_: format_html(
-            LoadFunction.get_model_header(),
-        ),
+        lambda params, **_: LoadFunction.get_model_header()
     )
     list = Table(
         h_tag=None,
@@ -149,6 +151,7 @@ def get_load_function_data(request, load_function):
 
 
 urlpatterns = [
+    path('function/create/', LoadFunctionCreate().as_view(), name='load_function_create'),
     path('function/<load_function>/delete/', LoadFunctionDelete().as_view(), name='load_function_delete'),
     path('function/<load_function>/edit/', LoadFunctionEdit().as_view(), name='load_function_edit'),
     path('function/<load_function>/', LoadFunctionDetail(

@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-from logging import getLogger, DEBUG
+from logging import getLogger
 from typing import Type
 
 from django.contrib.auth.models import AbstractUser
@@ -8,6 +8,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Model, ForeignKey, PROTECT, CharField, FloatField, TextField, IntegerField, BooleanField, Manager
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
+from django.urls import reverse
 from model_utils.managers import QueryManager
 from simple_history.models import HistoricalRecords
 
@@ -107,7 +108,13 @@ class Task(ModelCommonMixin, Model):
         return text
 
     def get_name(self):
-        return f"{self.unit.code} - {self.name}"
+        """
+        :return: The name of the task, with unit code if possible
+        """
+        if self.unit:
+            return f"{self.unit.code} - {self.name}"
+        else:
+            return f"{self.name}"
 
     def get_instance_header(self) -> str:
         """
@@ -131,6 +138,15 @@ class Task(ModelCommonMixin, Model):
                     'text': self
                 }
             )
+
+    def get_absolute_url(self) -> str:
+        """
+        Preprend the unit if this is a unit task
+        """
+        if self.unit:
+            return reverse('unit_task_detail', args=[self.unit.code, self.pk])
+        else:
+            return super().get_absolute_url()
 
     def has_any_provisional(self) -> bool:
         return any(self.assignment_set.values_list('is_provisional', flat=True))

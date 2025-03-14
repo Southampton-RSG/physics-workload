@@ -2,4 +2,8 @@
     display: none;
 }
 
-body { margin-bottom: 65px !important;}
+/*body { margin-bottom: 65px !important;}*/
+
+.sidebar-image {
+    width:80px;
+}

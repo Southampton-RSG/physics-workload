@@ -1,0 +1,17 @@
+{% extends "iommi/main_menu/menu.html" %}
+{% load static %}
+
+{% block before_ul %}
+    <i style="margin-top:1rem; margin-left:1rem;" class="fa-solid fa-scale-balanced fs-3"></i>
+{% endblock %}
+
+{% block bottom %}
+    <nav class="mt-auto">
+        <ul>
+            <li class=""><a href="/privacy/"><span>Privacy Statement</span></a></li>
+            <li><a href="https://rsg.soton.ac.uk"><img class="sidebar-image" src="{% static 'img/RSG_logo_orange.png' %}/" alt="Research Software Group"/></a>
+            <li><a href="https://rsg.soton.ac.uk"><img class="sidebar-image" src="{% static 'img/UoS_logo_white.png' %}/" alt="University of Southampton"/></a>
+            </li>
+        </ul>
+    </nav>
+{% endblock %}

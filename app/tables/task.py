@@ -3,7 +3,7 @@ from django.template import Template
 
 from iommi import Table, Column, Field, LAST
 
-from app.pages import ColumnModify
+from app.pages.components.tables import ColumnModify
 from app.models import Task
 from app.style import floating_fields_style
 

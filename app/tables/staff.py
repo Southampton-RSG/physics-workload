@@ -3,7 +3,7 @@ from django.db.models import Q
 from iommi import Table, Column, Field, Action
 
 from app.models.staff import Staff
-from app.pages import ColumnModify
+from app.pages.components.tables import ColumnModify
 from app.style import floating_fields_style
 
 
@@ -12,7 +12,7 @@ class StaffTable(Table):
         auto__model=Staff
         auto__include=[
             'account', 'name', 'gender', 'academic_group', 'is_active',
-            'load_calculated_balance', 'load_historic_balance', 'assignment_set',
+            'load_calc_balance', 'load_historic_balance', 'assignment_set',
         ]
         columns__name__cell__url=lambda row, **_: row.get_absolute_url()
         columns__name__filter__include=True
@@ -45,7 +45,7 @@ class StaffTable(Table):
             display_name='Historic',
             cell__template='app/integer_cell.html',
         )
-        columns__load_calculated_balance=dict(
+        columns__load_calc_balance=dict(
             group="Load Balance",
             display_name='Current',
             cell__template='app/integer_cell.html',
@@ -65,12 +65,6 @@ class StaffTable(Table):
                     choices=lambda params, **_: [''] + list(set(Staff.objects.values_list('gender', flat=True))),
                     after='academic_group',
                 ),
-                # fields__is_active=Field.boolean(
-                #     display_name='Active Only',
-                #     initial=True,
-                #     iommi_style='boolean_buttons',
-                #     after='load_calculated_balance',
-                # ),
                 actions__reset=Action.button(display_name='Clear Filter', attrs__type='reset'),
             ),
             filters=dict(
@@ -83,8 +77,8 @@ class StaffTable(Table):
     @staticmethod
     def filter_status_into_query(value_string_or_f) -> Q|None:
         if value_string_or_f == 'Underloaded':
-            return Q(load_calculated_balance__gt=0)
+            return Q(load_calc_balance__gt=0)
         elif value_string_or_f == 'Overloaded':
-            return Q(load_calculated_balance__lt=0)
+            return Q(load_calc_balance__lt=0)
         else:
             return Q()

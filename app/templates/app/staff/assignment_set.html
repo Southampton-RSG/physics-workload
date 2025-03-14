@@ -1,5 +1,5 @@
 <td>
     {% for assignment in value.all %}
-        {% include "app/assignment/assignment.html" with assignment=assignment assignment_name=assignment.get_name_without_staff %}
+        {% include "app/assignment/assignment.html" with assignment=assignment assignment_name=assignment.task.get_name %}
     {% endfor %}
 </td>

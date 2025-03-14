@@ -1,27 +1,19 @@
 """
 Handles the views for the Standard Load
 """
-from django.db.models import Count, Sum
 from django.urls import path
-from django.utils.html import format_html, mark_safe
-from django.template import Template
+from django.utils.html import format_html
 
-from iommi import Page, Table, html, Form, EditTable, Column, Action, Menu, Fragment, Header, Asset
-from iommi.path import register_path_decoding
-from iommi import register_search_fields
-from iommi.views import crud_views
+from iommi import Page, Table, html, Form, Column
 
-from app.models import AcademicGroup, Staff, Unit, Task, StandardLoad
-from app.pages import BasePage, Equations
+from app.models.standard_load import StandardLoad
+from app.pages.components import Equations
 from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceDetail, HeaderList
 from app.style import horizontal_fields_style, floating_fields_style
 from app.assets import mathjax_js
 
 
-register_path_decoding(standard_load=lambda string, **_: StandardLoad.objects.get(year=int(string)))
-
-
-class StandardLoadEdit(BasePage):
+class StandardLoadEdit(Page):
     """
     Edit the standard load
     """
@@ -40,7 +32,7 @@ class StandardLoadEdit(BasePage):
     )
 
 
-class StandardLoadDetail(BasePage):
+class StandardLoadDetail(Page):
     """
     Shows details of the standard load
     """
@@ -73,14 +65,12 @@ class StandardLoadDetail(BasePage):
     )
 
 
-class StandardLoadList(BasePage):
+class StandardLoadList(Page):
     """
     Page listing the standard load over history
     """
-    header = Header(
-        lambda params, **_: format_html(
-            StandardLoad.get_model_header(),
-        ),
+    header = HeaderList(
+        lambda params, **_: StandardLoad.get_model_header(),
     )
     list = Table(
         h_tag=None,

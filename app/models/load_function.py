@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.core.validators import MinValueValidator
 from django.db.models import Model, CharField, TextField, BooleanField, Manager, IntegerField, CheckConstraint, Q, F
 from django.utils.html import format_html
@@ -66,3 +67,7 @@ class LoadFunction(ModelCommonMixin, Model):
         :return: The output of the equation.
         """
         return simple_eval(self.expression, names={'s': students})
+
+    def has_access(self, user: AbstractUser|AnonymousUser) -> bool:
+        """You can always see the load functions"""
+        """You can always see the load details"""

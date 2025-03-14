@@ -17,7 +17,8 @@ if not SECRET_KEY:
     SECRET_KEY = ''.join(random.choice( string.ascii_lowercase  ) for i in range( 32 ))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG_ACCESS = config('DEBUG_ACCESS', default=False, cast=bool)
 
 # HOSTs List
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
@@ -56,6 +57,7 @@ MIDDLEWARE = [
 
     'iommi.sql_trace.Middleware',
     'iommi.profiling.Middleware',
+    'iommi.experimental.main_menu.main_menu_middleware',
 
     'simple_history.middleware.HistoryRequestMiddleware',
     'app.middlewares.AjaxMiddleware',
@@ -190,6 +192,7 @@ from app.style import base_style
 
 IOMMI_DEFAULT_STYLE = base_style
 IOMMI_DEBUG = config("DEBUG_IOMMI", default=False, cast=bool)
+IOMMI_MAIN_MENU = 'app.pages.main_menu.main_menu'
 
 ################################################################################
 # DJANGO SIMPLE HISTORY

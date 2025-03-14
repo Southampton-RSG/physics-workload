@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractUser
 from django.db.models import Model, CharField, BooleanField, Manager
-from django.urls import reverse_lazy
 
 from app.models.managers import ActiveManager
 from app.models.mixins import ModelCommonMixin
@@ -13,10 +12,12 @@ class AcademicGroup(ModelCommonMixin, Model):
     Named AcademicGroup to avoid collision with base Django Group,
     which is more about user permissions.
     """
-    icon = "user-group"
+    icon = "users"
     url_root = "academic_group"
 
+
     code = CharField(max_length=1, unique=True, blank=False, primary_key=True)
+    short_name = CharField(max_length=16, unique=True, blank=False, db_index=True)
     name = CharField(max_length=128, unique=True, blank=False)
 
     is_active = BooleanField(default=True)
@@ -29,7 +30,11 @@ class AcademicGroup(ModelCommonMixin, Model):
         verbose_name_plural = 'Groups'
 
     def __str__(self):
-        return self.name
+        return f"{self.short_name}"
+
+    def get_instance_header(self, text: str|None = None) -> str:
+        """Uses the full name for the header of one of these"""
+        return super().get_instance_header(text=self.name)
 
     def has_access(self, user: AbstractUser) -> bool:
         """
@@ -37,4 +42,4 @@ class AcademicGroup(ModelCommonMixin, Model):
         :param user: The user
         :return: True if the user is assigned to this task
         """
-        return self == user.staff.academic_group
+        return user.staff.academic_group == self

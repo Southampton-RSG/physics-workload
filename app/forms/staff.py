@@ -16,8 +16,8 @@ class StaffForm(Form):
         fields__type__group='row1'
         fields__fte_fraction__group='row2'
         fields__hours_fixed__group='row2'
-        fields__load_calculated_target__group='row2'
-        fields__load_calculated_assigned__group='row2'
-        fields__load_calculated_balance__group='row2'
+        fields__load_calc_target__group='row2'
+        fields__load_calc_assigned__group='row2'
+        fields__load_calc_balance__group='row2'
         fields__load_historic_balance__group='row2'
         iommi_style=floating_fields_style

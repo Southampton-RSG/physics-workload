@@ -1,8 +1,8 @@
 from logging import getLogger
 from typing import Type
 
-from django.db.models import Model, ForeignKey, PROTECT, TextField, BooleanField, Index
-from django.db.models.signals import post_delete, post_save
+from django.db.models import Model, ForeignKey, PROTECT, TextField, BooleanField, Index, FloatField
+from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
 from app.models.task import Task
@@ -35,6 +35,11 @@ class Assignment(ModelCommonMixin, Model):
     is_first_time = BooleanField(default=False)
     is_provisional = BooleanField(default=False)
 
+    load_calc = FloatField(
+        default=0.0,
+        verbose_name='Load',
+    )
+
     class Meta:
         indexes = [
             Index(fields=['staff']),
@@ -46,10 +51,7 @@ class Assignment(ModelCommonMixin, Model):
         verbose_name_plural = 'Assignments'
 
     def __str__(self) -> str:
-        return f"{self.task.get_name()} - {self.staff.name} [{self.get_load()}]"
-
-    def get_name_without_staff(self):
-        return f"{self.task.get_name()}"
+        return f"{self.task.get_name()} - {self.staff.name} [{self.load_calc}]"
 
     def get_full_name(self):
         return f"{self.task.get_name()} - {self.staff.name}"
@@ -60,14 +62,18 @@ class Assignment(ModelCommonMixin, Model):
         """
         return self.task.get_absolute_url()
 
-    def get_load(self) -> float:
-        """
-        :return: Returns the load for this assignment, with the first-time multiplier if appropriate
-        """
-        if self.is_first_time:
-            return self.task.load_calc_first
-        else:
-            return self.task.load_calc
+
+@receiver(pre_save, sender=Assignment)
+def calculate_load(
+        sender: Type[Assignment], instance: Assignment, **kwargs
+):
+    """
+    Called before an assignment is saved, applies the correct load.
+    """
+    if instance.is_first_time:
+        instance.load_calc = instance.task.load_calc_first
+    else:
+        instance.load_calc = instance.task.load_calc
 
 
 @receiver(post_save, sender=Assignment)
@@ -75,7 +81,7 @@ def apply_load(
         sender: Type[Assignment], instance: Assignment, **kwargs
 ):
     """
-    Called after a task is updated - updates the load on all linked staff.
+    Called after an assignment is updated - updates the load on all linked staff.
     """
     logger.debug(f"{instance}: Saved assignment, updating staff")
     instance.staff.calculate_load_balance()
@@ -85,7 +91,7 @@ def apply_load(
         sender: Type[Assignment], instance: Assignment, **kwargs
 ):
     """
-    Called after a task is updated - updates the load on all linked staff.
+    Called after an assignment is updated - updates the load on all linked staff.
     """
     logger.debug(f"{instance}: Deleted assignment, updating staff")
     instance.staff.calculate_load_balance()
