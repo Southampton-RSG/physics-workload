@@ -47,8 +47,7 @@ class ModelCommonMixin(Model):
         return render_to_string(
             template_name='app/header/header.html',
             context={
-                'icon': self.icon, 'url': self.get_absolute_url(),
-                'text': text if text else self
+                'icon': self.icon, 'text': text if text else self
             }
         )
 

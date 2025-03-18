@@ -1,26 +1,26 @@
 {% if assignment.is_provisional and assignment.is_first_time %}
     <a href='{{ assignment.get_absolute_url }}' class='btn btn-sm btn-outline-success'>
-        {{ assignment_name }} {% if noload %}{% else %}[{{ assignment.get_load|floatformat:0 }}]{% endif %}
+        {{ assignment_name }} {% if noload %}{% else %}[{{ assignment.load_calc|floatformat:0 }}]{% endif %}
         <i class="fa-solid fa-clipboard-user"></i>
         <i class="fa fa-plus"></i>
     </a>
 
 {% elif assignment.is_provisional %}
     <a href='{{ assignment.get_absolute_url }}' class='btn btn-sm btn-outline-primary'>
-        {{ assignment_name }} {% if noload %}{% else %}[{{ assignment.get_load|floatformat:0 }}]{% endif %}
+        {{ assignment_name }} {% if noload %}{% else %}[{{ assignment.load_calc|floatformat:0 }}]{% endif %}
         <i class="fa-solid fa-clipboard-user"></i>
     </a>
 
 {% elif assignment.is_first_time %}
     <a href='{{ assignment.get_absolute_url }}' class='btn btn-sm btn-success'>
-        {{ assignment_name }} {% if noload %}{% else %}[{{ assignment.get_load|floatformat:0 }}]{% endif %}
+        {{ assignment_name }} {% if noload %}{% else %}[{{ assignment.load_calc|floatformat:0 }}]{% endif %}
         <i class="fa-solid fa-clipboard-check"></i>
         <i class="fa-solid fa-plus"></i>
     </a>
 
 {% else %}
     <a href='{{ assignment.get_absolute_url }}' class='btn btn-sm btn-primary'>
-        {{ assignment_name }} {% if noload %}{% else %}[{{ assignment.get_load|floatformat:0 }}]{% endif %}
+        {{ assignment_name }} {% if noload %}{% else %}[{{ assignment.load_calc|floatformat:0 }}]{% endif %}
         <i class="fa-solid fa-clipboard-check"></i>
     </a>
 {% endif %}

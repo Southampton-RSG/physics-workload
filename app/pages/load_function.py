@@ -139,7 +139,7 @@ class LoadFunctionList(Page):
         auto__exclude=['notes'],
         columns__is_active__render_column=False,
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
-        columns__expression__cell__template=Template("<td>{{ value | truncatechars:32 }}</td>"),
+        columns__expression__cell__template=Template("<td class='font-monospace'>{{ value | truncatechars:32 }}</td>"),
         columns__modify=ColumnModify.create(),
     )
 

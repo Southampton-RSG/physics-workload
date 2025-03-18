@@ -66,6 +66,11 @@ class Unit(ModelCommonMixin, Model):
     objects_active = QueryManager(is_active=True)
     objects = Manager()
 
+    standard_load = ForeignKey(
+        'StandardLoad', on_delete=PROTECT,
+        verbose_name="Year",
+    )
+
     class Meta:
         ordering = ['name']
         verbose_name = 'Unit'

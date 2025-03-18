@@ -7,6 +7,7 @@ from django.urls import path
 from iommi import Page, Table, html, Form, EditTable, Column, Action, Menu, Fragment
 
 from app.models import AcademicGroup, Staff, Unit
+from app.tables.staff import StaffTable
 from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
     HeaderInstanceDetail, HeaderList
 
@@ -20,31 +21,10 @@ class AcademicGroupDetail(Page):
         lambda params, **_: params.academic_group.get_instance_header()
     )
 
-    staff = Table(
-        auto__model=Staff,
-        auto__include=[
-            'name', 'load_calc_target', 'load_calc_assigned', 'load_calc_balance',
-            'load_historic_balance', 'assignment_set'
-        ],
-        columns__load_calc_assigned=dict(
-            display_name='Assigned',
-            group='Current year load',
-        ),
-        columns__load_calc_target=dict(
-            display_name='Target',
-            group='Current year load',
-        ),
-        columns__load_calc_balance=dict(
-            display_name='Balance',
-            group='Current year load',
-        ),
-        columns__assignment_set={
-            "cell__template": 'app/academic_group/assignment_set.html',
-        },
-        rows=lambda params, **_: Staff.objects_active.filter(academic_group=params.academic_group),
-        columns__name__cell__url = lambda row, **_: row.get_absolute_url(),
-        page_size=20,
-        empty_message="No staff available.",
+    staff = StaffTable(
+        rows=lambda params, **_: StaffTable.annotate_rows(params.academic_group.staff_set.filter(is_active=True)),
+        columns__academic_group_code__include=False,
+        query__include=False,
         attrs__class={'mb-3': True},
     )
     units = Table(
@@ -53,7 +33,7 @@ class AcademicGroupDetail(Page):
         columns__code__cell__url=lambda row, **_: row.get_absolute_url(),
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
         columns__task_set=dict(
-            display_name='Tasks',
+            display_name="Tasks",
             cell__template='app/academic_group/task_set.html',
             after='students',
         ),
@@ -78,9 +58,9 @@ class AcademicGroupEdit(Page):
     form = Form.edit(
         h_tag=None,
         auto__model=AcademicGroup, instance=lambda params, **_: params.academic_group,
-        fields__code__group="row1",
-        fields__short_name__group="row1",
-        fields__name__group="row1",
+        fields__code__group='row1',
+        fields__short_name__group='row1',
+        fields__name__group='row1',
         extra__redirect_to='..',
     )
 
@@ -95,9 +75,9 @@ class AcademicGroupCreate(Page):
     form = Form.create(
         h_tag=None,
         auto__model=AcademicGroup,
-        fields__code__group="row1",
-        fields__short_name__group="row1",
-        fields__name__group="row1",
+        fields__code__group='row1',
+        fields__short_name__group='row1',
+        fields__name__group='row1',
     )
 
 
@@ -114,9 +94,9 @@ class AcademicGroupDelete(Page):
     form = Form.delete(
         h_tag=None,
         auto__model=AcademicGroup, instance=lambda params, **_: params.academic_group,
-        fields__code__group="row1",
-        fields__short_name__group="row1",
-        fields__name__group="row1",
+        fields__code__group='row1',
+        fields__short_name__group='row1',
+        fields__name__group='row1',
     )
 
 

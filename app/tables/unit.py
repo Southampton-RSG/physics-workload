@@ -58,7 +58,6 @@ class UnitTable(Table):
                 fields__is_active=Field.boolean(
                     display_name='Active Only',
                     initial=True,
-                    iommi_style='boolean_buttons',
                     after='status',
                 ),
                 actions__reset=Action.button(display_name='Clear Filter', attrs__type='reset'),
@@ -75,7 +74,7 @@ class UnitTable(Table):
         elif value_string_or_f == "Has Provisional":
             return Q(assignment_provisional__gt=0)
         else:
-            return
+            return Q()
 
     @staticmethod
     def annotate_query_set(query_set: QuerySet[Unit]) -> QuerySet[Unit]:

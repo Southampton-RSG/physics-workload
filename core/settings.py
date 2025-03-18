@@ -17,8 +17,8 @@ if not SECRET_KEY:
     SECRET_KEY = ''.join(random.choice( string.ascii_lowercase  ) for i in range( 32 ))
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
-DEBUG_ACCESS = config('DEBUG_ACCESS', default=False, cast=bool)
+DEBUG: bool = config('DEBUG', default=False, cast=bool)
+DEBUG_ACCESS: bool = config('DEBUG_ACCESS', default=False, cast=bool)
 
 # HOSTs List
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']

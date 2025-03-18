@@ -81,7 +81,6 @@ class TaskTable(Table):
                 fields__is_active=Field.boolean(
                     display_name='Active Only',
                     initial=True,
-                    iommi_style='boolean_buttons',
                     after=LAST,
                 )
             ),

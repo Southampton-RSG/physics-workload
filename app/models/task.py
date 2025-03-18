@@ -12,7 +12,6 @@ from django.urls import reverse
 from model_utils.managers import QueryManager
 from simple_history.models import HistoricalRecords
 
-from app.models.standard_load import StandardLoad, get_current_standard_load
 from app.models.load_function import LoadFunction
 from app.models.unit import Unit
 from app.models.mixins import ModelCommonMixin
@@ -87,6 +86,11 @@ class Task(ModelCommonMixin, Model):
     description = TextField(blank=False)
     notes = TextField(blank=True)
 
+    standard_load = ForeignKey(
+        'StandardLoad', on_delete=PROTECT,
+        verbose_name="Year",
+    )
+
     class Meta:
         ordering = ('is_active', 'unit', 'name',)
         verbose_name = 'Task'
@@ -121,23 +125,14 @@ class Task(ModelCommonMixin, Model):
         Overrides the default instance header to include the unit, with link, if present.
         :return: The rendered HTML template for this model.
         """
-        if self.unit:
-            return render_to_string(
-                template_name='app/header/header_unit.html',
-                context={
-                    'icon': self.icon, 'url': self.get_absolute_url(),
-                    'text': self.name,
-                    'unit_text': self.unit.code, 'unit_url': self.unit.get_absolute_url(),
-                }
-            )
-        else:
-            return render_to_string(
-                template_name='app/header/header.html',
-                context={
-                    'icon': self.icon, 'url': self.get_absolute_url(),
-                    'text': self
-                }
-            )
+        return render_to_string(
+            template_name='app/header/header.html',
+            context={
+                'icon': self.icon,
+                'text': f"{self.get_name()}",
+            }
+        )
+
 
     def get_absolute_url(self) -> str:
         """
@@ -162,84 +157,80 @@ class Task(ModelCommonMixin, Model):
         """
         return user.staff in self.assignment_set.values_list('staff', flat=True)
 
+    def update_load(self) -> True:
+        """
+        Updates the load for this task. Does not save to DB; that needs to be done in the calling function.
+        :return: True if the load has changed, false if not.
+        """
+        load: float = 0
+        logger.debug(f"{self}: Updating load...")
 
-@receiver(pre_save, sender=Task)
-def calculate_load_for_task(
-        sender: Type[Task], instance: Task, **kwargs
-):
-    """
-    Called when the model is being saved, updates the calculated load
-    """
-    load: float = 0
-    logger.debug(f"{instance}: Updating load...")
+        if self.unit and (self.coursework_fraction or self.exam_fraction):
+            # ==== IF THIS IS A UNIT CO-ORDINATOR ====
+            # SPREADSHEET LOGIC
+            standard_load: 'StandardLoad' = self.standard_load
+            unit: Unit = self.unit
 
-    if instance.unit and (instance.coursework_fraction or instance.exam_fraction):
-        # ==== IF THIS IS A UNIT CO-ORDINATOR ====
-        # SPREADSHEET LOGIC
-        standard_load: StandardLoad = get_current_standard_load()
-        unit: Unit = instance.unit
+            # ($I2+$Q2) = "Number of Lectures/Problem Classes Run by Coordinator" + "Number of Synoptic Lectures"
+            contact_sessions: int = unit.lectures + unit.synoptic_lectures + unit.problem_classes
 
-        # ($I2+$Q2) = "Number of Lectures/Problem Classes Run by Coordinator" + "Number of Synoptic Lectures"
-        contact_sessions: int = unit.lectures + unit.synoptic_lectures + unit.problem_classes
+            # (($I2+$Q2)*3.5) or (($I2+$Q2)*6)
+            load_lecture: float = contact_sessions * standard_load.load_lecture
+            load_lecture_first: float = contact_sessions * standard_load.load_lecture_first
 
-        # (($I2+$Q2)*3.5) or (($I2+$Q2)*6)
-        load_lecture: float = contact_sessions * standard_load.load_lecture
-        load_lecture_first: float = contact_sessions * standard_load.load_lecture_first
+            load_coursework: float = 0
+            if unit.coursework and self.coursework_fraction:
+                # ($J2*2) = "Coursework (number of items prepared)"
+                load_coursework += unit.coursework * standard_load.load_coursework_set
 
-        load_coursework: float = 0
-        if unit.coursework and instance.coursework_fraction:
-            # ($J2*2) = "Coursework (number of items prepared)"
-            load_coursework += unit.coursework * standard_load.load_coursework_set
+                # ($L2*$O2*2) = "Coursework (fraction of unit mark)" * "Total Number of CATS"
+                load_coursework += unit.coursework_mark_fraction * unit.credits * standard_load.load_coursework_credit
 
-            # ($L2*$O2*2) = "Coursework (fraction of unit mark)" * "Total Number of CATS"
-            load_coursework += unit.coursework_mark_fraction * unit.credits * standard_load.load_coursework_credit
+                # ($J2+$L2*$Q2) = "Coursework (number of items prepared)" + "Coursework (fraction of unit mark)" * "Total Number of CATS"
+                # (0.1667 * [] * $K2 * $P2) = "Fraction of Coursework marked by coordinator" * "Number of Students"
+                load_coursework += (unit.coursework + unit.coursework_mark_fraction * unit.credits) * \
+                                                self.coursework_fraction * unit.students * standard_load.load_coursework_marked
 
-            # ($J2+$L2*$Q2) = "Coursework (number of items prepared)" + "Coursework (fraction of unit mark)" * "Total Number of CATS"
-            # (0.1667 * [] * $K2 * $P2) = "Fraction of Coursework marked by coordinator" * "Number of Students"
-            load_coursework += (unit.coursework + unit.coursework_mark_fraction * unit.credits) * \
-                                            instance.coursework_fraction * unit.students * standard_load.load_coursework_marked
+            load_exam: float = 0
+            if self.exam_fraction:
+                # ($M2*O2*2) = "Examination (fraction of unit mark)" * "Total Number of CATS"
+                load_exam += unit.exam_mark_fraction * unit.credits * standard_load.load_exam_credit
 
-        load_exam: float = 0
-        if instance.exam_fraction:
-            # ($M2*O2*2) = "Examination (fraction of unit mark)" * "Total Number of CATS"
-            load_exam += unit.exam_mark_fraction * unit.credits * standard_load.load_exam_credit
+                # ($P2*$N2*1) = "Number of Students" * "Fraction of Exams Marked by Coordinator"
+                load_exam += unit.students * self.exam_fraction * standard_load.load_exam_marked
 
-            # ($P2*$N2*1) = "Number of Students" * "Fraction of Exams Marked by Coordinator"
-            load_exam += unit.students * instance.exam_fraction * standard_load.load_exam_marked
+            load: float = load_coursework + load_exam
 
-        load: float = load_coursework + load_exam
+            if self.load_function:
+                load += self.load_function.evaluate(self.students)
+            elif self.students:
+                raise Exception("Task has students but no load function")
 
-        if instance.load_function:
-            load += instance.load_function.evaluate(instance.students)
-        elif instance.students:
-            raise Exception("Task has students but no load function")
+            load_calc_first = load + self.load_fixed + load_lecture_first + self.load_fixed_first
+            load_calc = load + self.load_fixed + load_lecture
 
-        instance.load_calc_first = load + instance.load_fixed + load_lecture_first + instance.load_fixed_first
-        instance.load_calc = load + instance.load_fixed + load_lecture
+            if self.load_calc != load_calc or self.load_calc_first != load_calc_first:
+                self.load_calc_first = load_calc
+                self.load_calc = load_calc
+                return True
+            else:
+                return False
 
-    else:
-        # ==== IF THIS IS NOT A UNIT CO-ORDINATOR ====
-        # Much simpler logic
-        if instance.load_function:
-            try:
-                load += instance.load_function.evaluate(instance.students)
-            except Exception as calculation_exception:
-                raise calculation_exception
+        else:
+            # ==== IF THIS IS NOT A UNIT CO-ORDINATOR ====
+            # Much simpler logic
+            if self.load_function:
+                try:
+                    load += self.load_function.evaluate(self.students)
+                except Exception as calculation_exception:
+                    raise calculation_exception
 
-        instance.load_calc = instance.load_fixed + load
-        instance.load_calc_first = instance.load_calc + instance.load_fixed_first
+            load_calc = self.load_fixed + load
+            load_calc_first = load_calc + self.load_fixed_first
 
-
-@receiver(post_save, sender=Task)
-def apply_updated_load(
-        sender: Type[Task], instance: Task, **kwargs
-):
-    """
-    Called after a task is updated - updates the load on all linked staff.
-    """
-    logger.debug(f"{instance}: Updated load, updating related models")
-
-    for assignment in instance.assignment_set.all():
-        # This could be done as an Update query with aggregation
-        logger.debug(f"{instance}: Updating balance on assigned staff {assignment.staff}")
-        assignment.staff.calculate_load_balance()
+            if self.load_calc != load_calc or self.load_calc_first != load_calc_first:
+                self.load_calc = self.load_fixed + load
+                self.load_calc_first = self.load_calc + self.load_fixed_first
+                return True
+            else:
+                return False

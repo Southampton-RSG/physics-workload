@@ -62,36 +62,33 @@ class Assignment(ModelCommonMixin, Model):
         """
         return self.task.get_absolute_url()
 
+    def update_load(self) -> bool:
+        """
+        Updates the load for this assignment.
+        :return: True if the load has changed.
+        """
+        if self.is_first_time:
+            if self.load_calc != self.task.load_calc_first:
+                self.load_calc = self.task.load_calc_first
+                return True
+        else:
+            if self.load_calc != self.task.load_calc:
+                self.load_calc = self.task.load_calc
+                return True
 
-@receiver(pre_save, sender=Assignment)
-def calculate_load(
-        sender: Type[Assignment], instance: Assignment, **kwargs
-):
-    """
-    Called before an assignment is saved, applies the correct load.
-    """
-    if instance.is_first_time:
-        instance.load_calc = instance.task.load_calc_first
-    else:
-        instance.load_calc = instance.task.load_calc
+        return False
 
-
-@receiver(post_save, sender=Assignment)
-def apply_load(
-        sender: Type[Assignment], instance: Assignment, **kwargs
-):
-    """
-    Called after an assignment is updated - updates the load on all linked staff.
-    """
-    logger.debug(f"{instance}: Saved assignment, updating staff")
-    instance.staff.calculate_load_balance()
 
 @receiver(post_delete, sender=Assignment)
 def apply_load(
         sender: Type[Assignment], instance: Assignment, **kwargs
 ):
     """
-    Called after an assignment is updated - updates the load on all linked staff.
+    When we delete an assignment, we want to update the assigned hours of the linked staff.
+    :param instance: The deleted assignment - this no longer exists in the DB, only in memory!
     """
     logger.debug(f"{instance}: Deleted assignment, updating staff")
-    instance.staff.calculate_load_balance()
+    instance.staff.update_load_assigned()
+    instance.staff.save()
+    instance.staff.standard_load.update_target_load_per_fte()
+    instance.staff.standard_load.save()

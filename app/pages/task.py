@@ -4,12 +4,14 @@
 import string
 from logging import getLogger
 
+from django.template.loader import render_to_string
 from django.urls import path
 from django.utils.html import format_html
 
 from iommi import Page, Table, html, Form, EditTable, Column, Field, EditColumn
 
 from app.models import Unit, Task, Assignment, Staff
+from app.models.standard_load import get_current_standard_load
 from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
     HeaderInstanceDetail, HeaderList
 from app.forms.task import TaskForm
@@ -25,9 +27,7 @@ class TaskDetail(Page):
     Page for showing task details
     """
     header = HeaderInstanceDetail(
-        lambda params, **_: format_html(
-            f"{params.task.get_instance_header()}"
-        )
+        lambda params, **_: params.task.get_instance_header()
     )
 
     @staticmethod
@@ -62,12 +62,13 @@ class TaskDetail(Page):
     form = TaskForm(
         title="Details",
         auto__model=Task, instance=lambda params, **_: params.task,
-        auto__exclude=['unit', 'is_active'],
+        auto__exclude=['unit', 'is_active', 'standard_load'],
         fields__coursework_fraction__include=lambda params, **_: params.task.coursework_fraction,
         fields__exam_fraction__include=lambda params, **_: params.task.exam_fraction,
         fields__load_function__include=lambda params, **_: params.task.students,
         fields__students__include=lambda params, **_: params.task.students,
         editable=False,
+        actions__submit=None,
     )
 
 
@@ -99,6 +100,10 @@ class TaskCreate(Page):
         fields__unit__include=False,
         fields__load_calc_first__include=False,
         fields__load_calc__include=False,
+        fields__standard_load=Field.non_rendered(
+            include=True,
+            initial=lambda params, **_: get_current_standard_load(),
+        )
     )
 
 

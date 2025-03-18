@@ -3,6 +3,7 @@
 """
 from django.urls import path
 from django.utils.html import format_html
+from django.template import Template, Context
 from django.template.loader import render_to_string
 
 from iommi import Page, Field, Header
@@ -13,9 +14,9 @@ from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreat
     HeaderInstanceDetail, HeaderList
 from app.pages.task import TaskDetail, TaskEdit, TaskDelete
 from app.models import Unit
+from app.models.standard_load import get_current_standard_load
 from app.tables.task import TaskTable
 from app.tables.unit import UnitTable
-
 
 
 class UnitTaskCreate(Page):
@@ -122,6 +123,10 @@ class UnitCreate(Page):
     )
     form = UnitForm.create(
         h_tag=None,
+        fields__standard_load=Field.non_rendered(
+            include=True,
+            initial=lambda params, **_: get_current_standard_load(),
+        )
     )
 
 

@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Q, QuerySet, F
 
 from iommi import Table, Column, Field, Action
 
@@ -11,8 +11,7 @@ class StaffTable(Table):
     class Meta:
         auto__model=Staff
         auto__include=[
-            'account', 'name', 'gender', 'academic_group', 'is_active',
-            'load_calc_balance', 'load_historic_balance', 'assignment_set',
+            'account', 'name', 'gender', 'academic_group', 'is_active', 'load_historic_balance', 'assignment_set',
         ]
         columns__name__cell__url=lambda row, **_: row.get_absolute_url()
         columns__name__filter__include=True
@@ -38,17 +37,24 @@ class StaffTable(Table):
         )
         columns__is_active=dict(
             render_column=False,
-            # filter__include=True,
         )
         columns__load_historic_balance=dict(
             group="Load Balance",
             display_name='Historic',
-            cell__template='app/integer_cell.html',
+            cell__value=lambda row, **_: int(row.load_historic_balance),
+            cell__attrs__class=lambda row, **_: {
+                'text-success': True if row.load_historic_balance > 0 else False,
+                'text-danger': True if row.load_historic_balance < 0 else False,
+            }
         )
-        columns__load_calc_balance=dict(
+        columns__load_balance=dict(
             group="Load Balance",
             display_name='Current',
-            cell__template='app/integer_cell.html',
+            cell__value=lambda row, **_: int(row.load_balance),
+            cell__attrs__class=lambda row, **_: {
+                'text-success': True if row.load_balance > 0 else False,
+                'text-danger': True if row.load_balance < 0 else False,
+            }
         )
         columns__modify=ColumnModify.create()
         query=dict(
@@ -72,13 +78,23 @@ class StaffTable(Table):
                     value_string_or_f)
             ),
         )
+        empty_message="No staff available."
         iommi_style=floating_fields_style
 
     @staticmethod
     def filter_status_into_query(value_string_or_f) -> Q|None:
         if value_string_or_f == 'Underloaded':
-            return Q(load_calc_balance__gt=0)
+            return Q(load_balance__gt=0)
         elif value_string_or_f == 'Overloaded':
-            return Q(load_calc_balance__lt=0)
+            return Q(load_balance__lt=0)
         else:
             return Q()
+
+    @staticmethod
+    def annotate_rows(rows: QuerySet) -> QuerySet:
+        """
+        Adds the load balance to the table rows, derived from the load columns.
+        :param rows: The query to annotate.
+        :return: The annotated query, with a 'load_balance' column.
+        """
+        return rows.annotate(load_balance=F('load_target') - F('load_assigned'))

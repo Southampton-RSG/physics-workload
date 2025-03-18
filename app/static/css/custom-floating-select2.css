@@ -1,0 +1,235 @@
+/* Select2 Modifications */
+/* This is a crude hack of the stuff from here: */
+/* https://github.com/adamculpepper/pure-css-float-labels/blob/master/float-labels.css */
+/* CSS is not my strong point and I will die before I learn it properly */
+
+select2-selection--single {
+    display: block;
+    width: 100%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--bs-body-color);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: var(--bs-body-bg);
+    background-clip: padding-box;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    height: 3.5rem;
+}
+
+
+.select2-dropdown {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+}
+
+.select2Part .floating-label{
+    opacity: 0;
+}
+.select2Part.focused .floating-label{
+    opacity: 1;
+}
+.select2multiple .floating-label{
+    opacity: 1;
+}
+.select2Part.focused .select2-container--default .select2-selection--single .select2-selection__rendered{
+    padding-top: 13px;
+}
+.select2-container--default .select2-selection--single{
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    height: 3.65rem;
+}
+.select2-container--focus.select2-container--default .select2-selection--single{
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    /*background-color: #fff;*/
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered{
+    color: var(--bs-body-color);
+    line-height: 40px;
+    transition: 240ms;
+    padding-right: 0rem;
+    padding-top: 1rem;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 53px;
+    right: 15px;
+    transition: 240ms;
+}
+
+.select2-results__option {
+    margin-left: .25rem;
+    margin-right: .25rem;
+    border-radius: .25rem;
+}
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--bs-secondary-bg);
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow b{
+    border: none;
+    background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxOS4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9Ii00NzMgMjc3IDEyIDgiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgLTQ3MyAyNzcgMTIgODsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4NCgkuc3Qwe2ZpbGw6IzhBOTNBNjt9DQo8L3N0eWxlPg0KPHBhdGggY2xhc3M9InN0MCIgZD0iTS00NzEuNiwyNzcuM2w0LjYsNC42bDQuNi00LjZsMS40LDEuNGwtNiw2bC02LTZMLTQ3MS42LDI3Ny4zeiIvPg0KPC9zdmc+DQo=') no-repeat 0 0;
+    width: 12px;
+    height: 8px;
+    background-size: 100% 100%;
+    transform: translateY(-50%);
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: var(--bs-secondary-bg)!important;
+}
+.select2-container--default .select2-results__option:last-child{
+    margin-bottom: 0.25rem;
+}
+.select2-container--default .select2-selection--single{
+    border-radius: var(--bs-border-radius);
+}
+.select2-container .select2-selection--single .select2-selection__rendered{
+    padding-left: 0.75rem;
+}
+.select2-container--default.select2-container--open.select2-container--above .select2-selection--multiple,
+.select2-container--default.select2-container--open.select2-container--above .select2-selection--single {
+    border-top-left-radius: var(--bs-border-radius);
+    border-top-right-radius: var(--bs-border-radius);
+}
+.select2-results__option {
+    padding: 8px 18px;
+    user-select: none;
+    -webkit-user-select: none;
+    /*color: #4F4F4F;*/
+    font-size: 15px;
+    font-weight: 400;
+}
+.select2-container--open .select2-dropdown--above {
+    box-shadow: 0px 6px 32px rgb(0 0 0 / 10%);
+    overflow: hidden;
+}
+
+.select2-container--open .select2-dropdown--below{
+    box-shadow: 0px 2px 18px rgb(0 0 0 / 16%);
+    overflow: hidden;
+}
+.select2Part.w-100 > .select2-container{
+    width: 100% !important;
+}
+.select2-search--dropdown{
+    padding: .5rem .5rem;
+    position: relative;
+}
+.select2-container--default .select2-search--dropdown .select2-search__field{
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    padding: 10px 15px;
+
+    position: relative;
+    padding-right: 45px;
+}
+
+.select2-container--default .select2-search--dropdown:after{
+    /* This is the 'down arrow' */
+    content: "\f002";
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 23px;
+    right: 1rem;
+    font-size: 15px;
+    color: var(--bs-body-color);
+}
+
+.select2-container--default .select2-selection--multiple{
+    /*background-color: #fff;*/
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    min-height: 50px;
+    position: relative;
+}
+.select2-container--default.select2-container--focus .select2-selection--multiple{
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    /*background-color: var(--bs-info-bg);*/
+}
+.select2-container--default .select2-selection--multiple .select2-selection__rendered{
+    /*color: #757575;*/
+    line-height: 55px;
+    padding-right: 40px;
+    display: block;
+    height: 100%;
+    padding-bottom: 7px;
+    padding-top: 17px;
+    padding-left: 17px;
+    transition: 240ms;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__arrow {
+    height: 48px;
+    right: 15px;
+    color: var(--bs-body-color);
+}
+.select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field{
+    line-height: initial;
+    padding: 0;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__rendered:before {
+    border: none;
+    content: '';
+    background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxOS4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9Ii00NzMgMjc3IDEyIDgiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgLTQ3MyAyNzcgMTIgODsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4NCgkuc3Qwe2ZpbGw6IzhBOTNBNjt9DQo8L3N0eWxlPg0KPHBhdGggY2xhc3M9InN0MCIgZD0iTS00NzEuNiwyNzcuM2w0LjYsNC42bDQuNi00LjZsMS40LDEuNGwtNiw2bC02LTZMLTQ3MS42LDI3Ny4zeiIvPg0KPC9zdmc+DQo=') no-repeat 0 0;
+    width: 12px;
+    height: 8px;
+    background-size: 100% 100%;
+    transform: translateY(-50%);
+    position: absolute;
+    right: 18px;
+    top: 26px;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__rendered li {
+    list-style: none;
+    line-height: initial;
+    padding: 5px;
+    font-size: 14px;
+    position: relative;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    /*background-color: #f1f1f1;*/
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    cursor: default;
+    float: left;
+    /*color: #1f1f1f;*/
+    margin-right: 5px;
+    margin-top: 5px;
+    width: initial !important;
+    padding: 5px 10px;
+    padding-right: 24px !important;
+    font-size: 13px !important;
+    letter-spacing: 0.3px;
+}
+.select2-container--default .select2-search--inline .select2-search__field{
+    width: 100% !important;
+    font-size: 16px;
+    margin-top: 0px;
+    padding: 0;
+    padding-left: 5px;
+    line-height: 27px;
+    padding-top: 6px;
+}
+
+.select2-selection__clear {
+    float: left!important;
+    padding-right: .25rem;
+}
+
+.floating-group.focused .select2-container--default .select2-selection--multiple {
+    padding-bottom: 7px;
+    padding-top: 17px;
+    padding-left: 17px;
+}

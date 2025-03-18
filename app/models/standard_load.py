@@ -1,4 +1,5 @@
 from typing import Dict
+from logging import getLogger
 
 from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.core.validators import MinValueValidator
@@ -9,6 +10,9 @@ from django.db.models import ObjectDoesNotExist, Sum
 from app.models.mixins import ModelCommonMixin
 from app.models.staff import Staff
 from app.models.assignment import Assignment
+
+
+logger = getLogger(__name__)
 
 
 class StandardLoad(ModelCommonMixin, Model):
@@ -90,21 +94,20 @@ class StandardLoad(ModelCommonMixin, Model):
             MinValueValidator(0.0),
         ],
         verbose_name="Staff misc. load per FTE fraction",
-        help_text="Basic allowance apart from explicit task loads"
+        help_text=r"$L_m$, basic allowance apart from explicit task loads"
     )
-    hours_fte = FloatField(
+    target_load_per_fte = FloatField(
         blank=False, null=False,
         validators=[
             MinValueValidator(0.0),
         ],
-        verbose_name="Backstop 'hours per FTE' value",
+        verbose_name="Default teaching load per FTE",
         help_text="Used when calculating target load hours",
     )
 
-    hours_fte_calc = FloatField(
+    target_load_per_fte_calc = FloatField(
         blank=True, null=True,
-        verbose_name="Calculated teaching hours per FTE",
-        help_text="Used when calculating target load hours",
+        verbose_name="Calculated teaching load per FTE",
     )
 
     notes = TextField(blank=True)
@@ -122,7 +125,7 @@ class StandardLoad(ModelCommonMixin, Model):
         """You can always see the load details"""
         return True
 
-    def calculate_teaching_hours(self):
+    def update_target_load_per_fte(self):
         """
 
         :return:
@@ -143,12 +146,20 @@ class StandardLoad(ModelCommonMixin, Model):
         # H_{teaching} = \frac{\sum H_{assigned} + \sum F_{contract} * H_{misc} - \sum H_{fixed}}{\sum F_{contract}}
 
         staff_aggregation: Dict[str, float] = Staff.objects_active.aggregate(Sum('fte_fraction'), Sum('hours_fixed'))
-        total_fixed_hours: float = staff_aggregation['hours_fixed']
-        total_fte_fraction: float = staff_aggregation['fte_fraction']
-        total_assigned_hours: float = Assignment.objects.filter(year=self.year).aggregate(Sum('load_calc'))['load_calc']
+        total_fixed_hours: float = staff_aggregation.get('hours_fixed__sum', 0)
+        total_fte_fraction: float = staff_aggregation.get('fte_fraction__sum', 0)
+        assignment_aggregation: Dict[str, float] = Assignment.objects.filter(task__standard_load__year=self.year).aggregate(Sum('load_calc'))
+        total_assigned_hours: float = assignment_aggregation.get('load_calc__sum', 0)
 
-        self.hours_fte_calc = self.load_fte_misc + (total_assigned_hours-total_fixed_hours) / total_fte_fraction
-        self.save()
+        if total_fte_fraction and total_assigned_hours:
+            self.target_load_per_fte_calc = self.load_fte_misc + (total_assigned_hours - total_fixed_hours) / total_fte_fraction
+        else:
+            self.target_load_per_fte_calc = self.target_load_per_fte
+
+        for staff in self.staff_set.filter(fte_fraction__gt=0).all():
+            staff.load_target = self.target_load_per_fte_calc * staff.fte_fraction
+            staff.save()
+
 
 def get_current_standard_load() -> StandardLoad|None:
     """

@@ -1,0 +1,21 @@
+/* Inline Select2 has a lot of padding, and doesn't have a predictable row height unless we set it*/
+.select2-container  .select2-selection--single {
+    border: none!important;
+    height: 2.5rem!important;
+}
+.select2-selection__rendered {
+    padding: 0px!important;
+}
+.select2-selection__arrow {
+    height:2.5rem!important;
+}
+.select2-dropdown--below {
+    border-top: var(--bs-border-width) solid var(--bs-border-color)!important;
+    border-top-left-radius: var(--bs-border-radius)!important;
+    border-top-right-radius: var(--bs-border-radius)!important;
+}
+.select2-dropdown--above {
+    border-bottom: var(--bs-border-width) solid var(--bs-border-color)!important;
+    border-bottom-left-radius: var(--bs-border-radius)!important;
+    border-bottom-right-radius: var(--bs-border-radius)!important;
+}

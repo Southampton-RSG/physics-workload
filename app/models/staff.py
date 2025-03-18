@@ -1,16 +1,18 @@
+from typing import Dict, Type
 from logging import getLogger
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import (
     Model, ForeignKey, TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index, CheckConstraint, Q, Sum
 )
+from django.db.models.signals import post_delete, post_save, pre_save
+from django.dispatch import receiver
 from django.db.models.deletion import PROTECT, SET_NULL
 from django.utils.html import format_html
 from model_utils.managers import QueryManager
 
 from app.models.academic_group import AcademicGroup
 from app.models.mixins import ModelCommonMixin
-from app.models.standard_load import get_current_standard_load
 
 logger = getLogger(__name__)
 
@@ -49,20 +51,15 @@ class Staff(ModelCommonMixin, Model):
         help_text="Sum of the load balance from previous years.",
     )
 
-    load_calc_target = FloatField(
+    load_target = FloatField(
         default=0, validators=[MinValueValidator(0.0)],
         verbose_name='Load target',
         help_text="Load hours calculated for the current year.",
     )
-    load_calc_assigned = FloatField(
+    load_assigned = FloatField(
         default=0, validators=[MinValueValidator(0.0)],
         verbose_name='Load assigned',
         help_text="Load hours assigned for the current year.",
-    )
-    load_calc_balance = FloatField(
-        default=0,
-        verbose_name='Load balance',
-        help_text="The current year's target load minus assigned load.",
     )
 
     hours_fixed = IntegerField(
@@ -85,6 +82,11 @@ class Staff(ModelCommonMixin, Model):
     is_active = BooleanField(default=True)
 
     notes = TextField(blank=True)
+
+    standard_load = ForeignKey(
+        'StandardLoad', on_delete=PROTECT,
+        verbose_name="Year",
+    )
 
     objects_active = QueryManager(is_active=True)
     objects = Manager()
@@ -114,7 +116,7 @@ class Staff(ModelCommonMixin, Model):
         Default rendering of a staff member shows their load balance
         :return: Their name plus load balance.
         """
-        return f"{self.name} [{self.load_calc_balance:.0f}]"
+        return f"{self.name} [{self.load_assigned - self.load_target:.0f}]"
 
     def get_instance_header(self) -> str:
         """
@@ -123,18 +125,38 @@ class Staff(ModelCommonMixin, Model):
         """
         return super().get_instance_header(text=self.name)
 
-    def calculate_load_balance(self):
+    def get_load_balance(self):
         """
-        :return: The load balance for this staff member.
+        :return: The load balance
         """
-        logger.debug(f"{self}: Updating load balance")
+        return self.load_assigned - self.load_target
 
-        load: float = self.assignment_set.aggregate(Sum('load_calc'))['load_calc']
+    def update_load_assigned(self):
+        """
+        Updates own assigned load by summing the load of the assignments.
+        :return: True if the total load has changed, false if not.
+        """
+        load_assigned = self.assignment_set.aggregate(Sum('load_calc'))['load_calc__sum']
+        if self.load_assigned !=- load_assigned:
+            self.load_assigned = load_assigned
+            return True
 
-        if self.fte_fraction:
-            # If a full-time employee, get a misc load allowance proportional to FTE fraction
-            load += get_current_standard_load().load_fte_misc * self.fte_fraction
+        else:
+            return False
 
-        self.load_calc_assigned = load
-        self.load_calc_balance = self.load_calc_target - self.load_calc_assigned
-        self.save()
+
+    def update_load_target(self):
+        """
+        Updates the target load from the standard load settings.
+        :return: True if the load target has changed, false if not.
+        """
+        if self.hours_fixed:
+            load_target = self.hours_fixed
+        else:
+            load_target = self.fte_fraction * self.standard_load.target_load_per_fte
+
+        if self.load_target != load_target:
+            self.load_target = load_target
+            return True
+        else:
+            return False
