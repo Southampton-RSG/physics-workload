@@ -1,12 +1,11 @@
 from typing import Dict, Type
 from logging import getLogger
 from django.conf import settings
+from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import (
     Model, ForeignKey, TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index, CheckConstraint, Q, Sum
 )
-from django.db.models.signals import post_delete, post_save, pre_save
-from django.dispatch import receiver
 from django.db.models.deletion import PROTECT, SET_NULL
 from django.utils.html import format_html
 from model_utils.managers import QueryManager
@@ -111,6 +110,16 @@ class Staff(ModelCommonMixin, Model):
             )
         ]
 
+    def has_access(self, user: AbstractUser|AnonymousUser) -> bool:
+        """
+        :param user:
+        :return:
+        """
+        if super().has_access(user):
+            return True
+        else:
+            return user == self.user
+
     def __str__(self):
         """
         Default rendering of a staff member shows their load balance
@@ -143,7 +152,6 @@ class Staff(ModelCommonMixin, Model):
 
         else:
             return False
-
 
     def update_load_target(self):
         """

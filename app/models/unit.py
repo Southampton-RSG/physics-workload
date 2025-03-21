@@ -102,8 +102,15 @@ class Unit(ModelCommonMixin, Model):
         :param user: The user
         :return: True if the user is assigned to a task in this unit
         """
-        for task in self.task_set.all():
-            if user.staff in task.assignment_set.values_list('staff', flat=True):
-                return True
+        if super().has_access(user):
+            return True
+        elif user.is_anonymous:
+            return False
+        else:
+            for task in self.task_set.all():
+                if user.staff in task.assignment_set.values_list('staff', flat=True):
+                    return True
 
-        return False
+            return False
+
+        return super().has_access(user)

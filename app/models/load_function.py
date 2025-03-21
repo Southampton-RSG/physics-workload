@@ -70,4 +70,4 @@ class LoadFunction(ModelCommonMixin, Model):
 
     def has_access(self, user: AbstractUser|AnonymousUser) -> bool:
         """You can always see the load functions"""
-        """You can always see the load details"""
+        return True

@@ -119,10 +119,21 @@ class StandardLoad(ModelCommonMixin, Model):
         verbose_name_plural='Standard Loads'
 
     def __str__(self) -> str:
-        return f"Load {self.year-2000}/{self.year-1999}"
+        return f"{self.year-2000}/{self.year-1999}"
+
+    def get_instance_header(self, text: str|None = None) -> str:
+        """
+        Prepend the instance name with 'Standard Load' for clarity
+        :return: Header in the format "Standard Load ??/??"
+        """
+        return super().get_instance_header(f"Standard Load {self}")
 
     def has_access(self, user: AbstractUser|AnonymousUser) -> bool:
-        """You can always see the load details"""
+        """
+        You can always see the load details
+        :param user: The user to test access for.
+        :return: True, always
+        """
         return True
 
     def update_target_load_per_fte(self):

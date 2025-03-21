@@ -1,10 +1,12 @@
 from abc import abstractmethod
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.db.models import Model
 from django.http import HttpRequest
+from iommi import Fragment, Header, html
 
 
 class ModelCommonMixin(Model):
@@ -38,12 +40,29 @@ class ModelCommonMixin(Model):
         """
         return reverse(type(self).url_root+'_detail', args=[self.pk])
 
+    def get_absolute_url_authenticated(self, user: AbstractUser|AnonymousUser|None) -> str:
+        """
+        :param user: The user to check authorisation for.
+        :return: The absolute URL for the detail view of this particular instance of the model if allowed, or blank.
+        """
+        if settings.DEBUG_ACCESS:
+            return self.get_absolute_url()
+        elif user and user.is_authenticated and (user.is_staff or self.has_access(user)):
+            return self.get_absolute_url()
+        else:
+            return ''
+
     def get_instance_header(self, text: str|None = None) -> str:
         """
         Creates a header for a view for an instance of this model.
         :param text: The text to use for the header, if not just the string representation of the instance.
         :return: The rendered template, for use on the page.
         """
+        # return html.span(
+        #     children__icon=html.i(attrs__class={'fa-solid': True, f'fa-{self.icon}': True}),
+        #     children__header=Header(text if text else f"{self}")
+        # )
+
         return render_to_string(
             template_name='app/header/header.html',
             context={
@@ -77,6 +96,9 @@ class ModelCommonMixin(Model):
     def has_access(self, user: AbstractUser|AnonymousUser) -> bool:
         """
         :param user: The user checking access.
-        :return: Whether or not the user has permission to view this model.
+        :return: True if debug auth is on or the user is staff.
         """
-        raise NotImplementedError()
+        if settings.DEBUG_ACCESS or user.is_staff:
+            return True
+        else:
+            return False

@@ -42,4 +42,9 @@ class AcademicGroup(ModelCommonMixin, Model):
         :param user: The user
         :return: True if the user is assigned to this task
         """
-        return user.staff.academic_group == self
+        if super().has_access(user):
+            return True
+        elif user.is_anonymous:
+            return False
+        else:
+            return user.staff.academic_group == self

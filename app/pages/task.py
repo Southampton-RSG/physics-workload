@@ -41,9 +41,6 @@ class TaskDetail(Page):
     list = EditTable(
         auto__model=Assignment,
         auto__exclude=['notes', 'load_calc'],
-        columns__staff__field__include=True,
-        columns__is_first_time__field__include=True,
-        columns__is_provisional__field__include=True,
         columns__task=EditColumn.hardcoded(
             render_column=False,
             field__parsed_data=lambda params, **_: params.task,

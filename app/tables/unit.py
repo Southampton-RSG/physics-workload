@@ -16,14 +16,14 @@ class UnitTable(Table):
         columns__assignment_provisional=Column(render_column=False)
         # -------- VISIBLE COLUMNS ------
         columns__code=dict(
-            cell__url=lambda row, **_: row.get_absolute_url(),
+            cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
             filter=dict(
                 include=True,
                 freetext=True,
             ),
         )
         columns__name=dict(
-            cell__url=lambda row, **_: row.get_absolute_url(),
+            cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
             filter=dict(
                 include=True,
                 freetext=True,

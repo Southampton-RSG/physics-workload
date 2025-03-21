@@ -2,13 +2,11 @@
 Handles the views for the Standard Load
 """
 from django.urls import path
-from django.utils.html import format_html
 
-from iommi import Page, Table, html, Form, Column, Header, Field
+from iommi import Page, Table, html, Form, Column, Header, Action
 
-from app.models import standard_load
 from app.models.standard_load import StandardLoad
-from app.forms.standard_load import StandardLoadForm, StandardLoadRefreshForm
+from app.forms.standard_load import StandardLoadForm, StandardLoadRecalculateForm
 from app.pages.components import Equations
 from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceDetail, HeaderList
 from app.style import horizontal_fields_style, floating_fields_style
@@ -38,8 +36,9 @@ class StandardLoadDetail(Page):
     Shows details of the standard load
     """
     header = HeaderInstanceDetail(
-        lambda params, **_: params.standard_load.get_instance_header()
+        lambda params, **_: params.standard_load.get_instance_header(),
     )
+
     assignment = html.p(
         children=dict(
             header=Header("Assignment Factors"),
@@ -78,13 +77,7 @@ class StandardLoadDetail(Page):
         iommi_style=floating_fields_style,
         editable=False,
     )
-    form = StandardLoadRefreshForm.edit(
-        h_tag=None, instance=lambda params, **_: params.standard_load,
-        fields__year=Field.non_rendered(
-            include=True,
-            initial=lambda params, **_: params.standard_load.year,
-        )
-    )
+    form = StandardLoadRecalculateForm()
 
 
 class StandardLoadList(Page):

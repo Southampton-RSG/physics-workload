@@ -1,19 +1,22 @@
 """
-
+Pages for academic units
 """
+from typing import Dict
+from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.urls import path
 from django.utils.html import format_html
 from django.template import Template, Context
 from django.template.loader import render_to_string
 
 from iommi import Page, Field, Header
+from iommi.experimental.main_menu import M
 
 from app.forms.task import TaskForm
 from app.forms.unit import UnitForm
 from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
     HeaderInstanceDetail, HeaderList
 from app.pages.task import TaskDetail, TaskEdit, TaskDelete
-from app.models import Unit
+from app.models import Unit, Task
 from app.models.standard_load import get_current_standard_load
 from app.tables.task import TaskTable
 from app.tables.unit import UnitTable
@@ -152,3 +155,22 @@ urlpatterns = [
     path('unit/<unit>/', UnitDetail().as_view(), name='unit_detail'),
     path('unit/', UnitList().as_view(), name='unit_list'),
 ]
+
+
+def get_menu_units_for_user(user: AbstractUser) -> Dict[str, M]:
+    """
+
+    :param user:
+    :return:
+    """
+    units: Dict[str, M] = {}
+
+    for task in user.staff.task_set.all():
+        units[task.unit.code] = M(
+            open=True,
+            view=UnitDetail(pk=task.unit.pk).as_view(),
+            display_name=lambda unit, **_: unit.name,
+            url=lambda unit, **_: task.unit.get_absolute_url(),
+        )
+
+    return units

@@ -124,7 +124,7 @@ AUTHENTICATION_BACKENDS = [
 ################################################################################
 # DJANGO AUTH ADFS
 ################################################################################
-LOGIN_URL = '/login'
+LOGIN_URL = '/oauth2/login'
 adfs_client_id = config('ADFS_CLIENT_ID', default="None")
 adfs_client_secret = config('ADFS_CLIENT_SECRET', default="None")
 adfs_tenant_id = config('ADFS_TENANT_ID', default="None")

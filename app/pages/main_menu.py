@@ -1,10 +1,11 @@
+from django.urls import path
 from django.template import Template
 from iommi import html, Page
 from iommi.experimental.main_menu import MainMenu, M, EXTERNAL
 
-from app.pages.academic_group import AcademicGroupList, AcademicGroupDetail, AcademicGroupCreate, AcademicGroupDelete
+from app.pages.academic_group import AcademicGroupList, AcademicGroupDetail, AcademicGroupCreate, AcademicGroupDelete, AcademicGroupEdit
 from app.pages.staff import StaffList, StaffDetail, StaffCreate, StaffEdit, StaffDelete
-from app.pages.unit import UnitList, UnitDetail, UnitCreate, UnitEdit, UnitDelete
+from app.pages.unit import UnitList, UnitDetail, UnitCreate, UnitEdit, UnitDelete, get_menu_units_for_user
 from app.pages.task import TaskList, TaskDetail, TaskCreate, TaskEdit, TaskDelete
 from app.pages.load_function import LoadFunctionList, LoadFunctionDetail, LoadFunctionCreate, LoadFunctionEdit, LoadFunctionDelete
 from app.pages.standard_load import StandardLoadDetail, StandardLoadList
@@ -12,17 +13,13 @@ from app.pages.standard_load import StandardLoadDetail, StandardLoadList
 from app.models import AcademicGroup, LoadFunction, Staff, Task, Unit, StandardLoad
 
 
-class IndexPage2(Page):
-    title = html.h1("Teaching Time Tool")
-    text = html.p("Select a thing")
-
 main_menu = MainMenu(
     items=dict(
         logout=M(
             icon='right-to-bracket',
             view=EXTERNAL,
             display_name='Log In',
-            url='/oath2/callback',
+            url='/oauth2/callback',
             include=lambda request, **_: not request.user.is_authenticated,
         ),
         log_out=M(
@@ -33,10 +30,11 @@ main_menu = MainMenu(
             include=lambda request, **_: request.user.is_authenticated,
         ),
         staff=M(
+            open=True,
             icon=Staff.icon,
             view=StaffList,
             items=dict(
-                staff_singular=dict(
+                detail=M(
                     view=StaffDetail,
                     display_name=lambda staff, **_: staff.name,
                     path='<staff>/',
@@ -46,10 +44,13 @@ main_menu = MainMenu(
             )
         ),
         unit=M(
+            open=True,
             icon=Unit.icon,
+            display_name="Unit",
             view=UnitList,
+            include=lambda request, **_: request.user.is_authenticated,
             items=dict(
-                unit_detail=dict(
+                detail=M(
                     view=UnitDetail,
                     display_name=lambda unit, **_: unit.code,
                     path='<unit>/',
@@ -74,7 +75,8 @@ main_menu = MainMenu(
             icon=Task.icon,
             view=TaskList,
             items=dict(
-                task_detail=dict(
+                detail=M(
+                    open=True,
                     view=TaskDetail,
                     display_name=lambda task, **_: task.name,
                     path='<task>/',
@@ -88,7 +90,8 @@ main_menu = MainMenu(
             icon=AcademicGroup.icon,
             view=AcademicGroupList,
             items=dict(
-                group_detail=dict(
+                detail=M(
+                    open=True,
                     view=AcademicGroupDetail,
                     display_name=lambda academic_group, **_: academic_group.short_name,
                     path='<academic_group>/',
@@ -102,7 +105,7 @@ main_menu = MainMenu(
             icon=LoadFunction.icon,
             view=LoadFunctionList,
             items=dict(
-                function_detail=dict(
+                detail=M(
                     view=LoadFunctionDetail,
                     display_name=lambda load_function, **_: load_function.name,
                     path='<load_function>/',
@@ -116,7 +119,8 @@ main_menu = MainMenu(
             icon=StandardLoad.icon,
             view=StandardLoadList,
             items=dict(
-                load_detail=dict(
+                detail=M(
+                    open=True,
                     view=StandardLoadDetail,
                     display_name=lambda standard_load, **_: standard_load,
                     path='<standard_load>/',

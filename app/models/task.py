@@ -133,7 +133,6 @@ class Task(ModelCommonMixin, Model):
             }
         )
 
-
     def get_absolute_url(self) -> str:
         """
         Preprend the unit if this is a unit task
@@ -155,7 +154,12 @@ class Task(ModelCommonMixin, Model):
         :param user: The user
         :return: True if the user is assigned to this task
         """
-        return user.staff in self.assignment_set.values_list('staff', flat=True)
+        if super().has_access(user):
+            return True
+        elif user.is_anonymous:
+            return False
+        else:
+            return user.staff in self.assignment_set.values_list('staff', flat=True)
 
     def update_load(self) -> True:
         """

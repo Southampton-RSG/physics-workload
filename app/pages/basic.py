@@ -1,4 +1,4 @@
-from iommi import Fragment, html, Page
+from iommi import Fragment, html, Page, Header
 
 
 class PrivacyPage(Page):
@@ -15,6 +15,8 @@ class PermissionDeniedPage(Page):
     text = Fragment(template='app/basic/permission_denied.html')
 
 
-class IndexPage(Page):
-    title = html.h1("Teaching Time Tool")
-    text = html.p("Select a thing")
+class AboutPage(Page):
+    title = Header("Teaching Time Tool")
+    text = html.p(
+        "This is a web app for assigning and balancing teaching workload for staff in the University of Southampton's Department of Physics."
+    )

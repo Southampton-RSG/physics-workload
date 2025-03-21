@@ -13,8 +13,7 @@ class TaskTable(Table):
         h_tag=None
         auto__model=Task
         auto__include=[
-            'name',
-            'load_calc', 'load_calc_first', 'assignment_set'
+            'name', 'load_calc', 'load_calc_first', 'assignment_set',
         ]
         # ------- INVISIBLE COLUMNS --------
         columns__unit_name=Column(
@@ -33,7 +32,7 @@ class TaskTable(Table):
         columns__unit_code=Column(
             attr='unit__code',
             display_name="Unit",
-            cell__url=lambda row, **_: row.unit.get_absolute_url() if row.unit else '',
+            cell__url=lambda row, request, **_: row.unit.get_absolute_url_authenticated(request.user) if row.unit else '',
             auto_rowspan=True,
             filter=dict(
                 include=True,
@@ -42,7 +41,7 @@ class TaskTable(Table):
         )
         columns__name=dict(
             after='unit_code',
-            cell__url=lambda row, **_: row.get_absolute_url(),
+            cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
             filter=dict(
                 include=True,
                 freetext=True,
