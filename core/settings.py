@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django_plotly_dash.apps.DjangoPlotlyDashConfig',
     'django_auth_adfs',
 
+    'users',  # Enable the custom users app
     'app',  # Enable the inner app
 ]
 
@@ -102,6 +103,7 @@ DATABASES = {
 # DJANGO CORE - AUTHENTICATION
 # Password validators: https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 ################################################################################
+AUTH_USER_MODEL = 'users.CustomUser'
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
