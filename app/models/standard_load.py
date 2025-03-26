@@ -3,11 +3,11 @@ from logging import getLogger
 
 from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.core.validators import MinValueValidator
-from django.db.models import Model, IntegerField, FloatField, TextField
+from django.db.models import IntegerField, FloatField, TextField
 from django.conf import settings
 from django.db.models import ObjectDoesNotExist, Sum
 
-from app.models.mixins import ModelCommonMixin
+from app.models.common import ModelCommon
 from app.models.staff import Staff
 from app.models.assignment import Assignment
 
@@ -15,7 +15,7 @@ from app.models.assignment import Assignment
 logger = getLogger(__name__)
 
 
-class StandardLoad(ModelCommonMixin, Model):
+class StandardLoad(ModelCommon):
     """
     Standard loads for an academic year
     """
@@ -23,7 +23,7 @@ class StandardLoad(ModelCommonMixin, Model):
     url_root = 'standard_load'
 
     year = IntegerField(
-        unique=True, primary_key=True,
+        unique=True,
         validators=[
             MinValueValidator(settings.YEAR_MINIMUM_VALUE),
         ],
@@ -121,6 +121,13 @@ class StandardLoad(ModelCommonMixin, Model):
     def __str__(self) -> str:
         return f"{self.year-2000}/{self.year-1999}"
 
+    def get_absolute_url(self) -> str:
+        """
+        The standard load is always
+        :return:
+        """
+        return f'/load/{self.year}/'
+
     def get_instance_header(self, text: str|None = None) -> str:
         """
         Prepend the instance name with 'Standard Load' for clarity
@@ -156,10 +163,10 @@ class StandardLoad(ModelCommonMixin, Model):
         # H_{teaching} \sum F_{contract} + \sum H_{fixed} = \sum H_{assigned} + \sum F_{contract} * H_{misc}
         # H_{teaching} = \frac{\sum H_{assigned} + \sum F_{contract} * H_{misc} - \sum H_{fixed}}{\sum F_{contract}}
 
-        staff_aggregation: Dict[str, float] = Staff.objects_active.aggregate(Sum('fte_fraction'), Sum('hours_fixed'))
+        staff_aggregation: Dict[str, float] = Staff.available_objects.aggregate(Sum('fte_fraction'), Sum('hours_fixed'))
         total_fixed_hours: float = staff_aggregation.get('hours_fixed__sum', 0)
         total_fte_fraction: float = staff_aggregation.get('fte_fraction__sum', 0)
-        assignment_aggregation: Dict[str, float] = Assignment.objects.filter(task__standard_load__year=self.year).aggregate(Sum('load_calc'))
+        assignment_aggregation: Dict[str, float] = Assignment.available_objects.filter(task__standard_load__year=self.year).aggregate(Sum('load_calc'))
         total_assigned_hours: float = assignment_aggregation.get('load_calc__sum', 0)
 
         if total_fte_fraction and total_assigned_hours:
@@ -167,9 +174,56 @@ class StandardLoad(ModelCommonMixin, Model):
         else:
             self.target_load_per_fte_calc = self.target_load_per_fte
 
-        for staff in self.staff_set.filter(fte_fraction__gt=0).all():
+        for staff in self.staff_set.filter(is_removed=False).filter(fte_fraction__gt=0).all():
             staff.load_target = self.target_load_per_fte_calc * staff.fte_fraction
             staff.save()
+
+    def update_calculated_loads(
+            self,
+            previous_standard_load: 'StandardLoad' = None,
+    ) -> bool:
+        """
+
+        :param previous_standard_load: The previous version of the standard loads.
+        :return: True if other models were updated, False otherwise.
+        """
+        logger.debug("Updating calculated loads...")
+
+        # Has this actually changed the misc load? That would require a reevaluation of teaching workload.
+        misc_hours_have_changed: bool = (self.load_fte_misc == previous_standard_load.load_fte_misc)
+
+        # The total load has changed, so we need to update the assignments
+        assigned_load_has_changed: bool = False
+
+        for task in self.task_set.filter(is_removed=False).all():
+            # Step over all tasks, and see if the changes to this form have changed the total load
+            logger.debug(f"Updating task {task}...")
+            if task.update_load():
+                logger.debug(f"Updating task assignments...")
+                task.save()
+
+                for assignment in task.assignment_set.filter(is_removed=False).all():
+                    logger.debug(f"Updating {assignment}...")
+                    if assignment.update_load():
+                        logger.debug(f"updating {assignment} staff...")
+                        assigned_load_has_changed = True
+                        assignment.save()
+                        assignment.staff.update_load_assigned()
+                        assignment.staff.save()
+
+        if not previous_standard_load or (assigned_load_has_changed or misc_hours_have_changed):
+            logger.debug("Updating standard load year with new assigned total")
+            self.update_target_load_per_fte()
+            self.save()
+
+            for staff in self.staff_set.filter(is_removed=False).all():
+                staff.update_load_target()
+                staff.save()
+
+        return any(
+            [misc_hours_have_changed, assigned_load_has_changed, not previous_standard_load]
+        )
+
 
 
 def get_current_standard_load() -> StandardLoad|None:
@@ -178,6 +232,6 @@ def get_current_standard_load() -> StandardLoad|None:
     :return: Gets the current standard load, or None if it's not yet initialised.
     """
     try:
-        return StandardLoad.objects.latest()
+        return StandardLoad.available_objects.latest()
     except ObjectDoesNotExist:
         return None

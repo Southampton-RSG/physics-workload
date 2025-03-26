@@ -27,7 +27,6 @@ class TaskTable(Table):
         )
         columns__assignment_open=Column(render_column=False)
         columns__assignment_provisional=Column(render_column=False)
-        columns__is_active=dict(render_column=False)
         # -------- VISIBLE COLUMNS --------
         columns__unit_code=Column(
             attr='unit__code',
@@ -77,11 +76,6 @@ class TaskTable(Table):
                         'Has Unassigned',
                     ],
                 ),
-                fields__is_active=Field.boolean(
-                    display_name='Active Only',
-                    initial=True,
-                    after=LAST,
-                )
             ),
             filters=dict(
                 status__value_to_q=lambda value_string_or_f, **_: TaskTable.filter_status_into_query(value_string_or_f),

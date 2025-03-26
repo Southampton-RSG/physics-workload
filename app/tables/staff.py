@@ -19,7 +19,7 @@ class StaffTable(Table):
     class Meta:
         auto__model=Staff
         auto__include=[
-            'account', 'name', 'gender', 'academic_group', 'is_active', 'load_historic_balance', 'assignment_set',
+            'account', 'name', 'gender', 'academic_group', 'load_historic_balance', 'assignment_set',
         ]
         columns=dict(
             name=dict(
@@ -47,9 +47,6 @@ class StaffTable(Table):
             ),
             assignment_set=dict(
                 cell__template='app/staff/assignment_set.html',
-            ),
-            is_active=dict(
-                render_column=False,
             ),
             load_historic_balance=dict(
                 group="Load Balance",
@@ -88,7 +85,7 @@ class StaffTable(Table):
                     ),
                     gender=Field.choice(
                         display_name='Gender',
-                        choices=lambda params, **_: [''] + list(set(Staff.objects.values_list('gender', flat=True))),
+                        choices=lambda params, **_: [''] + list(set(Staff.available_objects.values_list('gender', flat=True))),
                         after='academic_group',
                     ),
                 ),

@@ -17,7 +17,6 @@ from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreat
     HeaderInstanceDetail, HeaderList
 from app.pages.task import TaskDetail, TaskEdit, TaskDelete
 from app.models import Unit, Task
-from app.models.standard_load import get_current_standard_load
 from app.tables.task import TaskTable
 from app.tables.unit import UnitTable
 
@@ -52,7 +51,7 @@ class UnitDetail(Page):
         h_tag=HeaderList,
         columns__unit_code__include=False,
         query__include=False,
-        rows=lambda params, **_: TaskTable.annotate_query_set(params.unit.task_set.all()),
+        rows=lambda params, **_: TaskTable.annotate_query_set(params.unit.task_set.filter(is_removed=False).all()),
         columns__assignment_set__cell__template='app/unit/assignment_set.html',
     )
     form = UnitForm(
@@ -83,8 +82,7 @@ class UnitDelete(Page):
     form = UnitForm.delete(
         h_tag=None,
         instance=lambda params, **_: params.unit,
-        fields__is_active__include=True,
-        fields__name__include=False,
+         fields__name__include=False,
         fields__code__include=False,
         fields__lectures__include=lambda params, **_: params.unit.lectures,
         fields__problem_classes__include=lambda params, **_: params.unit.problem_classes,
@@ -126,10 +124,6 @@ class UnitCreate(Page):
     )
     form = UnitForm.create(
         h_tag=None,
-        fields__standard_load=Field.non_rendered(
-            include=True,
-            initial=lambda params, **_: get_current_standard_load(),
-        )
     )
 
 
@@ -141,7 +135,7 @@ class UnitList(Page):
         lambda params, **_: Unit.get_model_header()
     )
     list = UnitTable(
-        rows=UnitTable.annotate_query_set(Unit.objects.all()),
+        rows=UnitTable.annotate_query_set(Unit.available_objects.all()),
     )
 
 

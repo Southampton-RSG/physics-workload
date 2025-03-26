@@ -3,13 +3,16 @@ from django.core.validators import MinValueValidator
 from django.db.models import Model, CharField, TextField, BooleanField, Manager, IntegerField, CheckConstraint, Q, F
 from django.utils.html import format_html
 
-from app.models.managers import ActiveManager
-from app.models.mixins import ModelCommonMixin
+from model_utils.managers import QueryManager
+from model_utils.models import SoftDeletableModel
+from simple_history.models import HistoricalRecords
+
+from app.models.common import ModelCommon
 
 from simpleeval import simple_eval
 
 
-class LoadFunction(ModelCommonMixin, Model):
+class LoadFunction(ModelCommon):
     """
     Evaluatable Python expression that determines the load for a number of students,
     e.g. for number of tutees or when marking a dissertation.
@@ -26,9 +29,6 @@ class LoadFunction(ModelCommonMixin, Model):
             "Evaluated using the <a class='font-monospace' href='https://github.com/danthedeckie/simpleeval'>simpleeval</a> Python module."
         )
     )
-    is_active = BooleanField(default=True)
-    objects_active = ActiveManager()
-    objects = Manager()
 
     plot_minimum = IntegerField(
         null=True, blank=True, help_text="If provided, range to plot function over.",

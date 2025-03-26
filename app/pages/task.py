@@ -32,7 +32,7 @@ class TaskDetail(Page):
 
     @staticmethod
     def filter_staff(task):
-        staff_allocated = task.assignment_set.values_list('staff', flat=True)
+        staff_allocated = task.assignment_set.filter(is_removed=False).values_list('staff', flat=True)
         print(staff_allocated)
         staff_allowed = Staff.objects.exclude(pk__in=staff_allocated)
         print(staff_allowed)
@@ -53,13 +53,13 @@ class TaskDetail(Page):
         #     )
         ),
         columns__delete=EditColumn.delete(),
-        rows=lambda params, **_: params.task.assignment_set.all(),
+        rows=lambda params, **_: params.task.assignment_set.filter(is_removed=False).all(),
     )
     br = html.br()
     form = TaskForm(
         title="Details",
         auto__model=Task, instance=lambda params, **_: params.task,
-        auto__exclude=['unit', 'is_active', 'standard_load'],
+        auto__exclude=['unit', 'standard_load'],
         fields__coursework_fraction__include=lambda params, **_: params.task.coursework_fraction,
         fields__exam_fraction__include=lambda params, **_: params.task.exam_fraction,
         fields__load_function__include=lambda params, **_: params.task.students,
@@ -125,7 +125,7 @@ class TaskList(Page):
         lambda params, **_: Task.get_model_header(),
     )
     list = TaskTable(
-        rows=TaskTable.annotate_query_set(Task.objects.all()),
+        rows=TaskTable.annotate_query_set(Task.available_objects.all()),
     )
 
 

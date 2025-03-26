@@ -5,12 +5,11 @@
     "fields": {
       "account": "aa1a23",
       "name": "Accomando",
-      "is_active": 1,
       "academic_group": "O",
       "gender": "F",
       "fte_fraction": 1.0,
       "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "standard_load": 2025
+      "standard_load": 1
     }
   },
   {
@@ -19,12 +18,11 @@
     "fields": {
       "account": "bb1b23",
       "name": "Banerji",
-      "is_active": 1,
       "academic_group": "A",
       "gender": "F",
       "hours_fixed": 140,
       "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "standard_load": 2025
+      "standard_load": 1
     }
   },
   {
@@ -33,12 +31,11 @@
     "fields": {
       "account": "ff1f23",
       "name": "Freegarde",
-      "is_active": 1,
       "academic_group": "Q",
       "gender": "M",
       "fte_fraction": 0.5,
       "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "standard_load": 2025
+      "standard_load": 1
     }
   }
 ]

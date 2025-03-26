@@ -42,10 +42,6 @@ class StaffEdit(Page):
         h_tag=None,
         auto__instance=lambda params, **_: params.staff,
         auto__exclude=['load_target', 'load_assigned', 'load_historic_balance', 'standard_load'],
-        # fields__load_target__include=False,
-        # fields__load_assigned__include=False,
-        # fields__load_historic_balance__include=False,
-        # fields__standard_load__include=False,
     )
 
 
@@ -76,7 +72,7 @@ class StaffDetail(Page):
         h_tag=None,
         auto__instance=lambda params, **_: params.staff,
         auto__exclude=[
-            'is_active', 'notes', 'standard_load', 'user'
+            'notes', 'standard_load', 'user'
         ],
         fields__fte_fraction__include=lambda params, **_: params.staff.fte_fraction,
         fields__hours_fixed__include=lambda params, **_: params.staff.hours_fixed,
@@ -84,7 +80,6 @@ class StaffDetail(Page):
         fields__load_target__group='row2',
         fields__load_assigned__group = 'row2',
         fields__load_historic_balance__group = 'row2',
-        fields__is_active__include=False,
         editable=False,
         actions__submit=None,
     )
@@ -98,7 +93,7 @@ class StaffDetail(Page):
             render_column=False,
             field__parsed_data=lambda params, **_: params.staff,
         ),
-        rows=lambda params, **_: Assignment.objects.filter(staff=params.staff),
+        rows=lambda params, **_: Assignment.available_objects.filter(staff=params.staff),
         columns__delete=EditColumn.delete(),
         iommi_style=floating_fields_select2_inline_style,
     )
@@ -113,7 +108,7 @@ class StaffList(Page):
     )
     list = StaffTable(
         h_tag=None,
-        rows=StaffTable.annotate_rows(Staff.objects_active),
+        rows=StaffTable.annotate_rows(Staff.available_objects),
     )
 
 

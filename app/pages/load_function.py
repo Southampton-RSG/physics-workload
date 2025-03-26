@@ -45,7 +45,6 @@ class LoadFunctionCreate(Page):
     )
     form = Form.create(
         h_tag=None, auto__model=LoadFunction,
-        auto__exclude=['is_active'],
         fields__plot_minimum__group="Plot",
         fields__plot_maximum__group="Plot",
         iommi_style=floating_fields_style,
@@ -65,7 +64,6 @@ class LoadFunctionEdit(Page):
         auto__model=LoadFunction, instance=lambda params, **_: params.load_function,
         fields__plot_minimum__group="Plot",
         fields__plot_maximum__group="Plot",
-        fields__is_active__group="Plot",
         iommi_style=floating_fields_style,
         editable=True,
         assets=mathjax_js,
@@ -85,7 +83,7 @@ class LoadFunctionDetail(Page):
     )
     detail = Form(
         auto__model=LoadFunction, instance=lambda params, **_: params.load_function,
-        auto__exclude=['name', 'is_active'],
+        auto__exclude=['name'],
         fields__plot_minimum=dict(
             group="Plot",
             include=lambda params, **_: params.load_function.plot_minimum,
@@ -136,8 +134,8 @@ class LoadFunctionList(Page):
     list = Table(
         h_tag=None,
         auto__model=LoadFunction,
+        rows=LoadFunction.available_objects.all(),
         auto__exclude=['notes'],
-        columns__is_active__render_column=False,
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
         columns__expression__cell__template=Template("<td class='font-monospace'>{{ value | truncatechars:32 }}</td>"),
         columns__modify=ColumnModify.create(),

@@ -5,22 +5,20 @@ from typing import Type
 from django.contrib.auth.models import AbstractUser
 from django.template.loader import render_to_string
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models import Model, ForeignKey, PROTECT, CharField, FloatField, TextField, IntegerField, BooleanField, Manager
-from django.db.models.signals import pre_save, post_save
-from django.dispatch import receiver
+from django.db.models import Model, ForeignKey, PROTECT, CharField, FloatField, TextField, IntegerField
+
 from django.urls import reverse
-from model_utils.managers import QueryManager
-from simple_history.models import HistoricalRecords
+from simple_history.models import HistoricForeignKey
 
 from app.models.load_function import LoadFunction
 from app.models.unit import Unit
-from app.models.mixins import ModelCommonMixin
+from app.models.common import ModelCommon
 
 # Set up logging for this file
 logger = getLogger(__name__)
 
 
-class Task(ModelCommonMixin, Model):
+class Task(ModelCommon, Model):
     """
     This is the model for tasks
     """
@@ -38,12 +36,6 @@ class Task(ModelCommonMixin, Model):
     )
 
     name = CharField(max_length=128, blank=False)
-
-    is_active = BooleanField(default=True)
-    objects_active = QueryManager(is_active=True)
-    objects = Manager()
-
-    history = HistoricalRecords()
 
     number_needed = IntegerField(
         null=False, blank=False, default=1,
@@ -65,7 +57,7 @@ class Task(ModelCommonMixin, Model):
         verbose_name="Extra load hours for first-time",
     )
 
-    load_function = ForeignKey(
+    load_function = HistoricForeignKey(
         LoadFunction, blank=True, null=True, on_delete=PROTECT,
         help_text="Function by which student load for this task scales",
     )
@@ -86,13 +78,13 @@ class Task(ModelCommonMixin, Model):
     description = TextField(blank=False)
     notes = TextField(blank=True)
 
-    standard_load = ForeignKey(
+    standard_load = HistoricForeignKey(
         'StandardLoad', on_delete=PROTECT,
         verbose_name="Year",
     )
 
     class Meta:
-        ordering = ('is_active', 'unit', 'name',)
+        ordering = ('unit', 'name',)
         verbose_name = 'Task'
         verbose_name_plural = 'Tasks'
 
@@ -120,9 +112,10 @@ class Task(ModelCommonMixin, Model):
         else:
             return f"{self.name}"
 
-    def get_instance_header(self) -> str:
+    def get_instance_header(self, text: str = None) -> str:
         """
         Overrides the default instance header to include the unit, with link, if present.
+        :param text: Ignored.
         :return: The rendered HTML template for this model.
         """
         return render_to_string(
@@ -143,10 +136,10 @@ class Task(ModelCommonMixin, Model):
             return super().get_absolute_url()
 
     def has_any_provisional(self) -> bool:
-        return any(self.assignment_set.values_list('is_provisional', flat=True))
+        return any(self.assignment_set.filter(is_removed=False).values_list('is_provisional', flat=True))
 
     def has_any_first_time(self) -> bool:
-        return any(self.assignment_set.values_list('is_first_time', flat=True))
+        return any(self.assignment_set.filter(is_removed=False).values_list('is_first_time', flat=True))
 
     def has_access(self, user: AbstractUser) -> bool:
         """
@@ -159,7 +152,7 @@ class Task(ModelCommonMixin, Model):
         elif user.is_anonymous:
             return False
         else:
-            return user.staff in self.assignment_set.values_list('staff', flat=True)
+            return user.staff in self.assignment_set.filter(is_removed=False).values_list('staff', flat=True)
 
     def update_load(self) -> True:
         """

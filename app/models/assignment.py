@@ -1,32 +1,34 @@
 from logging import getLogger
 from typing import Type
 
-from django.db.models import Model, ForeignKey, PROTECT, TextField, BooleanField, Index, FloatField
+from django.db.models import Model, ForeignKey, PROTECT, TextField, BooleanField, Index, FloatField, Manager
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
+from simple_history.models import HistoricForeignKey
+
 from app.models.task import Task
 from app.models.staff import Staff
-from app.models.mixins import ModelCommonMixin
+from app.models.common import ModelCommon
 
 
 logger = getLogger(__name__)
 
 
-class Assignment(ModelCommonMixin, Model):
+class Assignment(ModelCommon, Model):
     """
     Pairs a Staff member up with the task they're performing.
     """
     icon = 'clipboard'
     url_root = 'assignment'
 
-    task = ForeignKey(
+    task = HistoricForeignKey(
         Task, blank=False, null=False, on_delete=PROTECT,
         related_name='assignment_set',
     )
-    staff = ForeignKey(
+    staff = HistoricForeignKey(
         Staff, blank=False, null=False, on_delete=PROTECT,
-        limit_choices_to={'is_active': True},
+        limit_choices_to={'is_removed': False},
         related_name='assignment_set',
     )
 
@@ -92,3 +94,7 @@ def apply_load(
     instance.staff.save()
     instance.staff.standard_load.update_target_load_per_fte()
     instance.staff.standard_load.save()
+    instance.task = None
+    instance.staff = None
+    instance.save()
+

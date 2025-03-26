@@ -11,7 +11,7 @@ class TaskForm(Form):
     """
     class Meta:
         auto__model = Task
-        auto__exclude = ['is_active', 'load_calc', 'load_calc_first', 'standard_load']
+        auto__exclude = ['load_calc', 'load_calc_first', 'standard_load']
 
         fields__name__group = "Basic"
         fields__number_needed__group = "Basic"
@@ -44,7 +44,7 @@ class TaskForm(Form):
                 # This was an error,
                 return
 
-            task_old: Task = Task.objects.get(pk=form.instance.pk)
+            task_old: Task = Task.available_objects.get(pk=form.instance.pk)
             task_new: Task = form.instance
 
             form.apply(task_new)
@@ -58,7 +58,7 @@ class TaskForm(Form):
                 assignment_load_has_changed: bool = False
 
                 # The total load has changed, so we need to update the assignments
-                for assignment in task_new.assignment_set.all():
+                for assignment in task_new.assignment_set.filter(is_removed=False).all():
                     if assignment.update_load():
                         # If this has actually changed the assignment loads too, then update them and the staff
                         assignment_load_has_changed = True

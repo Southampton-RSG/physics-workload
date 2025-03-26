@@ -4,13 +4,11 @@
     "fields": {
       "name": "Physics from Evidence I",
       "code": "PHYS2022",
-      "is_active": 1,
       "has_dissertation": 0,
       "has_placement": 0,
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       "students": 109,
-      "credits": 15,
-      "standard_load": 2025
+      "credits": 15
     }
   },
   {
@@ -19,7 +17,6 @@
       "name": "Galaxies",
       "code": "PHYS2013",
       "academic_group": "A",
-      "is_active": 1,
       "has_dissertation": 0,
       "has_placement": 0,
       "lectures": 33,
@@ -28,8 +25,7 @@
       "exam_mark_fraction": 0.75,
       "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
       "students": 54,
-      "credits": 15,
-      "standard_load": 2025
+      "credits": 15
     }
   },
   {
@@ -37,13 +33,11 @@
     "fields": {
       "name": "MPhys with Indsutrial Placement",
       "code": "PHYS6027",
-      "is_active": 1,
       "has_dissertation": 0,
       "has_placement": 1,
       "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
       "students": 2,
-      "credits": 15,
-      "standard_load": 2025
+      "credits": 15
     }
   }
 ]

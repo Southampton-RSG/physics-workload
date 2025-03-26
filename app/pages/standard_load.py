@@ -6,9 +6,9 @@ from django.urls import path
 from iommi import Page, Table, html, Form, Column, Header, Action
 
 from app.models.standard_load import StandardLoad
-from app.forms.standard_load import StandardLoadForm, StandardLoadRecalculateForm
+from app.forms.standard_load import StandardLoadForm
 from app.pages.components import Equations
-from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceDetail, HeaderList
+from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceDetail, HeaderList, HeaderInstanceHistory
 from app.style import horizontal_fields_style, floating_fields_style
 
 
@@ -23,9 +23,12 @@ class StandardLoadEdit(Page):
     form = StandardLoadForm.edit(
         h_tag=None,
         instance=lambda params, **_: params.standard_load,
-        auto__exclude=['year'],
         iommi_style=horizontal_fields_style,
-        fields__notes__iommi_style=floating_fields_style,
+        fields=dict(
+            notes__iommi_style=floating_fields_style,
+            year__include=False,
+            is_removed=False,
+        ),
         editable=True,
         extra__redirect_to='..',
     )
@@ -47,7 +50,11 @@ class StandardLoadDetail(Page):
             ),
             form=Form(
                 auto__model=StandardLoad, instance=lambda params, **_: params.standard_load,
-                auto__exclude=['year', 'target_load_per_fte', 'load_fte_misc', 'notes', 'target_load_per_fte_calc'],
+                auto__include=[
+                    'load_lecture', 'load_lecture_first',
+                    'load_coursework_set',  'load_coursework_credit', 'load_coursework_marked',
+                    'load_exam_credit', 'load_exam_marked',
+                ],
                 iommi_style=horizontal_fields_style,
                 editable=False,
                 actions__submit=None,
@@ -62,9 +69,17 @@ class StandardLoadDetail(Page):
             ),
             form=Form(
                 auto__model=StandardLoad, instance=lambda params, **_: params.standard_load,
-                auto__include=['load_fte_misc', 'target_load_per_fte', 'target_load_per_fte_calc'],
-                fields__target_load_per_fte__initial=lambda params, **_: int(params.standard_load.target_load_per_fte),
-                fields__target_load_per_fte_calc__initial=lambda params, **_: int(params.standard_load.target_load_per_fte_calc) if params.standard_load.target_load_per_fte_calc else '',
+                auto__include=[
+                    'load_fte_misc', 'target_load_per_fte', 'target_load_per_fte_calc'
+                ],
+                fields=dict(
+                    target_load_per_fte=dict(
+                        initial=lambda params, **_: int(params.standard_load.target_load_per_fte),
+                    ),
+                    target_load_per_fte_calc=dict(
+                        initial=lambda params, **_: int(params.standard_load.target_load_per_fte_calc) if params.standard_load.target_load_per_fte_calc else '',
+                    )
+                ),
                 iommi_style=horizontal_fields_style,
                 editable=False,
                 actions__submit=None,
@@ -73,36 +88,34 @@ class StandardLoadDetail(Page):
     )
     notes = Form(
         auto__model=StandardLoad, instance=lambda params, **_: params.standard_load,
-        auto__include=['notes'],
+        auto__include=[
+            'notes'
+        ],
         iommi_style=floating_fields_style,
         editable=False,
     )
-    form = StandardLoadRecalculateForm()
 
 
-class StandardLoadList(Page):
+class StandardLoadHistory(Page):
     """
-    Page listing the standard load over history
+
     """
-    header = HeaderList(
-        lambda params, **_: StandardLoad.get_model_header(),
+    header = HeaderInstanceHistory(
+        lambda params, **_: params.standard_load.get_instance_header(),
     )
-    list = Table(
-        h_tag=None,
+    table = Table(
         auto__model=StandardLoad,
-        auto__include=['year'],
-        columns__year__cell__value=lambda row, **_: f"{row.year} - {row.year+1}",
-        columns__year__cell__url=lambda row, **_: row.get_absolute_url(),
-        columns__edit=Column.edit(
-            cell__url=lambda row, **_: f"{row.get_absolute_url()}edit/",
-            include=lambda request, **_: request.user.is_staff,
+        auto__include=['year', 'target_load_per_fte_calc'],
+        rows=lambda params, **_: params.standard_load.history.all(),
+        columns__history_date=dict(
+            include=True,
+            display_name="Date"
         ),
     )
 
 
-
 urlpatterns = [
+    path('load/<standard_load>/history/', StandardLoadHistory().as_view(), name='standard_load_history'),
     path('load/<standard_load>/edit/', StandardLoadEdit().as_view(), name='standard_load_edit'),
     path('load/<standard_load>/', StandardLoadDetail().as_view(), name='standard_load_detail'),
-    path('load/', StandardLoadList().as_view(), name='standard_load_list'),
 ]

@@ -6,15 +6,21 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.db.models import Model
 from django.http import HttpRequest
+
+from model_utils.models import SoftDeletableModel
+
 from iommi import Fragment, Header, html
+from simple_history.models import HistoricalRecords
 
 
-class ModelCommonMixin(Model):
+class ModelCommon(SoftDeletableModel):
     """
     Contains the framework for a DB model to have an icon and title associated with it
 
     Classes implement `icon` (a font-awesome icon name) and `url_root` (the Django URL resolver root for that model).
     """
+    history = HistoricalRecords(inherit=True)
+
     class Meta:
         abstract = True
 

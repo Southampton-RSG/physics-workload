@@ -23,7 +23,7 @@ clean:
 	uv run manage.py migrate
 
 superuser:
-	export DJANGO_SUPERUSER_PASSWORD=password
-	uv run manage.py createsuperuser --noinput --username admin --email admin@admin.com
+	uv run manage.py createsuperuser --username teachingtimetool --email admin@admin.com --noinput
+	uv run manage.py shell < ./scripts/create_default_createsuperuser.py
 
 all: clean data superuser

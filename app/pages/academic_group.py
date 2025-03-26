@@ -22,7 +22,7 @@ class AcademicGroupDetail(Page):
     )
 
     staff = StaffTable(
-        rows=lambda params, **_: StaffTable.annotate_rows(params.academic_group.staff_set.filter(is_active=True)),
+        rows=lambda params, **_: StaffTable.annotate_rows(params.academic_group.staff_set.filter(is_removed=False)),
         columns__academic_group_code__include=False,
         query__include=False,
         attrs__class={'mb-3': True},
@@ -110,12 +110,13 @@ class AcademicGroupList(Page):
     list = Table(
         h_tag=None,
         auto__model=AcademicGroup,
+        rows=AcademicGroup.available_objects.all(),
         auto__include=['name'],
         columns__staff=Column(
-            cell__value=lambda row, **_: row.staff_set.count(),
+            cell__value=lambda row, **_: row.staff_set.filter(is_removed=False).count(),
         ),
         columns__units=Column(
-            cell__value=lambda row, **_: row.unit_set.count(),
+            cell__value=lambda row, **_: row.unit_set.filter(is_removed=False).count(),
         ),
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
         columns__edit=Column.edit(

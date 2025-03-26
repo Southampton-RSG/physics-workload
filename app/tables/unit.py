@@ -10,7 +10,7 @@ from app.style import floating_fields_style
 class UnitTable(Table):
     class Meta:
         auto__model=Unit
-        auto__include=['is_active', 'code', 'name', 'academic_group', 'task_set', 'students']
+        auto__include=['code', 'name', 'academic_group', 'task_set', 'students']
         # -------- HIDDEN COLUMNS --------
         columns__assignment_open=Column(render_column=False)
         columns__assignment_provisional=Column(render_column=False)
@@ -28,10 +28,6 @@ class UnitTable(Table):
                 include=True,
                 freetext=True,
             ),
-        )
-        columns__is_active=dict(
-            render_column=False,
-            filter__include=True,
         )
         columns__task_set=dict(
             display_name='Tasks',
@@ -54,11 +50,6 @@ class UnitTable(Table):
                         'Has Provisional',
                         'Has Unassigned',
                     ],
-                ),
-                fields__is_active=Field.boolean(
-                    display_name='Active Only',
-                    initial=True,
-                    after='status',
                 ),
                 actions__reset=Action.button(display_name='Clear Filter', attrs__type='reset'),
             ),

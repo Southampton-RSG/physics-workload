@@ -8,22 +8,23 @@ from django.db.models import (
 )
 from django.db.models.deletion import PROTECT, SET_NULL
 from django.utils.html import format_html
-from model_utils.managers import QueryManager
+
+from simple_history.models import HistoricForeignKey
 
 from app.models.academic_group import AcademicGroup
-from app.models.mixins import ModelCommonMixin
+from app.models.common import ModelCommon
 
 logger = getLogger(__name__)
 
 
-class Staff(ModelCommonMixin, Model):
+class Staff(ModelCommon):
     """
     Member of staff; not necessarily a current user.
     """
     icon = 'user'
     url_root = 'staff'
 
-    user = ForeignKey(
+    user = HistoricForeignKey(
         settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=SET_NULL,
     )
     account = CharField(
@@ -78,20 +79,15 @@ class Staff(ModelCommonMixin, Model):
         ],
     )
 
-    is_active = BooleanField(default=True)
-
     notes = TextField(blank=True)
 
-    standard_load = ForeignKey(
+    standard_load = HistoricForeignKey(
         'StandardLoad', on_delete=PROTECT,
         verbose_name="Year",
     )
 
-    objects_active = QueryManager(is_active=True)
-    objects = Manager()
-
     class Meta:
-        ordering = ('is_active', 'name')
+        ordering = ('is_removed', 'name')
         verbose_name = 'Staff Member'
         verbose_name_plural = 'Staff Members'
         indexes = [
@@ -161,7 +157,7 @@ class Staff(ModelCommonMixin, Model):
         if self.hours_fixed:
             load_target = self.hours_fixed
         else:
-            load_target = self.fte_fraction * self.standard_load.target_load_per_fte
+            load_target = self.fte_fraction * self.standard_load.target_load_per_fte_calc
 
         if self.load_target != load_target:
             self.load_target = load_target

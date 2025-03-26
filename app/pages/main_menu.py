@@ -3,36 +3,24 @@ from django.template import Template
 from iommi import html, Page
 from iommi.experimental.main_menu import MainMenu, M, EXTERNAL
 
+from app.models.standard_load import get_current_standard_load
 from app.pages.academic_group import AcademicGroupList, AcademicGroupDetail, AcademicGroupCreate, AcademicGroupDelete, AcademicGroupEdit
 from app.pages.staff import StaffList, StaffDetail, StaffCreate, StaffEdit, StaffDelete
 from app.pages.unit import UnitList, UnitDetail, UnitCreate, UnitEdit, UnitDelete, get_menu_units_for_user
 from app.pages.task import TaskList, TaskDetail, TaskCreate, TaskEdit, TaskDelete
 from app.pages.load_function import LoadFunctionList, LoadFunctionDetail, LoadFunctionCreate, LoadFunctionEdit, LoadFunctionDelete
-from app.pages.standard_load import StandardLoadDetail, StandardLoadList
-
+from app.pages.standard_load import StandardLoadDetail
+from app.auth import has_staff_access
 from app.models import AcademicGroup, LoadFunction, Staff, Task, Unit, StandardLoad
 
 
 main_menu = MainMenu(
     items=dict(
-        logout=M(
-            icon='right-to-bracket',
-            view=EXTERNAL,
-            display_name='Log In',
-            url='/oauth2/callback',
-            include=lambda request, **_: not request.user.is_authenticated,
-        ),
-        log_out=M(
-            icon='left-from-bracket',
-            view=EXTERNAL,
-            display_name='Log Out',
-            url='/oauth2/callback',
-            include=lambda request, **_: request.user.is_authenticated,
-        ),
         staff=M(
             open=True,
             icon=Staff.icon,
             view=StaffList,
+            include=lambda request, **_: request.user.is_authenticated,
             items=dict(
                 detail=M(
                     view=StaffDetail,
@@ -74,6 +62,7 @@ main_menu = MainMenu(
         task=M(
             icon=Task.icon,
             view=TaskList,
+            include=lambda request, **_: request.user.is_authenticated,
             items=dict(
                 detail=M(
                     open=True,
@@ -89,6 +78,7 @@ main_menu = MainMenu(
             open=True,
             icon=AcademicGroup.icon,
             view=AcademicGroupList,
+            include=lambda request, **_: request.user.is_authenticated,
             items=dict(
                 detail=M(
                     open=True,
@@ -104,6 +94,7 @@ main_menu = MainMenu(
             path='/function/',
             icon=LoadFunction.icon,
             view=LoadFunctionList,
+            include=lambda request, **_: request.user.is_authenticated,
             items=dict(
                 detail=M(
                     view=LoadFunctionDetail,
@@ -117,7 +108,9 @@ main_menu = MainMenu(
         load=M(
             path='/load/',
             icon=StandardLoad.icon,
-            view=StandardLoadList,
+            view=lambda **_: StandardLoadDetail(year=get_current_standard_load().year).as_view(),
+            url=lambda **_: get_current_standard_load().get_absolute_url(),
+            include=lambda request, **_: request.user.is_authenticated,
             items=dict(
                 detail=M(
                     open=True,

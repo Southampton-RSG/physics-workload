@@ -43,6 +43,15 @@ class HeaderInstanceDetailEdit(Header):
         attrs__class={'position-relative': True}
 
 
+class HeaderInstanceHistory(Header):
+    """
+    A header without any extra buttons but with a time of deletion
+    """
+    class Meta:
+        attrs__class={'position-relative': True}
+        children__suffix=html.span(template='app/header/history_suffix.html')
+
+
 class HeaderInstanceDetailDelete(Header):
     """
     A header, with *only* a 'delete this model' button after it

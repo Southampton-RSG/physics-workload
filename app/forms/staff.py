@@ -20,7 +20,6 @@ class StaffForm(Form):
         fields__type__group='row1'
         fields__fte_fraction__group='row2'
         fields__hours_fixed__group='row2'
-        fields__is_active__group='row2'
         iommi_style = floating_fields_style
 
         @staticmethod
@@ -37,7 +36,7 @@ class StaffForm(Form):
                 # This was an error,
                 return
 
-            staff_old: Staff = Staff.objects.get(pk=form.instance.pk)
+            staff_old: Staff = Staff.available_objects.get(pk=form.instance.pk)
             staff_new: Staff = form.instance
 
             form.apply(staff_new)

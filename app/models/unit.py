@@ -2,16 +2,15 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models import Model, CharField, BooleanField, TextField, ForeignKey, IntegerField, FloatField, CheckConstraint, Q, F
+from django.db.models import Model, CharField, BooleanField, TextField, IntegerField, FloatField, CheckConstraint, Q, F
 from django.db.models.deletion import PROTECT
-from django.db.models.manager import Manager
-from model_utils.managers import QueryManager
+from simple_history.models import HistoricForeignKey
 
 from app.models.academic_group import AcademicGroup
-from app.models.mixins import ModelCommonMixin
+from app.models.common import ModelCommon
 
 
-class Unit(ModelCommonMixin, Model):
+class Unit(ModelCommon, Model):
     """
     Academic unit, e.g. PHYS!001
     """
@@ -20,7 +19,7 @@ class Unit(ModelCommonMixin, Model):
 
     code = CharField(max_length=16, blank=False, unique=True, primary_key=True)
     name = CharField(max_length=128, blank=False, unique=True)
-    academic_group = ForeignKey(
+    academic_group = HistoricForeignKey(
         AcademicGroup, blank=True, null=True, on_delete=PROTECT,
         verbose_name='Group',
     )
@@ -62,15 +61,6 @@ class Unit(ModelCommonMixin, Model):
     description = TextField(blank=True)
     notes = TextField(blank=True)
 
-    is_active = BooleanField(default=True)
-    objects_active = QueryManager(is_active=True)
-    objects = Manager()
-
-    standard_load = ForeignKey(
-        'StandardLoad', on_delete=PROTECT,
-        verbose_name="Year",
-    )
-
     class Meta:
         ordering = ['name']
         verbose_name = 'Unit'
@@ -93,7 +83,7 @@ class Unit(ModelCommonMixin, Model):
         """
         if self.has_dissertation:
             return sum(
-                self.task_set.values_list('student', flat=True)
+                self.task_set.filter(is_removed=False).values_list('student', flat=True)
             )
 
     def has_access(self, user: AbstractUser) -> bool:
@@ -104,13 +94,10 @@ class Unit(ModelCommonMixin, Model):
         """
         if super().has_access(user):
             return True
-        elif user.is_anonymous:
-            return False
-        else:
+        elif not user.is_anonymous:
             for task in self.task_set.all():
-                if user.staff in task.assignment_set.values_list('staff', flat=True):
+                if user.staff in task.assignment_set.filter(is_removed=False).values_list('staff', flat=True):
                     return True
 
-            return False
+        return False
 
-        return super().has_access(user)

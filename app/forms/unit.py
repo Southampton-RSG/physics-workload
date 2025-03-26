@@ -10,7 +10,7 @@ class UnitForm(Form):
     """
     class Meta:
         auto__model = Unit
-        auto__exclude = ['is_active', 'task_set' , 'standard_load']
+        auto__exclude = ['task_set', 'is_removed']
         fields__code__group = "Basics"
         fields__name__group = "Basics"
         fields__academic_group__group = "Basics"
@@ -43,7 +43,7 @@ class UnitForm(Form):
             # This was an error,
             return
 
-        unit_old: Unit = Unit.objects.get(pk=form.cleaned_data['pk'])
+        unit_old: Unit = Unit.available_objects.get(pk=form.cleaned_data['pk'])
         unit_new: Unit = form.instance
 
         form.apply(unit_new)
@@ -56,7 +56,7 @@ class UnitForm(Form):
         else:
             assignment_load_has_changed: bool = False
 
-            for task in unit_new.task_set.all():
+            for task in unit_new.task_set.filter(is_removed=False).all():
                 task_old_load_calc = task.load_calc
                 task_old_load_calc_first = task.load_calc_first
                 task_load_has_changed: bool = task.update_load()
@@ -65,7 +65,7 @@ class UnitForm(Form):
                     # If it actually has an effect, then flag that fact and update the task
                     task.save()
 
-                    for assignment in task.assignment_set.all():
+                    for assignment in task.assignment_set.filter(is_removed=False).all():
                         if assignment.update_load():
                             # If this has actually changed the assignment loads too, then update them and the staff
                             assignment_load_has_changed = True
