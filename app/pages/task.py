@@ -8,12 +8,9 @@ from django.template.loader import render_to_string
 from django.urls import path
 from django.utils.html import format_html
 
-from iommi import Page, Table, html, Form, EditTable, Column, Field, EditColumn
+from iommi import Page, Table, html, Form, EditTable, Column, Field, EditColumn, Header
 
-from app.models import Unit, Task, Assignment, Staff
-from app.models.standard_load import get_current_standard_load
-from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
-    HeaderInstanceDetail, HeaderList
+from app.models import Unit, Task, Assignment, Staff, StandardLoad
 from app.forms.task import TaskForm
 from app.tables.task import TaskTable
 
@@ -26,7 +23,7 @@ class TaskDetail(Page):
     """
     Page for showing task details
     """
-    header = HeaderInstanceDetail(
+    header = Header(
         lambda params, **_: params.task.get_instance_header()
     )
 
@@ -59,7 +56,7 @@ class TaskDetail(Page):
     form = TaskForm(
         title="Details",
         auto__model=Task, instance=lambda params, **_: params.task,
-        auto__exclude=['unit', 'standard_load'],
+        auto__exclude=['unit', 'is_removed'],
         fields__coursework_fraction__include=lambda params, **_: params.task.coursework_fraction,
         fields__exam_fraction__include=lambda params, **_: params.task.exam_fraction,
         fields__load_function__include=lambda params, **_: params.task.students,
@@ -73,7 +70,7 @@ class TaskEdit(Page):
     """
     Page for editing a task
     """
-    header = HeaderInstanceEdit(
+    header = Header(
         lambda params, **_: params.task.get_instance_header()
     )
     form = TaskForm.edit(
@@ -89,8 +86,8 @@ class TaskCreate(Page):
     """
     Page for creating a task
     """
-    header = HeaderInstanceCreate(
-        lambda params, **_: Task.get_model_header()
+    header = Header(
+        lambda params, **_: Task.get_model_header_singular()
     )
     form = TaskForm.create(
         h_tag=None,
@@ -99,7 +96,7 @@ class TaskCreate(Page):
         fields__load_calc__include=False,
         fields__standard_load=Field.non_rendered(
             include=True,
-            initial=lambda params, **_: get_current_standard_load(),
+            initial=lambda params, **_: StandardLoad.objects.latest(),
         )
     )
 
@@ -108,7 +105,7 @@ class TaskDelete(Page):
     """
     Page for deleting a task
     """
-    header = HeaderInstanceDelete(
+    header = Header(
         lambda params, **_: params.task.get_instance_header()
     )
     form = TaskForm.delete(
@@ -121,7 +118,7 @@ class TaskList(Page):
     """
     Page for listing tasks
     """
-    header = HeaderList(
+    header = Header(
         lambda params, **_: Task.get_model_header(),
     )
     list = TaskTable(

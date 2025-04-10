@@ -136,7 +136,9 @@ AUTH_ADFS = {
     'CLIENT_ID': adfs_client_id,
     'CLIENT_SECRET': adfs_client_secret,
     'CLAIM_MAPPING': {
-        'first_name': 'given_name', 'last_name': 'family_name', 'email': 'email'
+        'first_name': 'given_name',
+        'last_name': 'family_name',
+        'email': 'email'
     },
     'GROUPS_CLAIM': 'roles',
     'MIRROR_GROUPS': True,

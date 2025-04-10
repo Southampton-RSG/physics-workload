@@ -27,4 +27,5 @@ dependencies = [
     "python-ldap>=3.4.4",
     "django-auth-adfs>=1.15.0",
     "python-decouple>=3.8",
+    "pandas>=2.2.3",
 ]

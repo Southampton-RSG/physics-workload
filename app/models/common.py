@@ -85,7 +85,7 @@ class ModelCommon(SoftDeletableModel):
         return reverse(cls.url_root+'_list')
 
     @classmethod
-    def get_model_header(cls) -> str:
+    def get_model_header(cls, suffix: str|None = None) -> str:
         """
         Creates a header for the view listing all of this model.
         :return: The rendered template, for use on the page.
@@ -94,7 +94,21 @@ class ModelCommon(SoftDeletableModel):
             template_name='app/header/header.html',
             context={
                 'icon': cls.icon, 'url': cls.get_model_url(),
-                'text': cls._meta.verbose_name_plural.title()
+                'text': cls._meta.verbose_name_plural.title()+(f' / {suffix}' if suffix else '')
+            }
+        )
+
+    @classmethod
+    def get_model_header_singular(cls, suffix: str|None = None) -> str:
+        """
+        Creates a header for a create view for this model.
+        :return: The rendered template, for use on the page.
+        """
+        return render_to_string(
+            template_name='app/header/header.html',
+            context={
+                'icon': cls.icon, 'url': cls.get_model_url(),
+                'text': cls._meta.verbose_name.title()+(f' / {suffix}' if suffix else '')
             }
         )
 

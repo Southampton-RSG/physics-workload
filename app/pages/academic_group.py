@@ -4,7 +4,7 @@ Handles the views for the Academic Groups
 from django.db.models import Count, Sum, Q, F
 from django.urls import path
 
-from iommi import Page, Table, html, Form, EditTable, Column, Action, Menu, Fragment
+from iommi import Page, Table, html, Form, EditTable, Column, Action, Menu, Fragment, Header
 
 from app.models import AcademicGroup, Staff, Unit
 from app.tables.staff import StaffTable
@@ -17,7 +17,7 @@ class AcademicGroupDetail(Page):
     Detail view showing group members and their workloads,
     as well as any units and their assignment status.
     """
-    header = HeaderInstanceDetail(
+    header = Header(
         lambda params, **_: params.academic_group.get_instance_header()
     )
 
@@ -52,7 +52,7 @@ class AcademicGroupEdit(Page):
     """
     Page showing an academic group to be edited
     """
-    header = HeaderInstanceEdit(
+    header = Header(
         lambda params, **_: params.academic_group.get_instance_header()
     )
     form = Form.edit(
@@ -69,8 +69,8 @@ class AcademicGroupCreate(Page):
     """
     Page showing an academic group to be created
     """
-    header = HeaderInstanceCreate(
-        lambda params, **_: AcademicGroup.get_model_header()
+    header = Header(
+        lambda params, **_: AcademicGroup.get_model_header_singular()
     )
     form = Form.create(
         h_tag=None,
@@ -85,7 +85,7 @@ class AcademicGroupDelete(Page):
     """
     Page showing an academic group to be created
     """
-    header = HeaderInstanceDelete(
+    header = Header(
         lambda params, **_: params.academic_group.get_instance_header(),
     )
     warning = html.p(
@@ -104,7 +104,7 @@ class AcademicGroupList(Page):
     """
     Page listing the academic groups
     """
-    title = HeaderList(
+    title = Header(
         lambda params, **_: AcademicGroup.get_model_header(),
     )
     list = Table(

@@ -26,7 +26,7 @@ class LoadFunction(ModelCommon):
     expression = TextField(
         blank=False, verbose_name="Weighting Expression",
         help_text=format_html(
-            "Evaluated using the <a class='font-monospace' href='https://github.com/danthedeckie/simpleeval'>simpleeval</a> Python module."
+            "Where $s$ is the number of students. Evaluated using the <a class='font-monospace' href='https://github.com/danthedeckie/simpleeval'>simpleeval</a> Python module."
         )
     )
 

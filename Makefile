@@ -4,7 +4,10 @@ site:
 	uv run manage.py loaddata site.json
 
 school:
-	uv run manage.py loaddata site standard_load academic_group staff
+	uv run manage.py loaddata site standard_load academic_group
+
+staff:
+	uv run manage.py loaddata staff
 
 unit: school
 	uv run manage.py loaddata load_function unit

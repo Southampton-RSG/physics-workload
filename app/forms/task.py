@@ -1,8 +1,13 @@
+from logging import getLogger
+
 from django.http import HttpResponseRedirect
 from iommi import Form
 
-from app.models import Task
+from app.models import Task, StandardLoad
 from app.style import floating_fields_style
+
+
+logger = getLogger(__name__)
 
 
 class TaskForm(Form):
@@ -11,7 +16,7 @@ class TaskForm(Form):
     """
     class Meta:
         auto__model = Task
-        auto__exclude = ['load_calc', 'load_calc_first', 'standard_load']
+        auto__exclude = ['load_calc', 'load_calc_first', 'is_removed']
 
         fields__name__group = "Basic"
         fields__number_needed__group = "Basic"
@@ -31,44 +36,14 @@ class TaskForm(Form):
         iommi_style = floating_fields_style
 
         @staticmethod
-        def actions__submit__post_handler(form, **_):
-            """
-            Make sure that we update the assignments if any of the task details change,
-            and update the teaching hours calculation if that's then implied.
+        def extra__on_delete(instance, **_):
+            logger.info(f"Deleting task member {instance}")
+            instance.delete()
+            StandardLoad.objects.latest().update_target_load_per_fte()
 
-            :param form:
-            :param _:
-            :return:
-            """
-            if not form.is_valid():
-                # This was an error,
-                return
-
-            task_old: Task = Task.available_objects.get(pk=form.instance.pk)
-            task_new: Task = form.instance
-
-            form.apply(task_new)
-            task_load_has_changed: bool = task_new.update_load()
-            task_new.save()
-
-            if not task_old:
-                # This is a new task, so the total load hasn't changed
-                pass
-            elif task_load_has_changed:
-                assignment_load_has_changed: bool = False
-
-                # The total load has changed, so we need to update the assignments
-                for assignment in task_new.assignment_set.filter(is_removed=False).all():
-                    if assignment.update_load():
-                        # If this has actually changed the assignment loads too, then update them and the staff
-                        assignment_load_has_changed = True
-                        assignment.save()
-                        if assignment.staff.update_load_assigned():
-                            assignment.staff.save()
-
-                if assignment_load_has_changed:
-                    # If the total assigned load changed, then update the standard load calculations
-                    task_new.standard_load.update_target_load_per_fte()
-                    task_new.standard_load.save()
-
-            return HttpResponseRedirect('..')
+        @staticmethod
+        def extra__on_save(form, instance, **_):
+            logger.info(f"Editing task {instance}, as {form.extra.crud_type}")
+            if instance.update_load():
+                logger.info(f"Task changes require recalculation of global load target.")
+                StandardLoad.objects.latest().update_calculated_loads()

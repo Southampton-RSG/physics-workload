@@ -30,8 +30,8 @@ class HeaderInstanceDetail(Header):
     A header, with edit and delete buttons after it
     """
     class Meta:
+        attrs__class = {'position-relative': True}
         children__button=html.span(template='app/header/modify_button.html')
-        attrs__class={'position-relative': True}
 
 
 class HeaderInstanceDetailEdit(Header):
@@ -39,8 +39,9 @@ class HeaderInstanceDetailEdit(Header):
     A header, with *only* an 'edit this model' button after it
     """
     class Meta:
-        children__button=html.span(template='app/header/edit_button.html')
         attrs__class={'position-relative': True}
+        children__button=html.span(template='app/header/edit_button.html')
+
 
 
 class HeaderInstanceHistory(Header):

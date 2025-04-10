@@ -14,6 +14,10 @@ def home_view_redirect(request: HttpRequest) -> HttpResponseRedirect:
         if request.user.is_staff:
             return HttpResponseRedirect(reverse('about'))
         else:
-            return HttpResponseRedirect(request.user.staff.get_absolute_url())
+            try:
+                return HttpResponseRedirect(request.user.staff.get_absolute_url())
+            except:
+                return HttpResponseRedirect(reverse('about'))
+
     else:
         return HttpResponseRedirect(reverse('about'))

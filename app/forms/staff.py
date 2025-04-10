@@ -1,9 +1,12 @@
-from django.http import HttpResponseRedirect
-from iommi import Form, Field
+from logging import getLogger, Logger
 
+from iommi import Form
 
-from app.models.staff import Staff
+from app.models import StandardLoad, Staff
 from app.style import floating_fields_style
+
+
+logger: Logger = getLogger(__name__)
 
 
 class StaffForm(Form):
@@ -23,30 +26,16 @@ class StaffForm(Form):
         iommi_style = floating_fields_style
 
         @staticmethod
-        def actions__submit__post_handler(form, **_):
-            """
-            Make sure that we update the staff member to have the correct load target,
-            and update the teaching hours calculation if that's then implied.
+        def extra__on_delete(instance, **_):
+            logger.info(f"Deleting staff member {instance}")
+            instance.delete()
+            standard_load: StandardLoad = StandardLoad.objects.latest()
+            standard_load.update_target_load_per_fte()
 
-            :param form:
-            :param _:
-            :return:
-            """
-            if not form.is_valid():
-                # This was an error,
-                return
-
-            staff_old: Staff = Staff.available_objects.get(pk=form.instance.pk)
-            staff_new: Staff = form.instance
-
-            form.apply(staff_new)
-
-            target_load_has_changed: bool = staff_new.update_load_target()
-            staff_new.save()
-
-            # So, did this change anything about the staff that would imply a need for recalculating the target teaching hours?
-            if staff_old and target_load_has_changed:
-                staff_new.standard_load.update_target_load_per_fte()
-                staff_new.standard_load.save()
-
-            return HttpResponseRedirect('..')
+        @staticmethod
+        def extra__on_save(form, instance, **_):
+            logger.info(f"Editing staff member {instance}, as {form.extra.crud_type}")
+            if instance.update_load_target():
+                logger.info(f"Staff changes require recalculation of global load target.")
+                standard_load: StandardLoad = StandardLoad.objects.latest()
+                standard_load.update_target_load_per_fte()

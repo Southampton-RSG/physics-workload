@@ -13,8 +13,6 @@ from iommi.experimental.main_menu import M
 
 from app.forms.task import TaskForm
 from app.forms.unit import UnitForm
-from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
-    HeaderInstanceDetail, HeaderList
 from app.pages.task import TaskDetail, TaskEdit, TaskDelete
 from app.models import Unit, Task
 from app.tables.task import TaskTable
@@ -44,11 +42,11 @@ class UnitDetail(Page):
     """
     View a unit and its associated tasks
     """
-    header = HeaderInstanceDetail(
+    header = Header(
         lambda params, **_: params.unit.get_instance_header()
     )
     tasks = TaskTable(
-        h_tag=HeaderList,
+        h_tag=Header,
         columns__unit_code__include=False,
         query__include=False,
         rows=lambda params, **_: TaskTable.annotate_query_set(params.unit.task_set.filter(is_removed=False).all()),
@@ -76,7 +74,7 @@ class UnitDelete(Page):
     """
     View a unit and its associated tasks
     """
-    header = HeaderInstanceDelete(
+    header = Header(
         lambda params, **_: params.unit.get_instance_header()
     )
     form = UnitForm.delete(
@@ -102,10 +100,8 @@ class UnitEdit(Page):
     """
     Edit a unit's details
     """
-    header = HeaderInstanceEdit(
-        lambda params, **_: format_html(
-            f"{params.unit.get_instance_header()}"
-        )
+    header = Header(
+        lambda params, **_: params.unit.get_instance_header()
     )
     form = UnitForm.edit(
         h_tag=None,
@@ -117,10 +113,8 @@ class UnitCreate(Page):
     """
     Page showing a unit to be created
     """
-    header = HeaderInstanceCreate(
-        lambda params, **_: format_html(
-            Unit.get_model_header()
-        ),
+    header = Header(
+        lambda params, **_: Unit.get_model_header_singular()
     )
     form = UnitForm.create(
         h_tag=None,
@@ -131,7 +125,7 @@ class UnitList(Page):
     """
     List of all currently active modules.
     """
-    header = HeaderList(
+    header = Header(
         lambda params, **_: Unit.get_model_header()
     )
     list = UnitTable(
@@ -142,6 +136,7 @@ class UnitList(Page):
 urlpatterns = [
     path('unit/create/', UnitCreate().as_view(), name='unit_create'),
     path('unit/<unit>/create/', UnitTaskCreate().as_view(), name='unit_task_create'),
+    path('unit/<unit>/delete/', UnitDelete().as_view(), name='unit_delete'),
     path('unit/<unit>/edit/', UnitEdit().as_view(), name='unit_edit'),
     path('unit/<unit>/<task>/edit/', TaskEdit().as_view(), name='unit_task_edit'),
     path('unit/<unit>/<task>/delete/', TaskDelete().as_view(), name='unit_task_delete'),

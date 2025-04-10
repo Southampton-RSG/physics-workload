@@ -101,3 +101,30 @@ class Unit(ModelCommon, Model):
 
         return False
 
+    def update_load(self) -> bool:
+        """
+
+        :return:
+        """
+        recalculate_loads: bool = False
+
+        for task in self.task_set.filter(is_removed=False).all():
+            task_old_load_calc = task.load_calc
+            task_old_load_calc_first = task.load_calc_first
+            task_load_has_changed: bool = task.update_load()
+
+            if task_load_has_changed:
+                # If it actually has an effect, then flag that fact and update the task
+                task.save()
+                recalculate_loads = True
+
+                for assignment in task.assignment_set.filter(is_removed=False).all():
+                    if assignment.update_load():
+                        # If this has actually changed the assignment loads too, then update them and the staff
+                        assignment.staff.update_load_assigned()
+
+        if recalculate_loads:
+            # If we need to update the standard load, then do so
+            from app.models.standard_load import StandardLoad
+            standard_load: StandardLoad = StandardLoad.objects.latest()
+            standard_load.update_target_load_per_fte()

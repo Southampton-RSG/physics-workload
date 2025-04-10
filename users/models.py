@@ -9,4 +9,4 @@ class CustomUser(AbstractUser):
     # add additional fields in here
 
     def __str__(self):
-        return self.email
+        return f"{self.first_name} {self.last_name}"

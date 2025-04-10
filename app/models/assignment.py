@@ -72,10 +72,12 @@ class Assignment(ModelCommon, Model):
         if self.is_first_time:
             if self.load_calc != self.task.load_calc_first:
                 self.load_calc = self.task.load_calc_first
+                self.save()
                 return True
         else:
             if self.load_calc != self.task.load_calc:
                 self.load_calc = self.task.load_calc
+                self.save()
                 return True
 
         return False

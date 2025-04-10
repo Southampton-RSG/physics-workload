@@ -4,7 +4,7 @@ Handles the views for the Load Functions Groups
 from django.urls import path
 from django.template import Template
 
-from iommi import Page, Table, html, Form, EditTable, Column, Field, Fragment
+from iommi import Page, Table, html, Form, EditTable, Column, Field, Fragment, Header
 
 from plotly.graph_objs import Layout, Figure, Scatter
 from plotly.graph_objs.layout import XAxis, YAxis
@@ -14,11 +14,10 @@ from dash_bootstrap_templates import load_figure_template
 load_figure_template('bootstrap_dark')
 
 from app.models import LoadFunction
+from app.forms.load_function import LoadFunctionForm
 
 from app.assets import mathjax_js
 from app.pages.components.tables import ColumnModify
-from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
-    HeaderInstanceDetail, HeaderList
 from app.style import floating_fields_style
 
 
@@ -26,47 +25,30 @@ class LoadFunctionDelete(Page):
     """
     Delete the load function
     """
-    header = HeaderInstanceDelete(
+    header = Header(
         lambda params, **_: params.load_function.get_instance_header(),
     )
-    detail_factors = Form.delete(
-        h_tag=None,
-        auto__model=LoadFunction, instance=lambda params, **_: params.load_function,
-        fields__plot_minimum__group="Plot",
-        fields__plot_maximum__group="Plot",
-        iommi_style=floating_fields_style,
-        assets=mathjax_js,
+    detail_factors = LoadFunctionForm.delete(
+        instance=lambda params, **_: params.load_function,
     )
 
 
 class LoadFunctionCreate(Page):
-    header = HeaderInstanceCreate(
-        lambda params, **_: params.load_function.get_model_header(),
+    header = Header(
+        lambda params, **_: LoadFunction.get_model_header_singular(),
     )
-    form = Form.create(
-        h_tag=None, auto__model=LoadFunction,
-        fields__plot_minimum__group="Plot",
-        fields__plot_maximum__group="Plot",
-        iommi_style=floating_fields_style,
-        editable=True,
-    )
+    form = LoadFunctionForm.create()
 
 
 class LoadFunctionEdit(Page):
     """
     Edit the standard load
     """
-    header = HeaderInstanceEdit(
+    header = Header(
         lambda params, **_: params.load_function.get_instance_header(),
     )
-    detail_factors = Form.edit(
-        h_tag=None,
-        auto__model=LoadFunction, instance=lambda params, **_: params.load_function,
-        fields__plot_minimum__group="Plot",
-        fields__plot_maximum__group="Plot",
-        iommi_style=floating_fields_style,
-        editable=True,
-        assets=mathjax_js,
+    detail_factors = LoadFunctionForm.edit(
+        instance=lambda params, **_: params.load_function,
         extra__redirect_to='..',
     )
     p = html.p(
@@ -78,21 +60,19 @@ class LoadFunctionDetail(Page):
     """
     Shows details of the standard load
     """
-    header = HeaderInstanceDetail(
+    header = Header(
         lambda params, **_: params.load_function.get_instance_header()
     )
-    detail = Form(
-        auto__model=LoadFunction, instance=lambda params, **_: params.load_function,
-        auto__exclude=['name'],
-        fields__plot_minimum=dict(
-            group="Plot",
-            include=lambda params, **_: params.load_function.plot_minimum,
+    detail = LoadFunctionForm(
+        instance=lambda params, **_: params.load_function,
+        fields=dict(
+            plot_minimum=dict(
+                include=lambda params, **_: params.load_function.plot_minimum,
+            ),
+            plot_maximum=dict(
+                include=lambda params, **_: params.load_function.plot_maximum,
+            ),
         ),
-        fields__plot_maximum=dict(
-            group="Plot",
-            include=lambda params, **_: params.load_function.plot_maximum,
-        ),
-        iommi_style=floating_fields_style,
         editable=False,
     )
     plot = Template("{{plotly | safe }}")
@@ -128,17 +108,17 @@ class LoadFunctionList(Page):
     """
     Page listing the standard load over history
     """
-    header = HeaderList(
+    header = Header(
         lambda params, **_: LoadFunction.get_model_header()
     )
     list = Table(
         h_tag=None,
         auto__model=LoadFunction,
-        rows=LoadFunction.available_objects.all(),
-        auto__exclude=['notes'],
+        auto__exclude=['notes', 'is_removed'],
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
         columns__expression__cell__template=Template("<td class='font-monospace'>{{ value | truncatechars:32 }}</td>"),
         columns__modify=ColumnModify.create(),
+        rows=LoadFunction.available_objects.all(),
     )
 
 def get_load_function_data(request, load_function):

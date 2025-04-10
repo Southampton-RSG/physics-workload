@@ -1,18 +1,18 @@
-FROM python:3.9
+FROM ghcr.io/astral-sh/uv:alpine
+
+RUN apk add --update gcc musl-dev openldap-dev python3-dev bash
 
 # set environment variables
+ENV PIP_DISABLE_PIP_VERSION_CHECK 1
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-COPY requirements.txt .
-# install python dependencies
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+RUN mkdir /var/www && mkdir /var/www/python-workload
+WORKDIR /var/www/python-workload
 
 COPY . .
 
-# running migrations
-RUN python manage.py migrate
+RUN uv run sync
+RUN uv run manage.py migrate
 
-# gunicorn
-CMD ["gunicorn", "--config", "gunicorn-cfg.py", "core.wsgi"]
+CMD ["uv", "run", "gunicorn", "core.wsgi"]

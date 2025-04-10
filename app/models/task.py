@@ -78,11 +78,6 @@ class Task(ModelCommon, Model):
     description = TextField(blank=False)
     notes = TextField(blank=True)
 
-    standard_load = HistoricForeignKey(
-        'StandardLoad', on_delete=PROTECT,
-        verbose_name="Year",
-    )
-
     class Meta:
         ordering = ('unit', 'name',)
         verbose_name = 'Task'
@@ -165,7 +160,9 @@ class Task(ModelCommon, Model):
         if self.unit and (self.coursework_fraction or self.exam_fraction):
             # ==== IF THIS IS A UNIT CO-ORDINATOR ====
             # SPREADSHEET LOGIC
-            standard_load: 'StandardLoad' = self.standard_load
+            from app.models.standard_load import StandardLoad
+            standard_load: StandardLoad = StandardLoad.available_objects.latest()
+
             unit: Unit = self.unit
 
             # ($I2+$Q2) = "Number of Lectures/Problem Classes Run by Coordinator" + "Number of Synoptic Lectures"
@@ -206,13 +203,6 @@ class Task(ModelCommon, Model):
             load_calc_first = load + self.load_fixed + load_lecture_first + self.load_fixed_first
             load_calc = load + self.load_fixed + load_lecture
 
-            if self.load_calc != load_calc or self.load_calc_first != load_calc_first:
-                self.load_calc_first = load_calc
-                self.load_calc = load_calc
-                return True
-            else:
-                return False
-
         else:
             # ==== IF THIS IS NOT A UNIT CO-ORDINATOR ====
             # Much simpler logic
@@ -225,9 +215,31 @@ class Task(ModelCommon, Model):
             load_calc = self.load_fixed + load
             load_calc_first = load_calc + self.load_fixed_first
 
-            if self.load_calc != load_calc or self.load_calc_first != load_calc_first:
-                self.load_calc = self.load_fixed + load
-                self.load_calc_first = self.load_calc + self.load_fixed_first
-                return True
-            else:
-                return False
+        if self.load_calc != load_calc or self.load_calc_first != load_calc_first:
+            # If this has changed any of the values, then update the assignments and return that it has
+            self.load_calc_first = load_calc_first
+            self.load_calc = load_calc
+            self.save()
+
+            for assignment in self.assignment_set.filter(is_removed=False).all():
+                assignment.update_load()
+
+            return True
+        else:
+            return False
+
+#
+# @receiver(post_delete, sender=Task)
+# def update_related_models(sender: Type[Task], instance: Task, **kwargs):
+#     """
+#
+#     :param sender:
+#     :param instance: The deleted instance. It now only exists in memory!
+#     :param kwargs:
+#     :return:
+#     """
+#     from app.models.standard_load import StandardLoad
+#     logger.info(
+#         f"Deleted {type(instance)} {instance}; updating the standard load."
+#     )
+#     StandardLoad.objects.latest().update_calculated_loads()
