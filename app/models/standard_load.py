@@ -132,12 +132,12 @@ class StandardLoad(ModelCommon):
         """
         return f'/load/{self.year}/'
 
-    def get_instance_header(self, text: str|None = None) -> str:
+    def get_instance_header(self, text: str|None = None, suffix: str|None = None) -> str:
         """
         Prepend the instance name with 'Standard Load' for clarity
         :return: Header in the format "Standard Load ??/??"
         """
-        return super().get_instance_header(f"Standard Load {self}")
+        return super().get_instance_header(text=f"Standard Load {self}", suffix=suffix)
 
     def has_access(self, user: AbstractUser|AnonymousUser) -> bool:
         """

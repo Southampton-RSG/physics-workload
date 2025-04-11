@@ -30,13 +30,13 @@ class AcademicGroup(ModelCommon):
     def __str__(self):
         return f"{self.short_name}"
 
-    def get_instance_header(self, text: str|None = None) -> str:
+    def get_instance_header(self, text: str|None = None, suffix: str|None = None) -> str:
         """
         Uses the full name for the header of one of these
         :param text: Text of the header, unused.
         :return: A rendered header string with the name of the instance.
         """
-        return super().get_instance_header(text=self.name)
+        return super().get_instance_header(text=self.name, suffix=suffix)
 
     def has_access(self, user: CustomUser) -> bool:
         """

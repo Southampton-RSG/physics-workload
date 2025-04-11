@@ -4,7 +4,7 @@ from iommi import html, Page
 from iommi.experimental.main_menu import MainMenu, M, EXTERNAL
 
 from app.pages.academic_group import AcademicGroupList, AcademicGroupDetail, AcademicGroupCreate, AcademicGroupDelete, AcademicGroupEdit
-from app.pages.staff import StaffList, StaffDetail, StaffCreate, StaffEdit, StaffDelete
+from app.pages.staff import StaffList, StaffDetail, StaffCreate, StaffEdit, StaffDelete, StaffHistoryList, StaffHistoryDetail
 from app.pages.unit import UnitList, UnitDetail, UnitCreate, UnitEdit, UnitDelete, get_menu_units_for_user, \
     UnitTaskCreate
 from app.pages.task import TaskList, TaskDetail, TaskCreate, TaskEdit, TaskDelete
@@ -41,10 +41,18 @@ main_menu = MainMenu(
                             view=StaffDelete,
                             include=lambda request, **_: request.user.is_staff,
                         ),
-                        # history=M(
-                        #     icon='clock-rotate-left',
-                        #     view=StaffHistory,
-                        # ),
+                        history=M(
+                            icon='clock-rotate-left',
+                            view=StaffHistoryList,
+                            items=dict(
+                                detail=M(
+                                    view=StaffHistoryDetail,
+                                    display_name=lambda staff_history, **_: staff_history.history_date.date(),
+                                    path='<staff_history>/',
+                                    params={'staff_history'},
+                                )
+                            )
+                        ),
                     ),
                 ),
                 create=M(
