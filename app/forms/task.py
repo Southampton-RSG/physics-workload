@@ -26,6 +26,7 @@ class TaskForm(Form):
 
         fields__students__group = "Load Function"
         fields__load_function__group = "Load Function"
+        fields__load_function__non_editable_input__template = 'app/choice_url.html'
 
         fields__coursework_fraction__group = "Mark Fractions"
         fields__exam_fraction__group = "Mark Fractions"

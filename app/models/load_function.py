@@ -18,7 +18,7 @@ class LoadFunction(ModelCommon):
     e.g. for number of tutees or when marking a dissertation.
     """
     icon = 'calculator'
-    url_root = 'load_function'
+    url_root = 'function'
 
     name = CharField(
         max_length=128, unique=True
@@ -59,14 +59,17 @@ class LoadFunction(ModelCommon):
             )
         ]
 
-    def evaluate(self, students: int) -> float:
+    def evaluate(self, students: int) -> float|None:
         """
         Runs the equation for a given number of students.
 
         :param students: The number of students
         :return: The output of the equation.
         """
-        return simple_eval(self.expression, names={'s': students})
+        if students:
+            return simple_eval(self.expression, names={'s': students})
+        else:
+            return 0
 
     def has_access(self, user: AbstractUser|AnonymousUser) -> bool:
         """You can always see the load functions"""

@@ -62,7 +62,6 @@ class TaskDetail(Page):
         fields__load_function__include=lambda params, **_: params.task.students,
         fields__students__include=lambda params, **_: params.task.students,
         editable=False,
-        actions__submit=None,
     )
 
 

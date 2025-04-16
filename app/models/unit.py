@@ -67,10 +67,10 @@ class Unit(ModelCommon, Model):
         verbose_name_plural = 'Units'
         constraints = [
             CheckConstraint(
-                check=Q(exam_mark_fraction__exact=1-F('coursework_mark_fraction')) | \
+                check=Q(exam_mark_fraction__lte=1-F('coursework_mark_fraction')) | \
                       (Q(exam_mark_fraction__isnull=True) & Q(coursework_mark_fraction__isnull=True)),
                 name='total_mark_fraction',
-                violation_error_message="Total mark fraction must be 1, or both mark fractions must be empty.",
+                violation_error_message="Total mark fraction must be less than 1, or both mark fractions must be empty.",
             )
         ]
 

@@ -4,13 +4,7 @@ Imports the Staff Contract Detail tab of the spreadsheet
 Needs to be run within the Django context; open the management shell with:
 
     ```
-    uv run manage.py shell
-    ```
-
-Then execute this file with:
-
-    ```
-    exec(open("/home/toaster/physics-workload/scripts/import_staff_from_csv.py").read())
+    uv run manage.py shell < import_staff_from_csv.py
     ```
 
 Annoyingly, because of this the path has to be hardcoded.
@@ -25,7 +19,7 @@ from app.models import Staff, AcademicGroup
 
 
 # Hardcoded for ease of dealing with the manage.py shell.
-CSV_PATH: str = Path("~/physics-workload/spreadsheet_staff_contract_cut.csv")
+CSV_PATH: str = Path("~/projects/physics-workload/spreadsheet_staff_contract_cut.csv")
 print(f"Importing staff from: {CSV_PATH}")
 
 # Track the history of creation
@@ -49,7 +43,7 @@ for idx, row in staff_df.iterrows():
         group = None
 
     staff: Staff = Staff(
-        account="PLACEHOLDER-"+uuid4()[:8],
+        account=f"PLACEHOLDER-{str(uuid4())[:8]}",
         name=row['STAFF'],
         gender=row['Gender'],
         fte_fraction=row['fte frac'] if not isna(row['fte frac']) else 0,

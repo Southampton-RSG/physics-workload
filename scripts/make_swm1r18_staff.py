@@ -4,4 +4,5 @@ from users.models import CustomUser
 staff: Staff = Staff.objects.get(account='swm1r18')
 user: CustomUser = staff.user
 user.is_superuser = True
+user.is_staff = True
 user.save()

@@ -44,7 +44,7 @@ class ModelCommon(SoftDeletableModel):
         """
         :return: The URL for the detail view of this particular instance of the model
         """
-        return reverse(type(self).url_root+'_detail', args=[self.pk])
+        return f"/{type(self).url_root}/{self.pk}/"
 
     def get_absolute_url_authenticated(self, user: AbstractUser|AnonymousUser|None) -> str:
         """
@@ -82,7 +82,7 @@ class ModelCommon(SoftDeletableModel):
         Equivalent to `get_absolute_url()` for model list.
         :return: The URL for the view listing all of this model
         """
-        return reverse(cls.url_root+'_list')
+        return f"/{cls.url_root}/"
 
     @classmethod
     def get_model_header(cls, suffix: str|None = None) -> str:
@@ -107,7 +107,7 @@ class ModelCommon(SoftDeletableModel):
         return render_to_string(
             template_name='app/header/header.html',
             context={
-                'icon': cls.icon, 'url': cls.get_model_url(),
+                'icon': cls.icon,
                 'text': cls._meta.verbose_name.title()+(f' / {suffix}' if suffix else '')
             }
         )

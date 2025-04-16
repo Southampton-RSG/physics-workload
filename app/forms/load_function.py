@@ -1,5 +1,7 @@
 from logging import getLogger, Logger
 
+from simpleeval import simple_eval
+
 from iommi import Form
 
 from app.models import LoadFunction, StandardLoad
@@ -30,6 +32,22 @@ class LoadFunctionForm(Form):
             )
         )
         iommi_style=floating_fields_style
+
+        @staticmethod
+        def fields__expression__is_valid(parsed_data, **_) -> (bool, str):
+            """
+            Tests to make sure the expression is valid!
+
+            :param parsed_data: The inbound text.
+            :raises ValidationError: If the expression is invalid.
+            :return: True/False, and then the reason why it failed if false.
+            """
+            try:
+                simple_eval(parsed_data, names={'s': 1})
+            except Exception as e:
+                return False, f"{e}"
+
+            return True, ""
 
         @staticmethod
         def extra__post_validation(form, instance, **_):

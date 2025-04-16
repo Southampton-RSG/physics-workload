@@ -8,7 +8,7 @@ from app.pages.staff import StaffList, StaffDetail, StaffCreate, StaffEdit, Staf
 from app.pages.unit import UnitList, UnitDetail, UnitCreate, UnitEdit, UnitDelete, get_menu_units_for_user, \
     UnitTaskCreate
 from app.pages.task import TaskList, TaskDetail, TaskCreate, TaskEdit, TaskDelete
-from app.pages.load_function import LoadFunctionList, LoadFunctionDetail, LoadFunctionCreate, LoadFunctionEdit, LoadFunctionDelete
+from app.pages.load_function import load_function_submenu
 from app.pages.standard_load import StandardLoadDetail, StandardLoadList, StandardLoadEdit
 from app.auth import has_staff_access
 from app.models import AcademicGroup, LoadFunction, Staff, Task, Unit, StandardLoad
@@ -202,42 +202,7 @@ main_menu = MainMenu(
         # --------------------------------------------------------------------------------------------------------------
         # Load Functions
         # --------------------------------------------------------------------------------------------------------------
-        function=M(
-            display_name="Load Function",
-            icon=LoadFunction.icon,
-            view=LoadFunctionList,
-            include=lambda request, **_: request.user.is_authenticated,
-            items=dict(
-                detail=M(
-                    view=LoadFunctionDetail,
-                    display_name=lambda load_function, **_: load_function.name,
-                    path='<load_function>/',
-                    url=lambda load_function, **_: load_function.get_absolute_url(),
-                    params={'load_function'},
-                    items=dict(
-                        edit=M(
-                            icon='pencil',
-                            view=LoadFunctionEdit,
-                            include=lambda request, **_: request.user.is_staff,
-                        ),
-                        delete=M(
-                            icon='trash',
-                            view=LoadFunctionDelete,
-                            include=lambda request, **_: request.user.is_staff,
-                        ),
-                        # history=M(
-                        #     icon='clock-rotate-left',
-                        #     view=TaskHistory,
-                        # )
-                    ),
-                ),
-                create=M(
-                    icon="plus",
-                    view=LoadFunctionCreate,
-                    include=lambda request, **_: request.user.is_staff,
-                ),
-            ),
-        ),
+        function=load_function_submenu,
 
         # --------------------------------------------------------------------------------------------------------------
         # Standard Loads
