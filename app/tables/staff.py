@@ -54,8 +54,8 @@ class StaffTable(Table):
                 cell=dict(
                     value=lambda request, row, **_: int(row.load_balance_historic) if row.has_access(request.user) else '',
                     attrs__class=lambda row, **_: {
-                        'text-success': True if row.load_balance_historic > 0 else False,
-                        'text-danger': True if row.load_balance_historic < 0 else False,
+                        'text-success': True if row.load_balance_historic <= -1 else False,
+                        'text-danger': True if row.load_balance_historic >= 1 else False,
                     }
                 )
             ),
@@ -65,8 +65,8 @@ class StaffTable(Table):
                 cell=dict(
                     value=lambda request, row, **_: int(row.load_balance) if row.has_access(request.user) else '',
                     attrs__class=lambda row, **_: {
-                        'text-success': True if row.load_balance > 0 else False,
-                        'text-danger': True if row.load_balance < 0 else False,
+                        'text-success': True if row.load_balance <= -1 else False,
+                        'text-danger': True if row.load_balance >= 1 else False,
                     }
                 ),
             ),

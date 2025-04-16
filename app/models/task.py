@@ -107,19 +107,14 @@ class Task(ModelCommon, Model):
         else:
             return f"{self.name}"
 
-    def get_instance_header(self, text: str = None) -> str:
+    def get_instance_header(self, text: str|None = None, suffix: str|None = None) -> str:
         """
         Overrides the default instance header to include the unit, with link, if present.
-        :param text: Ignored.
+        :param text: Override text.
+        :param suffix: Optional suffix.
         :return: The rendered HTML template for this model.
         """
-        return render_to_string(
-            template_name='app/header/header.html',
-            context={
-                'icon': self.icon,
-                'text': f"{self.get_name()}",
-            }
-        )
+        return super().get_instance_header(text=self.get_name(), suffix=suffix)
 
     def get_absolute_url(self) -> str:
         """

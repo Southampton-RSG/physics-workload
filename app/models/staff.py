@@ -146,12 +146,12 @@ class Staff(ModelCommon):
         """
         return f"{self.name} [{self.load_assigned - self.load_target:.0f}]"
 
-    def get_instance_header(self) -> str:
+    def get_instance_header(self, text:str|None = None, suffix: str|None = None) -> str:
         """
         Creates a header for staff, without their load balance in.
         :return: A header with just the name
         """
-        return super().get_instance_header(text=self.name)
+        return super().get_instance_header(text=self.name, suffix=suffix)
 
     def get_load_balance(self):
         """

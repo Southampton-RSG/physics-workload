@@ -24,11 +24,7 @@ class UnitTaskCreate(Page):
     Create a task associated with a unit
     """
     header = Header(
-        lambda params, **_: format_html(
-            f"{params.unit.get_instance_header()} / Create Task "+render_to_string(
-                "app/create_icon.html"
-            )
-        ),
+        lambda params, **_: params.unit.get_instance_header(suffix="Create Task")
     )
     form = TaskForm.create(
         h_tag=None,

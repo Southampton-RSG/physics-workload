@@ -4,12 +4,11 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.db.models import Model
+from django.db.models import FloatField
 from django.http import HttpRequest
 
 from model_utils.models import SoftDeletableModel
 
-from iommi import Fragment, Header, html
 from simple_history.models import HistoricalRecords
 
 
@@ -58,7 +57,7 @@ class ModelCommon(SoftDeletableModel):
         else:
             return ''
 
-    def get_instance_header(self, text: str|None = None) -> str:
+    def get_instance_header(self, text: str|None = None, suffix: str|None = None) -> str:
         """
         Creates a header for a view for an instance of this model.
         :param text: The text to use for the header, if not just the string representation of the instance.
@@ -72,7 +71,7 @@ class ModelCommon(SoftDeletableModel):
         return render_to_string(
             template_name='app/header/header.html',
             context={
-                'icon': self.icon, 'text': text if text else self
+                'icon': self.icon, 'text': f"{text if text else self}"+(f" / {suffix}" if suffix else "")
             }
         )
 
@@ -122,3 +121,7 @@ class ModelCommon(SoftDeletableModel):
             return True
         else:
             return False
+
+
+class LoadBalanceField(FloatField):
+    pass

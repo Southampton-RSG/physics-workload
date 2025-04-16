@@ -28,5 +28,8 @@ register_path_decoding(
     staff=has_access_decoder(Staff, "You may only view your own Staff details."),
 )
 register_path_decoding(
+    staff_history=lambda string, **_: Staff.history.get(history_id=int(string)),
+)
+register_path_decoding(
     standard_load=lambda string, **_: StandardLoad.available_objects.get(year=int(string))
 )
