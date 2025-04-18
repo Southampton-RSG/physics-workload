@@ -1,16 +1,18 @@
 """
 
 """
-import string
 from logging import getLogger
+from typing import List
 
-from django.template.loader import render_to_string
 from django.urls import path
-from django.utils.html import format_html
+from django.db.models import QuerySet
 
-from iommi import Page, Table, html, Form, EditTable, Column, Field, EditColumn, Header
+from iommi import Page, html, EditTable, Column, Field, EditColumn, Header
+from iommi.path import register_path_decoding
+from iommi.experimental.main_menu import M
 
-from app.models import Unit, Task, Assignment, Staff, StandardLoad
+from app.auth import has_access_decoder
+from app.models import Task, Assignment, Staff, StandardLoad
 from app.forms.task import TaskForm
 from app.tables.task import TaskTable
 
@@ -29,10 +31,8 @@ class TaskDetail(Page):
 
     @staticmethod
     def filter_staff(task):
-        staff_allocated = task.assignment_set.filter(is_removed=False).values_list('staff', flat=True)
-        print(staff_allocated)
-        staff_allowed = Staff.objects.exclude(pk__in=staff_allocated)
-        print(staff_allowed)
+        staff_allocated: List[Staff] = task.assignment_set.filter(is_removed=False).values_list('staff', flat=True)
+        staff_allowed: QuerySet[Staff] = Staff.objects.exclude(pk__in=staff_allocated)
         return staff_allowed
 
     list = EditTable(
@@ -125,10 +125,47 @@ class TaskList(Page):
     )
 
 
-urlpatterns = [
-    path('task/create/', TaskCreate().as_view(), name='task_create'),
-    path('task/<task>/delete/', TaskDelete().as_view(), name='task_delete'),
-    path('task/<task>/edit/', TaskEdit().as_view(), name='task_edit'),
-    path('task/<task>/', TaskDetail().as_view(), name='task_detail'),
-    path('task/', TaskList().as_view(), name='task_list'),
-]
+# Decode <task> in paths so a LoadFunction object is in the view parameters.
+register_path_decoding(
+    task=has_access_decoder(Task, "You must be assigned to a Task to view it."),
+)
+
+# This is imported into the main menu tree.
+task_submenu: M = M(
+    display_name=Task._meta.verbose_name_plural,
+    icon=Task.icon,
+    include=lambda request, **_: request.user.is_authenticated,
+    view=TaskList,
+
+    items=dict(
+        create=M(
+            icon="plus",
+            view=TaskCreate,
+            include=lambda request, **_: request.user.is_staff,
+        ),
+        detail=M(
+            display_name=lambda task, **_: task.name,
+            params={'task'},
+            path='<task>/',
+            url=lambda task, **_: f"{Task.url_root}/{task.pk}/",
+            view=TaskDetail,
+
+            items=dict(
+                edit=M(
+                    icon='pencil',
+                    view=TaskEdit,
+                    include=lambda request, **_: request.user.is_staff,
+                ),
+                delete=M(
+                    icon='trash',
+                    view=TaskDelete,
+                    include=lambda request, **_: request.user.is_staff,
+                ),
+                # history=M(
+                #     icon='clock-rotate-left',
+                #     view=TaskHistory,
+                # )
+            )
+        )
+    )
+)

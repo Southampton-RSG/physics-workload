@@ -14,6 +14,7 @@ __pycache__/
 # venv
 env
 venv
+.venv
 
 # other
 .DS_Store
@@ -27,4 +28,8 @@ staticfiles/*
 
 
 # Secret values
-settings.ini
+.env
+
+# Data
+*.csv
+*.xlsx

@@ -18,12 +18,7 @@ register_search_fields(
 register_path_decoding(
     unit=has_access_decoder(Unit, "You must be assigned to a Unit to view it"),
 )
-register_path_decoding(
-    academic_group=has_access_decoder(AcademicGroup, "You must be a member of this Group to view it."),
-)
-register_path_decoding(
-    task=has_access_decoder(Task, "You must be assigned to a Task to view it."),
-)
+
 register_path_decoding(
     staff=has_access_decoder(Staff, "You may only view your own Staff details."),
 )

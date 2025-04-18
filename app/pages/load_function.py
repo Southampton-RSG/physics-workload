@@ -140,18 +140,17 @@ class LoadFunctionList(Page):
     )
 
 
-# If we put 'create' below the existing LoadFunctions in the menu, it checks 'create' as a possible LF key first;
-# so we catch and ignore.
+# Decode <load_function> in paths so a LoadFunction object is in the view parameters.
 register_path_decoding(
     load_function=lambda string, **_: LoadFunction.objects.get(pk=int(string))
 )
 
 # This is imported into the main menu tree.
 load_function_submenu: M = M(
-    display_name="Load Function",
+    display_name=LoadFunction._meta.verbose_name_plural,
     icon=LoadFunction.icon,
-    view=LoadFunctionList,
     include=lambda request, **_: request.user.is_authenticated,
+    view=LoadFunctionList,
 
     items=dict(
         create=M(

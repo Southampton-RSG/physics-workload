@@ -3,11 +3,11 @@ from django.template import Template
 from iommi import html, Page
 from iommi.experimental.main_menu import MainMenu, M, EXTERNAL
 
-from app.pages.academic_group import AcademicGroupList, AcademicGroupDetail, AcademicGroupCreate, AcademicGroupDelete, AcademicGroupEdit
+from app.pages.academic_group import academic_group_submenu
 from app.pages.staff import StaffList, StaffDetail, StaffCreate, StaffEdit, StaffDelete, StaffHistoryList, StaffHistoryDetail
 from app.pages.unit import UnitList, UnitDetail, UnitCreate, UnitEdit, UnitDelete, get_menu_units_for_user, \
     UnitTaskCreate
-from app.pages.task import TaskList, TaskDetail, TaskCreate, TaskEdit, TaskDelete
+from app.pages.task import task_submenu, TaskDetail, TaskCreate, TaskEdit, TaskDelete
 from app.pages.load_function import load_function_submenu
 from app.pages.standard_load import StandardLoadDetail, StandardLoadList, StandardLoadEdit
 from app.auth import has_staff_access
@@ -131,81 +131,12 @@ main_menu = MainMenu(
         # --------------------------------------------------------------------------------------------------------------
         # Tasks
         # --------------------------------------------------------------------------------------------------------------
-        task=M(
-            icon=Task.icon,
-            view=TaskList,
-            include=lambda request, **_: request.user.is_authenticated,
-            items=dict(
-                detail=M(
-                    open=True,
-                    view=TaskDetail,
-                    display_name=lambda task, **_: task.name,
-                    path='<task>/',
-                    url=lambda task, **_: task.get_absolute_url(),
-                    params={'task'},
-                    items=dict(
-                        edit=M(
-                            icon='pencil',
-                            view=TaskEdit,
-                            include=lambda request, **_: request.user.is_staff,
-                        ),
-                        delete=M(
-                            icon='trash',
-                            view=TaskDelete,
-                            include=lambda request, **_: request.user.is_staff,
-                        ),
-                        # history=M(
-                        #     icon='clock-rotate-left',
-                        #     view=TaskHistory,
-                        # )
-                    ),
-                ),
-                create = M(
-                    icon="plus",
-                    view=TaskCreate,
-                    include=lambda request, **_: request.user.is_staff,
-                ),
-            ),
-        ),
+        task=task_submenu,
 
         # --------------------------------------------------------------------------------------------------------------
         # Academic Groups
         # --------------------------------------------------------------------------------------------------------------
-        group=M(
-            icon=AcademicGroup.icon,
-            view=AcademicGroupList,
-            include=lambda request, **_: request.user.is_authenticated,
-            items=dict(
-                detail=M(
-                    view=AcademicGroupDetail,
-                    display_name=lambda academic_group, **_: academic_group.short_name,
-                    path='<academic_group>/',
-                    url=lambda academic_group, **_: academic_group.get_absolute_url(),
-                    params={'academic_group'},
-                    items=dict(
-                        edit=M(
-                            icon='pencil',
-                            view=AcademicGroupEdit,
-                            include=lambda request, **_: request.user.is_staff,
-                        ),
-                        delete=M(
-                            icon='trash',
-                            view=AcademicGroupDelete,
-                            include=lambda request, **_: request.user.is_staff,
-                        ),
-                        # history=M(
-                        #     icon='clock-rotate-left',
-                        #     view=AcademicGroupHistory,
-                        # )
-                    ),
-                ),
-                create=M(
-                    icon="plus",
-                    view=AcademicGroupCreate,
-                    include=lambda request, **_: request.user.is_staff,
-                ),
-            ),
-        ),
+        group=academic_group_submenu,
 
         # --------------------------------------------------------------------------------------------------------------
         # Load Functions
