@@ -1,0 +1,4 @@
+git
+python-devel
+openldap-devel
+docker

@@ -1,5 +1,5 @@
 services:
-  nginx:
+  physics_workload_nginx:
     container_name: physics-workload-nginx
     image: nginx:latest
     ports:
@@ -10,11 +10,11 @@ services:
         source: "./nginx/app.conf"
         target: "/etc/nginx/conf.d/default.conf"
       - type: bind
-        source: "/etc/tls/certs/"
-        target: "/etc/tls/certs/"
+        source: "/etc/pki/tls/certs/"
+        target: "/etc/pki/tls/certs/"
       - type: bind
-        source: "/etc/tls/private/"
-        target: "/etc/tls/private/"
+        source: "/etc/pki/tls/private/"
+        target: "/etc/pki/tls/private/"
       - type: bind
         source: "${PROJECT_PATH}/logs/"
         target: "/var/www/physics-workload/logs/"
@@ -25,7 +25,7 @@ services:
     depends_on:
       - django
 
-  django:
+  physics_workload_django:
     container_name: physics-workload-django
     build:
       dockerfile: Dockerfile

@@ -21,9 +21,19 @@ DEBUG: bool = config('DEBUG', default=False, cast=bool)
 DEBUG_ACCESS: bool = config('DEBUG_ACCESS', default=False, cast=bool)
 
 # HOSTs List
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    'teaching.physics.soton.ac.uk',
+]
 # Add here your deployment HOSTS
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:5085', 'http://127.0.0.1:8000', 'http://127.0.0.1:5085']
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    '0.0.0.0:8000',
+    'teaching.physics.soton.ac.uk:8000'
+]
 
 # Application definition
 
@@ -170,8 +180,8 @@ STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (
-    BASE_DIR / 'core/static',
-    BASE_DIR /'app/static',
+    BASE_DIR / 'core' / 'static',
+    BASE_DIR /'app' / 'static',
 )
 
 ################################################################################
