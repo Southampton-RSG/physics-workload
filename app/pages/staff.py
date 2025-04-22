@@ -318,6 +318,7 @@ staff_submenu: M = M(
         ),
         detail=M(
             display_name=lambda staff, **_: staff.name,
+            open=True,
             params={'staff'},
             path='<staff>/',
             url=lambda staff, **_: f"/{Staff.url_root}/{staff.account}/",

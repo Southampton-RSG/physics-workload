@@ -146,6 +146,7 @@ academic_group_submenu: M = M(
         ),
         detail=M(
             display_name=lambda academic_group, **_: academic_group.short_name,
+            open=True,
             params={'academic_group'},
             path='<academic_group>/',
             url=lambda academic_group, **_: f"{AcademicGroup.url_root}/{academic_group.code}/",

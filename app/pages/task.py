@@ -149,6 +149,7 @@ task_submenu: M = M(
         ),
         detail=M(
             display_name=lambda task, **_: task.name,
+            open=True,
             params={'task'},
             path='<task>/',
             url=lambda task, **_: f"{Task.url_root}/{task.pk}/",

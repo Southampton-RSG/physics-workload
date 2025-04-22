@@ -43,7 +43,7 @@ class Task(ModelCommon, Model):
         verbose_name="Required",
     )
 
-    unit = ForeignKey(
+    unit = HistoricForeignKey(
         Unit, on_delete=PROTECT, null=True, blank=True,
         related_name='task_set',
     )

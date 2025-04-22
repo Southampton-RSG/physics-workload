@@ -5,6 +5,7 @@ from django.db.models import CharField
 from app.models.common import ModelCommon
 from users.models import CustomUser
 
+
 logger = getLogger(__name__)
 
 

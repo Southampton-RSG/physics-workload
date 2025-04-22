@@ -11,8 +11,8 @@ staff: school
 	#uv run manage.py loaddata staff
 
 unit: school
-#	uv run manage.py shell < ./scripts/import_units_from_csv.py
-	uv run manage.py loaddata load_function unit
+	uv run manage.py shell < ./scripts/import_units_from_csv.py
+	#uv run manage.py loaddata load_function unit
 
 task: unit
 	uv run manage.py loaddata task
@@ -28,7 +28,7 @@ clean:
 	uv run manage.py migrate
 
 superuser:
-	uv run manage.py shell < ./scripts/make_swm1r18_staff.py
+	uv run manage.py shell < ./scripts/make_swm1r18_superuser.py
 
 
 

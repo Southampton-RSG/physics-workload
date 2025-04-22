@@ -38,7 +38,7 @@ class Staff(ModelCommon):
     name = CharField(
         max_length=128, blank=False,
     )
-    academic_group = ForeignKey(
+    academic_group = HistoricForeignKey(
         AcademicGroup, on_delete=PROTECT,
         null=True, blank=True,
         verbose_name='Group',

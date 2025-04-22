@@ -161,6 +161,7 @@ load_function_submenu: M = M(
 
         detail=M(
             display_name=lambda load_function, **_: load_function.name,
+            open=True,
             params={'load_function'},
             path='<load_function>/',
             url=lambda load_function, **_: f"/{LoadFunction.url_root}/{load_function.pk}/",

@@ -8,7 +8,7 @@ from django.utils.html import format_html
 from django.template import Template, Context
 from django.template.loader import render_to_string
 
-from iommi import Page, Field, Header, Column
+from iommi import Page, Field, Header, Column, Table
 from iommi.path import register_path_decoding
 from iommi.experimental.main_menu import M
 
@@ -16,7 +16,7 @@ from app.auth import has_access_decoder
 from app.forms.task import TaskForm
 from app.forms.unit import UnitForm
 from app.pages.task import TaskDetail, TaskEdit, TaskDelete
-from app.models import Unit, Task
+from app.models import Unit, Task, Assignment
 from app.tables.task import TaskTable
 from app.tables.unit import UnitTable
 
@@ -137,15 +137,25 @@ class UnitHistoryDetail(Page):
     header = Header(
         lambda params, **_: params.unit.get_instance_header(suffix=f"{params.unit_history.history_date.date()}")
     )
-    tasks = TaskTable(
-        h_tag=Header,
-        columns=dict(
-            unit_code__include=False,
-            assignment_set__cell__template='app/unit/assignment_set.html',
-        ),
-        query__include=False,
-        rows=lambda params, **_: TaskTable.annotate_query_set(params.unit_history.task_set.filter(is_removed=False).all()),
-    )
+    # Can't use assignment_set, so need a custom table for history that pulls the assignments itself.
+    # tasks = TaskTable(
+    #     h_tag=Header,
+    #     columns=dict(
+    #         unit_code__include=False,
+    #         assignment_set=Column(
+    #             cell=dict(
+    #                 template='app/unit/assignment_set.html',
+    #                 value=lambda row, params, **_: Assignment.history.as_of(
+    #                     params.unit_history.history_date
+    #                 ).filter(task=row).all(),
+    #             )
+    #         ),
+    #     ),
+    #     query__include=False,
+    #     rows=lambda params, **_: TaskTable.annotate_query_set(
+    #         Task.history.as_of(params.unit_history.history_date).filter(unit=params.unit, is_removed=False)
+    #     ),
+    # )
     form = UnitForm(
         title="Details",
         instance=lambda params, **_: params.unit,
@@ -169,7 +179,10 @@ class UnitHistoryList(Page):
     List of all historical entries for a Unit.
     """
     header = Header(lambda params, **_: params.unit.get_instance_header(suffix="History"))
-    list = UnitTable(
+    list = Table(
+        auto__model=Unit,
+        h_tag=None,
+        auto__include=['students'],
         columns=dict(
             history_date=Column(
                 cell=dict(
@@ -207,6 +220,7 @@ unit_submenu: M = M(
         ),
         detail=M(
             display_name=lambda unit, **_: unit.code,
+            open=True,
             params={'unit'},
             path='<unit>/',
             url=lambda unit, **_: f"/{Unit.url_root}/{unit.pk}/",
@@ -223,21 +237,22 @@ unit_submenu: M = M(
                     view=UnitDelete,
                     include=lambda request, **_: request.user.is_staff,
                 ),
-                history=M(
-                    icon='clock-rotate-left',
-                    view=UnitHistoryList,
-                    items=dict(
-                        detail=M(
-                            display_name=lambda unit_history, **_: unit_history.history_date.date(),
-                            params={'unit_history'},
-                            path='<unit_history>/',
-                            view=UnitHistoryDetail,
-                        )
-                    )
-                ),
+                # history=M(
+                #     icon='clock-rotate-left',
+                #     view=UnitHistoryList,
+                #     items=dict(
+                #         detail=M(
+                #             display_name=lambda unit_history, **_: unit_history.history_date.date(),
+                #             params={'unit_history'},
+                #             path='<unit_history>/',
+                #             view=UnitHistoryDetail,
+                #         )
+                #     )
+                # ),
                 task_detail=M(
                     display_name=lambda task, **_: task.name,
                     icon=Task.icon,
+                    open=True,
                     params={'unit', 'task'},
                     path='<task>/',
                     url=lambda task, **_: f"/{Unit.url_root}/{task.unit.pk}/{task.pk}/",
