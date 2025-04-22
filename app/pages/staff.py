@@ -4,10 +4,11 @@ Handles the views for the Academic Groups
 from datetime import datetime
 from typing import List, Dict, Any
 
-from django.urls import path
 from django.template import Template
 
-from iommi import EditTable, EditColumn, Page, Field, Header, html, Table, Column
+from iommi import EditTable, EditColumn, Page, Field, Header, html, Table, Column, register_search_fields
+from iommi.path import register_path_decoding
+from iommi.experimental.main_menu import M
 
 from plotly.graph_objs import Layout, Figure, Scatter
 from plotly.graph_objs.layout import XAxis, YAxis
@@ -16,6 +17,7 @@ from plotly.offline import plot
 from dash_bootstrap_templates import load_figure_template
 load_figure_template('bootstrap_dark')
 
+from app.auth import has_access_decoder
 from app.models import Staff, Assignment
 from app.models.standard_load import StandardLoad
 from app.forms.staff import StaffForm
@@ -179,7 +181,7 @@ class StaffHistoryDetail(Page):
 
 class StaffHistoryList(Page):
     """
-    List of all currently active staff.
+    List of History entries for a staff member.
     """
     header = Header(lambda params, **_: params.staff.get_instance_header(suffix="History"))
 
@@ -195,38 +197,40 @@ class StaffHistoryList(Page):
         auto__model=Staff,
         h_tag=None,
         auto__include=['load_balance_final', 'load_balance_historic'],
-        columns__history_date=Column(
-            cell=dict(
-                url=lambda params, row, **_: f"{row.history_id}/",
-                value=lambda params, row, **_: row.history_date.date(),
+        columns=dict(
+            history_date=Column(
+                cell=dict(
+                    url=lambda params, row, **_: f"{row.history_id}/",
+                    value=lambda params, row, **_: row.history_date.date(),
+                ),
             ),
-        ),
-        columns__history_id=Column(
-            render_column=False,
-        ),
-        columns__load_balance_final=dict(
-            after="history_date",
-            group="Load Balance",
-            display_name="Final",
-            cell=dict(
-                value=lambda row, **_: int(row.load_balance_final),
-                attrs__class=lambda row, **_: {
-                    'text-success': True if row.load_balance_final <= -1 else False,
-                    'text-danger': True if row.load_balance_final >= 1 else False,
-                },
+            history_id=Column(
+                render_column=False,
             ),
-        ),
-        columns__load_balance_historic=dict(
-            after="load_balance_final",
-            group="Load Balance",
-            display_name="Cumulative",
-            cell=dict(
-                value=lambda row, **_: int(row.load_balance_historic),
-                attrs__class=lambda row, **_: {
-                    'text-success': True if row.load_balance_historic <= -1 else False,
-                    'text-danger': True if row.load_balance_historic >= 1 else False,
-                }
-            )
+            load_balance_final=dict(
+                after="history_date",
+                group="Load Balance",
+                display_name="Final",
+                cell=dict(
+                    value=lambda row, **_: int(row.load_balance_final),
+                    attrs__class=lambda row, **_: {
+                        'text-success': True if row.load_balance_final <= -1 else False,
+                        'text-danger': True if row.load_balance_final >= 1 else False,
+                    },
+                ),
+            ),
+            load_balance_historic=dict(
+                after="load_balance_final",
+                group="Load Balance",
+                display_name="Cumulative",
+                cell=dict(
+                    value=lambda row, **_: int(row.load_balance_historic),
+                    attrs__class=lambda row, **_: {
+                        'text-success': True if row.load_balance_historic <= -1 else False,
+                        'text-danger': True if row.load_balance_historic >= 1 else False,
+                    }
+                ),
+            ),
         ),
         rows=lambda params, **_: params.staff.history.all(),
     )
@@ -292,14 +296,57 @@ class StaffList(Page):
     )
 
 
-urlpatterns = [
-    path('staff/create/', StaffCreate().as_view(), name='staff_create'),
-    path('staff/<staff>/delete/', StaffDelete().as_view(), name='staff_delete'),
-    path('staff/<staff>/edit/', StaffEdit().as_view(), name='staff_edit'),
-    path('staff/<staff>/history/<staff_history>/', StaffHistoryDetail().as_view(), name='staff_history_detail'),
-    path('staff/<staff>/history/', StaffHistoryList().as_view(), name='staff_history'),
-    path('staff/<staff>/', StaffDetail(
-        # context__plotly=lambda params, **_: StaffDetail.create_graph(params.staff),
-    ).as_view(), name='staff_detail'),
-    path('staff/', StaffList().as_view(), name='staff_list'),
-]
+register_search_fields(
+     model=Staff, search_fields=['name', 'gender', 'academic_group'], allow_non_unique=True,
+)
+register_path_decoding(
+    staff=has_access_decoder(Staff, "You may only view your own Staff details."),
+)
+register_path_decoding(
+    staff_history=lambda string, **_: Staff.history.get(history_id=int(string)),
+)
+
+staff_submenu: M = M(
+    icon=Staff.icon,
+    view=StaffList,
+    include=lambda request, **_: request.user.is_authenticated,
+    items=dict(
+        create=M(
+            icon="plus",
+            include=lambda request, **_: request.user.is_staff,
+            view=StaffCreate,
+        ),
+        detail=M(
+            display_name=lambda staff, **_: staff.name,
+            params={'staff'},
+            path='<staff>/',
+            url=lambda staff, **_: f"/{Staff.url_root}/{staff.account}/",
+            view=StaffDetail,
+
+            items=dict(
+                edit=M(
+                    icon='pencil',
+                    view=StaffEdit,
+                    include=lambda request, **_: request.user.is_staff,
+                ),
+                delete=M(
+                    icon='trash',
+                    view=StaffDelete,
+                    include=lambda request, **_: request.user.is_staff,
+                ),
+                history=M(
+                    icon='clock-rotate-left',
+                    view=StaffHistoryList,
+                    items=dict(
+                        detail=M(
+                            display_name=lambda staff_history, **_: staff_history.history_date.date(),
+                            params={'staff_history'},
+                            path='<staff_history>/',
+                            view = StaffHistoryDetail,
+                        )
+                    )
+                ),
+            ),
+        ),
+    )
+)

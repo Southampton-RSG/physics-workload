@@ -8,23 +8,6 @@ from app.models.staff import Staff
 from app.models.task import Task
 
 
-register_search_fields(
-     model=Staff, search_fields=['name', 'gender', 'academic_group'], allow_non_unique=True,
-)
-register_search_fields(
-    model=Task, search_fields=['name'], allow_non_unique=True
-)
-
-register_path_decoding(
-    unit=has_access_decoder(Unit, "You must be assigned to a Unit to view it"),
-)
-
-register_path_decoding(
-    staff=has_access_decoder(Staff, "You may only view your own Staff details."),
-)
-register_path_decoding(
-    staff_history=lambda string, **_: Staff.history.get(history_id=int(string)),
-)
 register_path_decoding(
     standard_load=lambda string, **_: StandardLoad.available_objects.get(year=int(string))
 )

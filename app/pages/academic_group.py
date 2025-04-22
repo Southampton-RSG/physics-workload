@@ -2,17 +2,14 @@
 Handles the views for the Academic Groups
 """
 from django.db.models import Count, Sum, Q, F
-from django.urls import path
 
 from iommi import Page, Table, html, Form, EditTable, Column, Action, Menu, Fragment, Header
 from iommi.path import register_path_decoding
 from iommi.experimental.main_menu import M
 
 from app.auth import has_access_decoder
-from app.models import AcademicGroup, Staff, Unit
+from app.models import AcademicGroup, Unit
 from app.tables.staff import StaffTable
-from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceCreate, HeaderInstanceDelete, \
-    HeaderInstanceDetail, HeaderList
 
 
 class AcademicGroupDetail(Page):
@@ -128,16 +125,18 @@ class AcademicGroupList(Page):
         ),
     )
 
+
+# Decodes "<academic_group>" in paths to add parmas.academic_group
 register_path_decoding(
     academic_group=has_access_decoder(AcademicGroup, "You must be a member of this Group to view it."),
 )
 
+# Imported into the main menu
 academic_group_submenu: M = M(
     display_name=AcademicGroup._meta.verbose_name_plural,
     icon=AcademicGroup.icon,
     include=lambda request, **_: request.user.is_authenticated,
     view=AcademicGroupList,
-
 
     items=dict(
         create=M(
@@ -149,7 +148,7 @@ academic_group_submenu: M = M(
             display_name=lambda academic_group, **_: academic_group.short_name,
             params={'academic_group'},
             path='<academic_group>/',
-            url=lambda academic_group, **_: f"{AcademicGroup.url_root}/{academic_group.pk}/",
+            url=lambda academic_group, **_: f"{AcademicGroup.url_root}/{academic_group.code}/",
             view=AcademicGroupDetail,
 
             items=dict(

@@ -7,7 +7,7 @@ from typing import List
 from django.urls import path
 from django.db.models import QuerySet
 
-from iommi import Page, html, EditTable, Column, Field, EditColumn, Header
+from iommi import Page, html, EditTable, Column, Field, EditColumn, Header, register_search_fields
 from iommi.path import register_path_decoding
 from iommi.experimental.main_menu import M
 
@@ -125,6 +125,10 @@ class TaskList(Page):
     )
 
 
+# Register tasks to be searched using the "name" field.
+register_search_fields(
+    model=Task, search_fields=['name'], allow_non_unique=True
+)
 # Decode <task> in paths so a LoadFunction object is in the view parameters.
 register_path_decoding(
     task=has_access_decoder(Task, "You must be assigned to a Task to view it."),

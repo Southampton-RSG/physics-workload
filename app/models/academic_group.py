@@ -16,7 +16,7 @@ class AcademicGroup(ModelCommon):
     which is more about user permissions.
     """
     icon = "users"
-    url_root = "academic_group"
+    url_root = "group"
 
     code = CharField(max_length=1, unique=True, blank=False, primary_key=True)
     short_name = CharField(max_length=16, unique=True, blank=False, db_index=True)

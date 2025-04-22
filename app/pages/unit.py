@@ -8,9 +8,11 @@ from django.utils.html import format_html
 from django.template import Template, Context
 from django.template.loader import render_to_string
 
-from iommi import Page, Field, Header
+from iommi import Page, Field, Header, Column
+from iommi.path import register_path_decoding
 from iommi.experimental.main_menu import M
 
+from app.auth import has_access_decoder
 from app.forms.task import TaskForm
 from app.forms.unit import UnitForm
 from app.pages.task import TaskDetail, TaskEdit, TaskDelete
@@ -91,7 +93,6 @@ class UnitDelete(Page):
     )
 
 
-
 class UnitEdit(Page):
     """
     Edit a unit's details
@@ -129,33 +130,139 @@ class UnitList(Page):
     )
 
 
-urlpatterns = [
-    path('unit/create/', UnitCreate().as_view(), name='unit_create'),
-    path('unit/<unit>/create/', UnitTaskCreate().as_view(), name='unit_task_create'),
-    path('unit/<unit>/delete/', UnitDelete().as_view(), name='unit_delete'),
-    path('unit/<unit>/edit/', UnitEdit().as_view(), name='unit_edit'),
-    path('unit/<unit>/<task>/edit/', TaskEdit().as_view(), name='unit_task_edit'),
-    path('unit/<unit>/<task>/delete/', TaskDelete().as_view(), name='unit_task_delete'),
-    path('unit/<unit>/<task>/', TaskDetail().as_view(), name='unit_task_detail'),
-    path('unit/<unit>/', UnitDetail().as_view(), name='unit_detail'),
-    path('unit/', UnitList().as_view(), name='unit_list'),
-]
-
-
-def get_menu_units_for_user(user: AbstractUser) -> Dict[str, M]:
+class UnitHistoryDetail(Page):
     """
-
-    :param user:
-    :return:
+    View showing the detail of a unit at a point in time.
     """
-    units: Dict[str, M] = {}
+    header = Header(
+        lambda params, **_: params.unit.get_instance_header(suffix=f"{params.unit_history.history_date.date()}")
+    )
+    tasks = TaskTable(
+        h_tag=Header,
+        columns=dict(
+            unit_code__include=False,
+            assignment_set__cell__template='app/unit/assignment_set.html',
+        ),
+        query__include=False,
+        rows=lambda params, **_: TaskTable.annotate_query_set(params.unit_history.task_set.filter(is_removed=False).all()),
+    )
+    form = UnitForm(
+        title="Details",
+        instance=lambda params, **_: params.unit,
+        fields__name__include=False,
+        fields__code__include=False,
+        fields__lectures__include=lambda params, **_: params.unit.lectures,
+        fields__problem_classes__include=lambda params, **_: params.unit.problem_classes,
+        fields__coursework__include=lambda params, **_: params.unit.coursework,
+        fields__synoptic_lectures__include=lambda params, **_: params.unit.synoptic_lectures,
+        fields__exams__include=lambda params, **_: params.unit.exams,
+        fields__exam_mark_fraction__include=lambda params, **_: params.unit.exam_mark_fraction,
+        fields__coursework_mark_fraction__include=lambda params, **_: params.unit.coursework_mark_fraction,
+        fields__has_dissertation__include=lambda params, **_: params.unit.has_dissertation,
+        fields__has_placement__include=lambda params, **_: params.unit.has_placement,
+        editable=False,
+    )
 
-    for task in user.staff.task_set.all():
-        units[task.unit.code] = M(
-            open=True,
-            view=UnitDetail(pk=task.unit.pk).as_view(),
-            display_name=lambda unit, **_: unit.name,
-            url=lambda unit, **_: task.unit.get_absolute_url(),
+
+class UnitHistoryList(Page):
+    """
+    List of all historical entries for a Unit.
+    """
+    header = Header(lambda params, **_: params.unit.get_instance_header(suffix="History"))
+    list = UnitTable(
+        columns=dict(
+            history_date=Column(
+                cell=dict(
+                    url=lambda params, row, **_: f"{row.history_id}/",
+                    value=lambda params, row, **_: row.history_date.date(),
+                ),
+            ),
+            history_id = Column(
+                render_column=False,
+            ),
+        ),
+        rows=lambda params, **_: params.unit.history.all(),
+    )
+
+
+# Decodes "<unit>" in paths into `params.unit`
+register_path_decoding(
+    unit=has_access_decoder(Unit, "You must be assigned to a Unit to view it"),
+)
+register_path_decoding(
+    unit_history=lambda string, **_: Unit.history.get(history_id=int(string)),
+)
+
+# Added to the main menu
+unit_submenu: M = M(
+    icon=Unit.icon,
+    include=lambda request, **_: request.user.is_authenticated,
+    view=UnitList,
+
+    items=dict(
+        create=M(
+            icon="plus",
+            include=lambda request, **_: request.user.is_staff,
+            view=UnitCreate,
+        ),
+        detail=M(
+            display_name=lambda unit, **_: unit.code,
+            params={'unit'},
+            path='<unit>/',
+            url=lambda unit, **_: f"/{Unit.url_root}/{unit.pk}/",
+            view=UnitDetail,
+
+            items=dict(
+                edit=M(
+                    icon='pencil',
+                    view=UnitEdit,
+                    include=lambda request, **_: request.user.is_staff,
+                ),
+                delete=M(
+                    icon='trash',
+                    view=UnitDelete,
+                    include=lambda request, **_: request.user.is_staff,
+                ),
+                history=M(
+                    icon='clock-rotate-left',
+                    view=UnitHistoryList,
+                    items=dict(
+                        detail=M(
+                            display_name=lambda unit_history, **_: unit_history.history_date.date(),
+                            params={'unit_history'},
+                            path='<unit_history>/',
+                            view=UnitHistoryDetail,
+                        )
+                    )
+                ),
+                task_detail=M(
+                    display_name=lambda task, **_: task.name,
+                    icon=Task.icon,
+                    params={'unit', 'task'},
+                    path='<task>/',
+                    url=lambda task, **_: f"/{Unit.url_root}/{task.unit.pk}/{task.pk}/",
+                    view=TaskDetail,
+
+                    items=dict(
+                        edit=M(
+                            icon='pencil',
+                            view=TaskEdit,
+                            include=lambda request, **_: request.user.is_staff,
+                        ),
+                        delete=M(
+                            icon='trash',
+                            view=TaskDelete,
+                            include=lambda request, **_: request.user.is_staff,
+                        ),
+                    )
+                ),
+                create = M(
+                    display_name="Create Task",
+                    icon='plus',
+                    view=UnitTaskCreate,
+                    include=lambda request, **_: request.user.is_staff,
+                ),
+            ),
         )
-
-    return units
+    )
+)
