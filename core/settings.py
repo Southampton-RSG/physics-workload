@@ -27,14 +27,17 @@ ALLOWED_HOSTS = [
     '172.18.0.2',
     '0.0.0.0',
     'teaching.physics.soton.ac.uk',
+    'srv04619.soton.ac.uk',
+    'srv04619',
 ]
 # Add here your deployment HOSTS
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'http://0.0.0.0:8000',
-    'http://172.18.0.2:8000/',
+    'http://172.18.0.2:8000',
     'http://teaching.physics.soton.ac.uk'
+    'http://srv04619.soton.ac.uk',
 ]
 
 # Application definition
@@ -242,9 +245,9 @@ LOGGING = {
     "version": 1,  # the dictConfig format version
     "disable_existing_loggers": False,  # retain the default loggers
     "handlers": {
-        "file": {
+        "file_django": {
             "class": "logging.FileHandler",
-            "filename": LOG_DIRECTORY / "django.general.log",
+            "filename": LOG_DIRECTORY / "django.log",
             "formatter": "verbose",
         },
         "file_app": {
@@ -252,15 +255,27 @@ LOGGING = {
             "filename": LOG_DIRECTORY / "django.app.log",
             "formatter": "verbose",
         },
+        "file_users": {
+            "class": "logging.FileHandler",
+            "filename": LOG_DIRECTORY / "django.users.log",
+            "formatter": "verbose",
+        },
+        "console": {
+            "class": "logging.StreamHandler",
+        }
     },
     "loggers": {
         "": {
             "level": "DEBUG",
-            "handlers": ["file"],
+            "handlers": ["file_django", "console"],
         },
         "app": {
             "level": "DEBUG",
-            "handlers": ["file_app"],
+            "handlers": ["file_app", "console"],
+        },
+        "users": {
+            "level": "DEBUG",
+            "handlers": ["file_users", "console"],
         },
     },
     "formatters": {

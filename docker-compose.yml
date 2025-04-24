@@ -10,11 +10,11 @@ services:
         source: "./nginx/app.conf"
         target: "/etc/nginx/conf.d/default.conf"
       - type: bind
-        source: "/etc/pki/tls/certs/"
-        target: "/etc/pki/tls/certs/"
+        source: "/etc/tls/certs/"
+        target: "/etc/tls/certs/"
       - type: bind
-        source: "/etc/pki/tls/private/"
-        target: "/etc/pki/tls/private/"
+        source: "/etc/tls/private/"
+        target: "/etc/tls/private/"
       - type: bind
         source: "${PROJECT_PATH}/logs/"
         target: "/var/www/physics-workload/logs/"
@@ -30,8 +30,8 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     env_file:
       - "./.env.default"
       - "./.env"
@@ -42,9 +42,13 @@ services:
       - type: bind
         source: "${PROJECT_PATH}/static/"
         target: "/var/www/physics-workload/static/"
+      - type: bind
+        source: "${PROJECT_PATH}/logs/"
+        target: "/var/www/physics-workload/logs/"
     command:
       - "uv"
       - "run"
       - "manage.py"
       - "runserver"
+      - "0.0.0.0:8000"
     restart: unless-stopped
