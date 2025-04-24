@@ -19,8 +19,8 @@ services:
         source: "${PROJECT_PATH}/logs/"
         target: "/var/www/physics-workload/logs/"
       - type: bind
-        source: "${PROJECT_PATH}/static/"
-        target: "/var/www/physics-workload/static/"
+        source: "${PROJECT_PATH}/staticfiles/"
+        target: "/var/www/physics-workload/staticfiles/"
     restart: unless-stopped
     depends_on:
       - physics_workload_django
