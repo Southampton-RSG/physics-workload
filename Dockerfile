@@ -15,5 +15,3 @@ COPY . .
 RUN uv run sync
 RUN uv run manage.py makemigrations && uv run manage.py migrate
 RUN uv run manage.py collectstatic
-
-CMD ["uv", "run", "gunicorn", "core.wsgi"]

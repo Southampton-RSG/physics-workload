@@ -19,11 +19,11 @@ services:
         source: "${PROJECT_PATH}/logs/"
         target: "/var/www/physics-workload/logs/"
       - type: bind
-        source: "${PROJECT_PATH}/app/static/"
-        target: "/var/www/physics-workload/app/static/"
+        source: "${PROJECT_PATH}/static/"
+        target: "/var/www/physics-workload/static/"
     restart: unless-stopped
     depends_on:
-      - django
+      - physics_workload_django
 
   physics_workload_django:
     container_name: physics-workload-django
@@ -39,4 +39,12 @@ services:
       - type: bind
         source: "${PROJECT_PATH}/db.sqlite3"
         target: "/var/www/physics-workload/db.sqlite3"
+      - type: bind
+        source: "${PROJECT_PATH}/static/"
+        target: "/var/www/physics-workload/static/"
+    command:
+      - "uv"
+      - "run"
+      - "manage.py"
+      - "runserver"
     restart: unless-stopped

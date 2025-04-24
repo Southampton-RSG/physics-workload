@@ -24,6 +24,7 @@ DEBUG_ACCESS: bool = config('DEBUG_ACCESS', default=False, cast=bool)
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    '172.18.0.2',
     '0.0.0.0',
     'teaching.physics.soton.ac.uk',
 ]
@@ -31,8 +32,9 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
-    '0.0.0.0:8000',
-    'teaching.physics.soton.ac.uk:8000'
+    'http://0.0.0.0:8000',
+    'http://172.18.0.2:8000/',
+    'http://teaching.physics.soton.ac.uk'
 ]
 
 # Application definition
@@ -175,7 +177,7 @@ USE_TZ = True
 ################################################################################
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / 'static'
 STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
@@ -242,12 +244,12 @@ LOGGING = {
     "handlers": {
         "file": {
             "class": "logging.FileHandler",
-            "filename": LOG_DIRECTORY / "general.log",
+            "filename": LOG_DIRECTORY / "django.general.log",
             "formatter": "verbose",
         },
         "file_app": {
             "class": "logging.FileHandler",
-            "filename": LOG_DIRECTORY / "app.log",
+            "filename": LOG_DIRECTORY / "django.app.log",
             "formatter": "verbose",
         },
     },
