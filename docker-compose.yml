@@ -37,8 +37,8 @@ services:
       - "./.env"
     volumes:
       - type: bind
-        source: "${PROJECT_PATH}/db.sqlite3"
-        target: "/var/www/physics-workload/db.sqlite3"
+        source: "${PROJECT_PATH}/data/"
+        target: "/var/www/physics-workload/data/"
       - type: bind
         source: "${PROJECT_PATH}/static/"
         target: "/var/www/physics-workload/static/"

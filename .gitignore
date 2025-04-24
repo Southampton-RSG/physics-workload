@@ -33,3 +33,6 @@ staticfiles/*
 # Data
 *.csv
 *.xlsx
+
+# Logging
+*.log
