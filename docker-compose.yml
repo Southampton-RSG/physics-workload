@@ -40,15 +40,12 @@ services:
         source: "${PROJECT_PATH}/data/"
         target: "/var/www/physics-workload/data/"
       - type: bind
-        source: "${PROJECT_PATH}/static/"
-        target: "/var/www/physics-workload/static/"
+        source: "${PROJECT_PATH}/staticfiles/"
+        target: "/var/www/physics-workload/staticfiles/"
       - type: bind
         source: "${PROJECT_PATH}/logs/"
         target: "/var/www/physics-workload/logs/"
     command:
-      - "uv"
-      - "run"
-      - "manage.py"
-      - "runserver"
-      - "0.0.0.0:8000"
+      - "bash"
+      - "docker_entrypoint_django.sh"
     restart: unless-stopped
