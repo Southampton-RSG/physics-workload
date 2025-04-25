@@ -10,7 +10,7 @@ from app.models.academic_group import AcademicGroup
 from app.models.common import ModelCommon
 
 
-class Unit(ModelCommon, Model):
+class Unit(ModelCommon):
     """
     Academic unit, e.g. PHYS!001
     """

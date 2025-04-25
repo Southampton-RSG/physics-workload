@@ -1,13 +1,6 @@
 """
 Pages for academic units
 """
-from typing import Dict
-from django.contrib.auth.models import AbstractUser, AnonymousUser
-from django.urls import path
-from django.utils.html import format_html
-from django.template import Template, Context
-from django.template.loader import render_to_string
-
 from iommi import Page, Field, Header, Column, Table
 from iommi.path import register_path_decoding
 from iommi.experimental.main_menu import M
@@ -16,7 +9,7 @@ from app.auth import has_access_decoder
 from app.forms.task import TaskForm
 from app.forms.unit import UnitForm
 from app.pages.task import TaskDetail, TaskEdit, TaskDelete
-from app.models import Unit, Task, Assignment
+from app.models import Unit, Task
 from app.tables.task import TaskTable
 from app.tables.unit import UnitTable
 
@@ -46,6 +39,7 @@ class UnitDetail(Page):
     tasks = TaskTable(
         h_tag=Header,
         columns__unit_code__include=False,
+        columns__academic_group__include=False,
         query__include=False,
         rows=lambda params, **_: TaskTable.annotate_query_set(params.unit.task_set.filter(is_removed=False).all()),
         columns__assignment_set__cell__template='app/unit/assignment_set.html',

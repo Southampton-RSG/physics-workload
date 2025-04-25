@@ -25,7 +25,7 @@ package-lock.json
 staticfiles/*
 !staticfiles/.gitkeep 
 .vscode/symbols.json
-
+.idea/
 
 # Secret values
 .env

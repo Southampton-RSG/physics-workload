@@ -1,15 +1,33 @@
 """
 Handles the views for the Academic Groups
 """
-from django.db.models import Count, Sum, Q, F
+from django.db.models import Count, Sum
 
-from iommi import Page, Table, html, Form, EditTable, Column, Action, Menu, Fragment, Header
+from iommi import Page, Table, html, Form, EditTable, Column, Action, Menu, Fragment, Header, Field
 from iommi.path import register_path_decoding
 from iommi.experimental.main_menu import M
 
 from app.auth import has_access_decoder
-from app.models import AcademicGroup, Unit
+from app.forms.task import TaskForm
+from app.models import AcademicGroup, Task, Unit
+from app.tables.task import TaskTable
 from app.tables.staff import StaffTable
+from app.pages.task import TaskEdit, TaskDelete, TaskDetail
+
+
+class AcademicGroupTaskCreate(Page):
+    """
+    Create a task associated with an academic group.
+    """
+    header = Header(
+        lambda params, **_: params.unit.get_instance_header(suffix="Create Task")
+    )
+    form = TaskForm.create(
+        h_tag=None,
+        fields__unit=Field.non_rendered(
+            initial=lambda params, **_: params.academic_group,
+        ),
+    )
 
 
 class AcademicGroupDetail(Page):
@@ -27,6 +45,15 @@ class AcademicGroupDetail(Page):
         query__include=False,
         attrs__class={'mb-3': True},
     )
+
+    tasks = TaskTable(
+        h_tag=Header,
+        columns__unit_code__include=False,
+        query__include=False,
+        rows=lambda params, **_: TaskTable.annotate_query_set(params.academic_group.task_set.filter(is_removed=False).all()),
+        columns__assignment_set__cell__template='app/academic_group/assignment_set.html',
+    )
+
     units = Table(
         auto__model=Unit,
         auto__include=['code', 'name', 'task_set', 'students'],
@@ -167,6 +194,35 @@ academic_group_submenu: M = M(
                 #     icon='clock-rotate-left',
                 #     view=AcademicGroupHistory,
                 # )
+
+                task_detail=M(
+                    display_name=lambda task, **_: task.name,
+                    icon=Task.icon,
+                    open=True,
+                    params={'academic_group', 'task'},
+                    path='<task>/',
+                    url=lambda task, **_: f"/{AcademicGroup.url_root}/{task.group.pk}/{task.pk}/",
+                    view=TaskDetail,
+
+                    items=dict(
+                        edit=M(
+                            icon='pencil',
+                            view=TaskEdit,
+                            include=lambda request, **_: request.user.is_staff,
+                        ),
+                        delete=M(
+                            icon='trash',
+                            view=TaskDelete,
+                            include=lambda request, **_: request.user.is_staff,
+                        ),
+                    )
+                ),
+                create=M(
+                    display_name="Create Task",
+                    icon='plus',
+                    view=AcademicGroupTaskCreate,
+                    include=lambda request, **_: request.user.is_staff,
+                ),
             ),
         )
     )

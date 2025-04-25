@@ -10,6 +10,7 @@ from django.db.models import Model, ForeignKey, PROTECT, CharField, FloatField, 
 from django.urls import reverse
 from simple_history.models import HistoricForeignKey
 
+from app.models import AcademicGroup
 from app.models.load_function import LoadFunction
 from app.models.unit import Unit
 from app.models.common import ModelCommon
@@ -18,7 +19,7 @@ from app.models.common import ModelCommon
 logger = getLogger(__name__)
 
 
-class Task(ModelCommon, Model):
+class Task(ModelCommon):
     """
     This is the model for tasks
     """
@@ -45,6 +46,10 @@ class Task(ModelCommon, Model):
 
     unit = HistoricForeignKey(
         Unit, on_delete=PROTECT, null=True, blank=True,
+        related_name='task_set',
+    )
+    academic_group = HistoricForeignKey(
+        AcademicGroup, on_delete=PROTECT, null=True, blank=True,
         related_name='task_set',
     )
 
@@ -89,7 +94,9 @@ class Task(ModelCommon, Model):
         """
         text = f"{self.name}"
         if self.unit:
-            text = f"{self.unit.code} - "+text
+            text = f"{self.unit.code} - " + text
+        elif self.academic_group:
+            text = f"{self.academic_group.short_name} - " + text
 
         if self.load_calc != self.load_calc_first:
             text += f" [{self.load_calc:.0f} / {self.load_calc_first:.0f}]"
@@ -104,6 +111,8 @@ class Task(ModelCommon, Model):
         """
         if self.unit:
             return f"{self.unit.code} - {self.name}"
+        elif self.academic_group:
+            return f"{self.academic_group.short_name} - {self.name}"
         else:
             return f"{self.name}"
 
@@ -121,7 +130,9 @@ class Task(ModelCommon, Model):
         Preprend the unit if this is a unit task
         """
         if self.unit:
-            return reverse('unit_task_detail', args=[self.unit.code, self.pk])
+            return f"{Unit.url_root}/{self.unit.pk}/{self.pk}/"
+        elif self.academic_group:
+            return f"{AcademicGroup.url_root}/{self.academic_group.pk}/{self.pk}/"
         else:
             return super().get_absolute_url()
 

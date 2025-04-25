@@ -3,11 +3,10 @@ from abc import abstractmethod
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.template.loader import render_to_string
-from django.urls import reverse
 from django.db.models import FloatField
-from django.http import HttpRequest
 
 from model_utils.models import SoftDeletableModel
+from model_utils.managers import InheritanceManager
 
 from simple_history.models import HistoricalRecords
 
@@ -121,6 +120,21 @@ class ModelCommon(SoftDeletableModel):
             return True
         else:
             return False
+
+
+class TaskOwner(ModelCommon):
+    """
+    Base class for things that can 'own' tasks, e.g. Academic Groups, Units
+    """
+    objects = InheritanceManager()
+
+    @abstractmethod
+    def get_task_prefix(self) -> str:
+        """
+        The prefix added to a task, e.g. "PHYS2001 - Taskname"
+        :return: The prefix.
+        """
+        raise NotImplementedError()
 
 
 class LoadBalanceField(FloatField):
