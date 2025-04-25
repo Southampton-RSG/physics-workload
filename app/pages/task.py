@@ -60,6 +60,8 @@ class TaskDetail(Page):
         fields__coursework_fraction__include=lambda params, **_: params.task.coursework_fraction,
         fields__exam_fraction__include=lambda params, **_: params.task.exam_fraction,
         fields__load_function__include=lambda params, **_: params.task.students,
+        fields__load_calc__include=lambda params, **_: params.task.unit or params.task.load_calc,
+        fields__load_calc_first__include=lambda params, **_: params.task.unit or params.task.load_calc,
         fields__students__include=lambda params, **_: params.task.students,
         editable=False,
     )
@@ -110,6 +112,8 @@ class TaskDelete(Page):
     form = TaskForm.delete(
         h_tag=None,
         instance=lambda params, **_: params.task,
+        fields__load_calc__include=lambda params, **_: params.task.unit or params.task.load_calc,
+        fields__load_calc_first__include=lambda params, **_: params.task.unit or params.task.load_calc,
     )
 
 

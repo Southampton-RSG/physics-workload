@@ -3,20 +3,49 @@
     "model": "app.LoadFunction",
     "pk": 1,
     "fields": {
-      "name": "BSc Final-Year Project",
-      "expression": "33+(6*s)",
-      "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+      "name": "Project Supervision (BSc, same topic/project)",
+      "expression": "15+12*(1.5+0.5*s)",
+      "plot_minimum": 1,
+      "plot_maximum": 10,
+      "notes": "For students on the same topic.\nPDB20190823: I replaced1.33(1.125)h → 1.5h (1.25h) fpr Bsc (MPhys) to account for preparation of meetings (part of NSS action plan agreed with MS)"
     }
   },
   {
     "model": "app.LoadFunction",
     "pk": 2,
     "fields": {
-      "name": "Industrial Placement",
-      "expression": "s * 5",
+      "name": "Project Supervision (MSc, same topic/project)",
+      "expression": "15 + 24*(1.25+0.5*s)",
       "plot_minimum": 1,
-      "plot_maximum": 20,
-      "notes": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
+      "plot_maximum": 10,
+      "notes": "For students on the same topic.\nPDB20190823: I replaced1.33(1.125)h → 1.5h (1.25h) fpr Bsc (MPhys) to account for preparation of meetings (part of NSS action plan agreed with MS)"
+    }
+  },
+  {
+    "model": "app.LoadFunction",
+    "pk": 3,
+    "fields": {
+      "name": "Dissertation (Marking)",
+      "expression": "3*s",
+      "notes": "CK20120408: new style dissertations"
+    }
+  },
+  {
+    "model": "app.LoadFunction",
+    "pk": 4,
+    "fields": {
+      "name": "Industrial Placement (Marking)",
+      "expression": "5*s",
+      "notes": "CK20130117: first guess at a reasonable load..."
+    }
+  },
+  {
+    "model": "app.LoadFunction",
+    "pk": 5,
+    "fields": {
+      "name": "Y1 Personal Tutor",
+      "expression": "35*(1+int(s/6)) + (5*s)",
+      "notes": "Equation reverse-engineered from spreadsheet, though it differs for 11 tutees."
     }
   }
 ]

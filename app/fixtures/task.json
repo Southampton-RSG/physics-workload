@@ -1,120 +1,223 @@
 [
   {
     "model": "app.Task",
-    "pk": 1,
+    "pk": null,
     "fields": {
-      "name": "Coordinator",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "unit": "PHYS2022",
-      "load_fixed": 200,
-      "load_fixed_first": 50,
-      "notes": "CK20120719: update of load structure after discussion with MK – [OLDER NOTES: 1st and subseq loads updated jmf 20090730, following reported hours for 08/09 by mk (current coordinator); note that 3 deputies are needed according to MK (CK 20110901); PDB20180731: Added 10hfor deputy (80h ->90h) accepting suggestion from VA."
+      "name": "Committee / Faculty Program",
+      "description": "Committee member.",
+      "load_fixed": 20
     }
   },
   {
     "model": "app.Task",
-    "pk": 2,
+    "pk": null,
     "fields": {
-      "name": "Deputy",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "unit": "PHYS2022",
-      "load_fixed": 120,
-      "notes": "CK20120719: new structure is that there are 3 staff deputies at 60 hrs each; 2 Mayflowers or equivalent at 120 hrs each; and 2 mayflowers (ideally) or PG/PDRA support at 75 hrs each – if the latter are not assigned here, they need to be assigned via PG demonstrating pool"
+      "name": "Committee / School Research",
+      "description": "Committee member.",
+      "load_fixed": 15
     }
   },
   {
     "model": "app.Task",
-    "pk": 3,
+    "pk": null,
     "fields": {
-      "name": "Teaching Assistant",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "unit": "PHYS2022",
-      "load_fixed": 120
+      "name": "Committee / Other Faculty",
+      "description": "Other than membership of Faculty Programme Committee.",
+      "load_fixed": 15
     }
   },
   {
     "model": "app.Task",
-    "pk": 4,
+    "pk": null,
     "fields": {
-      "name": "Computing Lab Coordinator",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "unit": "PHYS2022",
+      "name": "Committee / Other UoS",
+      "description": "PLACEHOLDER",
+      "load_fixed": 15
+    }
+  },
+    {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "Committee / Other UoS, major",
+      "description": "PLACEHOLDER",
+      "load_fixed": 20
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "Committee / Other AU-Level",
+      "description": "PLACEHOLDER",
+      "load_fixed": 15
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "Committee / Staff-Student Liason",
+      "description": "PLACEHOLDER",
+      "load_fixed": 15
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "School Representative - Senate",
+      "description": "PLACEHOLDER",
+      "load_fixed": 20
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "Committee / Ethics",
+      "description": "PLACEHOLDER",
+      "load_fixed": 45,
+      "notes": "CK20130625: updated following email exchange with AK dated 27/4/13; CK20121112: updated after discussion with AK (decent load justification)"
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "Schools Liason Home & Overseas",
+      "description": "PLACEHOLDER",
+      "load_fixed": 200
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "Zepler Institute Management Board",
+      "description": "PLACEHOLDER",
+      "load_fixed": 36
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "University Strategic Group, Chair",
+      "description": "PLACEHOLDER",
+      "load_fixed": 50,
+      "notes": "CK20130423: suggest by PL; agreed by PAC"
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "REF Impact Champion",
+      "description": "PLACEHOLDER",
       "load_fixed": 150,
-      "load_fixed_first": 35,
-      "notes": "PDB: reviewed under request of DW: increased to 150h"
+      "notes": "CK20130423: suggest by PL; agreed by PAC"
     }
   },
   {
     "model": "app.Task",
-    "pk": 5,
+    "pk": null,
     "fields": {
-      "name": "Computing Lab Assessor",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "unit": "PHYS2022",
-      "load_fixed": 15
-    }
-  },
-  {
-    "model": "app.Task",
-    "pk": 6,
-    "fields": {
-      "name": "Coordinator",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "unit": "PHYS2013",
-      "load_fixed": 9,
-      "coursework_fraction": 1.0,
-      "exam_fraction": 1.0
-    }
-  },
-  {
-    "model": "app.Task",
-    "pk": 7,
-    "fields": {
-      "name": "Deputy",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "unit": "PHYS2013",
-      "load_fixed": 15
-    }
-  },
-  {
-    "model": "app.Task",
-    "pk": 8,
-    "fields": {
-      "name": "Assessor",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "unit": "PHYS2013",
-      "load_fixed": 15
-    }
-  },
-  {
-    "model": "app.Task",
-    "pk": 9,
-    "fields": {
-      "name": "Coordinator",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "unit": "PHYS6027",
+      "name": "Light Express - Mayflower Helper",
+      "description": "PLACEHOLDER",
       "load_fixed": 100,
-      "load_fixed_first": 50
+      "notes": "assigned semi-randomly by CK – 20110901"
     }
   },
   {
     "model": "app.Task",
-    "pk": 10,
+    "pk": null,
     "fields": {
-      "name": "Deputy",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "unit": "PHYS6027",
-      "load_fixed": 25
+      "name": "REF Impact Case",
+      "description": "PLACEHOLDER",
+      "load_fixed": 35
     }
   },
   {
     "model": "app.Task",
-    "pk": 11,
+    "pk": null,
     "fields": {
-      "name": "Examinations Officer",
-      "description": "ck20140819: numbers slightly increased based on load estimate from NJE, increased again AJB in 2015/16",
-      "load_fixed": 250,
-      "load_fixed_first": 50
+      "name": "Committee / KCT Board",
+      "description": "PLACEHOLDER",
+      "load_fixed": 15
     }
-  }
+  },
+  {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "Appeals Officer",
+      "description": "PLACEHOLDER",
+      "load_fixed": 65,
+      "notes": "CK20120409 – new role; load is a guess at the moment"
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "Public Engagement Champions",
+      "description": "PLACEHOLDER",
+      "load_fixed": 50,
+      "notes": "AJB – created, includes creation of impact case"
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "Head of Academic Unit",
+      "description": "PLACEHOLDER",
+      "load_fixed": 912,
+      "notes": "20110415 HoS/DHoSE; updated again by HoS/DHoSE 20120227 – contract says 60% FTE, which ought to mean ~1000 hrs"
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "Deputy Head of School / Research",
+      "description": "PLACEHOLDER",
+      "load_fixed": 300,
+      "load_fixed_first": 50,
+      "notes": "Load confirmed in email by HoS to incoming DHoSR, 26 Feb 2010"
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "Deputy Head of School / Enterprise",
+      "description": "PLACEHOLDER",
+      "load_fixed": 150,
+      "load_fixed_first": 25,
+      "notes": "Load confirmed in email by HoS to incoming DHoSR, 26 Feb 2010"
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "Deputy Head of School / Education",
+      "description": "PLACEHOLDER",
+      "load_fixed": 912,
+      "notes": "figure updated 20090213 by HoS/DHoSE;  updated again by HoS/DHoSE 20120227 – contract says 60% FTE, which ought to mean ~1000 hrs"
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": null,
+    "fields": {
+      "name": "Director of Programmes",
+      "description": "PLACEHOLDER",
+      "load_fixed": 912,
+      "notes": "roles of dirpro and DHOSE split (AJB, for AY21/22)"
+    }
+  },
+
 ]

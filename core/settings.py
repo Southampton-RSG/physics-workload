@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'simple_history',
     'iommi',
     'django_plotly_dash.apps.DjangoPlotlyDashConfig',
+    'csvimport.app.CSVImportConf',
     'django_auth_adfs',
 
     'users',  # Enable the custom users app
