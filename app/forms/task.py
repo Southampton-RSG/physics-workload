@@ -1,7 +1,6 @@
 from logging import getLogger
 
-from django.http import HttpResponseRedirect
-from iommi import Form
+from iommi import Form, Field
 
 from app.models import Task, StandardLoad
 from app.style import floating_fields_style
@@ -12,28 +11,42 @@ logger = getLogger(__name__)
 
 class TaskForm(Form):
     """
-    Form for editing Tasks
+    Form for displaying and editing Tasks
     """
     class Meta:
-        auto__model = Task
-        auto__exclude = ['load_calc', 'load_calc_first', 'is_removed']
+        auto = dict(
+            model=Task,
+            exclude=[
+                'load_calc', 'load_calc_first', 'is_removed',
+                'academic_group', 'unit',
+            ],
+        )
+        fields = dict(
+            name__group="Basic",
+            number_needed__group="Basic",
+            load_fixed__group="Load",
+            load_fixed_first=dict(
+                group="Load",
+            ),
 
-        fields__name__group = "Basic"
-        fields__number_needed__group = "Basic"
-
-        fields__load_fixed__group = "Load"
-        fields__load_fixed_first__group = "Load"
-
-        fields__students__group = "Load Function"
-        fields__load_function__group = "Load Function"
-        fields__load_function__non_editable_input__template = 'app/choice_url.html'
-
-        fields__coursework_fraction__group = "Mark Fractions"
-        fields__exam_fraction__group = "Mark Fractions"
-
-        fields__load_calc__group = "Calculated Load"
-        fields__load_calc_first__group = "Calculated Load"
-
+            load_coordinator=dict(
+                group="Calculation",
+                include=lambda params, **_: params.task.unit if hasattr(params, 'task') else hasattr(params, 'unit'),
+            ),
+            load_function=dict(
+                group="Calculation",
+                non_editable_input__template = 'app/choice_url.html',
+            ),
+            students__group = "Calculation",
+            coursework_fraction=dict(
+                group="Calculation",
+                include=lambda params, **_: params.task.unit if hasattr(params, 'task') else hasattr(params, 'unit'),
+            ),
+            exam_fraction=dict(
+                group="Calculation",
+                include=lambda params, **_: params.task.unit if hasattr(params, 'task') else hasattr(params, 'unit'),
+            ),
+        )
         iommi_style = floating_fields_style
 
         @staticmethod

@@ -1,5 +1,6 @@
 from django.http import HttpRequest, HttpResponseRedirect
 from django.urls import reverse
+from django.views.generic import TemplateView
 
 
 def home_view_redirect(request: HttpRequest) -> HttpResponseRedirect:

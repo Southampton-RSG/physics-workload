@@ -6,10 +6,9 @@ Needs to be run within the Django context; open the management shell with:
     ```
     uv run manage.py shell < import_staff_from_csv.py
     ```
-
-Annoyingly, because of this the path has to be hardcoded.
 """
 from datetime import datetime
+from os import getcwd
 from pathlib import Path
 from uuid import uuid4
 
@@ -19,7 +18,7 @@ from app.models import Staff, AcademicGroup
 
 
 # Hardcoded for ease of dealing with the manage.py shell.
-CSV_PATH: str = Path("~/projects/physics-workload/spreadsheet_staff_contract_cut.csv")
+CSV_PATH: Path = Path(getcwd()) / "spreadsheet_staff_contract_cut.csv"
 print(f"Importing staff from: {CSV_PATH}")
 
 # Track the history of creation
@@ -49,7 +48,7 @@ for idx, row in staff_df.iterrows():
         fte_fraction=row['fte frac'] if not isna(row['fte frac']) else 0,
         hours_fixed=row['Fixed hrs '] if not isna(row['Fixed hrs '])  else 0,
         academic_group=group if group else None,
-        notes=row['Comment'],
+        notes=row['Comment'] if not isna(row['Comment']) else "",
     )
 
     # Now, for each historical balance associated with a given year,

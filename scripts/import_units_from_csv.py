@@ -6,12 +6,12 @@ Needs to be run within the Django context; feed it into the management shell wit
     ```
     uv run manage.py shell < scripts/import_units_from_csv.py
     ```
-
-Annoyingly, because of this the path has to be hardcoded.
 """
 from datetime import datetime
 from logging import getLogger, Logger
+from os import getcwd
 from pathlib import Path
+
 import pandas
 from pandas import DataFrame, read_csv, isnull, to_numeric
 from django.conf import settings
@@ -20,9 +20,10 @@ from app.models import Unit
 
 # Set up logging
 logger: Logger = getLogger(__name__)
+logger.propagate = False
 
 # Hardcoded for ease of dealing with the manage.py shell.
-CSV_PATH: str = Path("~/physics-workload/spreadsheet_load_master.csv")
+CSV_PATH: Path = Path(getcwd()) / "spreadsheet_load_master.csv"
 logger.info(f"Importing units from: {CSV_PATH}")
 
 # Track the history of creation

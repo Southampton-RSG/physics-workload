@@ -1,15 +1,14 @@
 """
 Handles the views for the Standard Load
 """
-from django.urls import path
 from django.utils.html import format_html
 
-from iommi import Page, Table, html, Form, Column, Header, Action
+from iommi import Page, Table, html, Form,  Header
 
 from app.models.standard_load import StandardLoad
 from app.forms.standard_load import StandardLoadForm, StandardLoadFormNewYear
 from app.pages.components import Equations
-from app.pages.components.headers import HeaderInstanceEdit, HeaderInstanceHistory
+from app.pages.components.suffixes import SuffixCreate, SuffixEdit
 from app.style import horizontal_fields_style, floating_fields_style
 
 
@@ -17,8 +16,9 @@ class StandardLoadEdit(Page):
     """
     Edit the standard load
     """
-    header = HeaderInstanceEdit(
+    header = Header(
         lambda params, **_: params.standard_load.get_instance_header(),
+        children__suffix=SuffixEdit(),
     )
     form = StandardLoadForm.edit(
         h_tag=None,
@@ -40,7 +40,10 @@ class StandardLoadNewYear(Page):
     """
     header = Header(
         lambda params, **_: format_html(
-            params.standard_load.get_instance_header() + " / New Year <i class='text-success fa-solid fa-calendar'></i>",
+            params.standard_load.get_instance_header(),
+        ),
+        children__suffix=SuffixCreate(
+            text=" / New Year ",
         )
     )
     form = StandardLoadFormNewYear.create(
@@ -54,10 +57,6 @@ class StandardLoadDetail(Page):
     """
     header = Header(
         lambda params, **_: params.standard_load.get_instance_header(),
-        attrs__class={'position-relative': True},
-        children__buttons=html.span(
-            template='app/standard_load/standard_load_detail_buttons.html'
-        )
     )
 
     assignment = html.p(
@@ -134,10 +133,3 @@ class StandardLoadList(Page):
         ),
     )
 
-
-urlpatterns = [
-    path('load/<standard_load>/new/', StandardLoadNewYear().as_view(), name='standard_load_new'),
-    path('load/<standard_load>/edit/', StandardLoadEdit().as_view(), name='standard_load_edit'),
-    path('load/<standard_load>/', StandardLoadDetail().as_view(), name='standard_load_detail'),
-    path('load/', StandardLoadList().as_view(), name='standard_load_list'),
-]

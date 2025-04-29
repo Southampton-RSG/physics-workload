@@ -1,12 +1,16 @@
+from logging import getLogger, Logger
+
 from django.conf import settings
 from django.db.models import Q, QuerySet, F
 
-from iommi import Table, Column, Field, Action
+from iommi import Table, Column, Field, Action, LAST
 
 from app.models.staff import Staff
-from app.pages.components.tables import ColumnModify
 from app.style import floating_fields_style
 from app.auth import has_staff_access
+
+
+logger: Logger = getLogger(__name__)
 
 
 class StaffTable(Table):
@@ -70,7 +74,6 @@ class StaffTable(Table):
                     }
                 ),
             ),
-            modify=ColumnModify.create(),
         )
         query=dict(
             advanced__include=False,
@@ -120,3 +123,9 @@ class StaffTable(Table):
         :return: The annotated query, with a 'load_balance' column.
         """
         return rows.annotate(load_balance=F('load_target') - F('load_assigned'))
+
+    @staticmethod
+    def extra__on_save(**_):
+        logger.debug(
+            "DEBUG"
+        )

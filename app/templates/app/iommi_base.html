@@ -1,15 +1,11 @@
 {% extends "iommi/base.html" %}
 {% load static %}
-...
-
-{% block iommi_head_contents_last %}
-
-{% endblock %}
 
 {% block iommi_top %}
-
-{% endblock %}
-
-{% block iommi_bottom %}
-
+    {% for message in messages %}
+    <div class="alert alert-dismissible {{ message.tags }}" role="alert">
+        <div>{{ message | safe }}</div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
 {% endblock %}

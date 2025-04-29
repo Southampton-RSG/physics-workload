@@ -1,9 +1,8 @@
 """
-
+Adds access-checking functions that test the permissions on the model.
 """
-from typing import Type, Callable, Any, Dict
+from typing import Type, Callable, Any
 
-from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, AbstractUser
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
@@ -41,7 +40,7 @@ def has_staff_access(user: AbstractUser|AnonymousUser) -> bool:
     :param user:
     :return:
     """
-    if settings.DEBUG_ACCESS or (user.is_authenticated and user.is_staff):
+    if user.is_authenticated and user.is_staff:
         return True
     else:
         return False

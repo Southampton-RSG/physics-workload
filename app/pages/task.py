@@ -4,14 +4,10 @@
 from logging import getLogger
 from typing import List
 
-from django.urls import path
 from django.db.models import QuerySet
 
 from iommi import Page, html, EditTable, Column, Field, EditColumn, Header, register_search_fields
-from iommi.path import register_path_decoding
-from iommi.experimental.main_menu import M
 
-from app.auth import has_access_decoder
 from app.models import Task, Assignment, Staff, StandardLoad
 from app.forms.task import TaskForm
 from app.tables.task import TaskTable
@@ -26,13 +22,22 @@ class TaskDetail(Page):
     Page for showing task details
     """
     header = Header(
-        lambda params, **_: params.task.get_instance_header()
+        lambda params, **_: params.task.get_instance_header(),
     )
 
     @staticmethod
     def filter_staff(task):
         staff_allocated: List[Staff] = task.assignment_set.filter(is_removed=False).values_list('staff', flat=True)
-        staff_allowed: QuerySet[Staff] = Staff.objects.exclude(pk__in=staff_allocated)
+        staff_allowed: QuerySet[Staff] = Staff.available_objects.exclude(pk__in=staff_allocated)
+
+        print(staff_allowed)
+
+        if task.unit and task.unit.academic_group:
+            staff_allowed = staff_allowed.filter(academic_group=task.unit.academic_group)
+
+        elif task.academic_group:
+            staff_allowed = staff_allowed.filter(academic_group=task.academic_group)
+
         return staff_allowed
 
     list = EditTable(
@@ -55,14 +60,39 @@ class TaskDetail(Page):
     br = html.br()
     form = TaskForm(
         title="Details",
-        auto__model=Task, instance=lambda params, **_: params.task,
-        auto__exclude=['unit', 'is_removed'],
-        fields__coursework_fraction__include=lambda params, **_: params.task.coursework_fraction,
-        fields__exam_fraction__include=lambda params, **_: params.task.exam_fraction,
-        fields__load_function__include=lambda params, **_: params.task.students,
-        fields__load_calc__include=lambda params, **_: params.task.unit or params.task.load_calc,
-        fields__load_calc_first__include=lambda params, **_: params.task.unit or params.task.load_calc,
-        fields__students__include=lambda params, **_: params.task.students,
+        auto__exclude=[
+            'is_removed', 'academic_group', 'unit', 'name',
+        ],
+        instance=lambda params, **_: params.task,
+        fields=dict(
+            name__include=False,
+            load_calc=dict(
+                group="Calculated Load",
+            ),
+            load_calc_first=dict(
+                include=lambda params, **_: params.task.load_calc_first and params.task.load_calc_first != params.task.load_calc,
+                group="Calculated Load",
+            ),
+            load_coordinator=dict(
+                include=lambda params, **_: params.task.unit,
+                group="Calculation Details",
+                after='load_calc_first',
+            ),
+            load_fixed_first=dict(
+                include=lambda params, **_: params.task.load_fixed_first
+            ),
+            coursework_fraction=dict(
+                include=lambda params, **_: params.task.load_coordinator,
+                group="Calculation Details",
+                after='load_coordinator',
+            ),
+            exam_fraction=dict(
+                include=lambda params, **_: params.task.load_coordinator,
+                group="Calculation Details",
+            ),
+            load_function__include=lambda params, **_: params.task.load_function,
+            students__include=lambda params, **_: params.task.students,
+        ),
         editable=False,
     )
 
@@ -76,8 +106,11 @@ class TaskEdit(Page):
     )
     form = TaskForm.edit(
         h_tag=None,
-        fields__load_calc_first__include=False,
-        fields__load_calc__include=False,
+        fields=dict(
+            load_coordinator__include=lambda params, **_: params.task.unit,
+            load_calc__include=False,
+            load_calc_first__include=False,
+        ),
         instance=lambda params, **_: params.task,
         extra__redirect_to='..',
     )
@@ -92,13 +125,17 @@ class TaskCreate(Page):
     )
     form = TaskForm.create(
         h_tag=None,
-        fields__unit__include=False,
-        fields__load_calc_first__include=False,
-        fields__load_calc__include=False,
-        fields__standard_load=Field.non_rendered(
-            include=True,
-            initial=lambda params, **_: StandardLoad.objects.latest(),
-        )
+        fields=dict(
+            unit__include=False,
+            load_calc_first__include=False,
+            load_calc__include=False,
+            load_fixed_first__include=True,
+            load_coordinator__include=False,
+            standard_load=Field.non_rendered(
+                include=True,
+                initial=lambda params, **_: StandardLoad.objects.latest(),
+            )
+        ),
     )
 
 
@@ -112,8 +149,12 @@ class TaskDelete(Page):
     form = TaskForm.delete(
         h_tag=None,
         instance=lambda params, **_: params.task,
-        fields__load_calc__include=lambda params, **_: params.task.unit or params.task.load_calc,
-        fields__load_calc_first__include=lambda params, **_: params.task.unit or params.task.load_calc,
+        fields=dict(
+            load_calc_first__include=lambda params, **_: params.task.load_calc_first,
+            load_fixed_first=dict(
+                include=lambda params, **_: params.task.load_fixed_first
+            ),
+        ),
     )
 
 
@@ -125,56 +166,13 @@ class TaskList(Page):
         lambda params, **_: Task.get_model_header(),
     )
     list = TaskTable(
-        rows=TaskTable.annotate_query_set(Task.available_objects.all()),
+        rows=TaskTable.annotate_query_set(
+            Task.available_objects.all()
+        ),
     )
 
 
 # Register tasks to be searched using the "name" field.
 register_search_fields(
     model=Task, search_fields=['name'], allow_non_unique=True
-)
-# Decode <task> in paths so a LoadFunction object is in the view parameters.
-register_path_decoding(
-    task=has_access_decoder(Task, "You must be assigned to a Task to view it."),
-)
-
-# This is imported into the main menu tree.
-task_submenu: M = M(
-    display_name=Task._meta.verbose_name_plural,
-    icon=Task.icon,
-    include=lambda request, **_: request.user.is_authenticated,
-    view=TaskList,
-
-    items=dict(
-        create=M(
-            icon="plus",
-            view=TaskCreate,
-            include=lambda request, **_: request.user.is_staff,
-        ),
-        detail=M(
-            display_name=lambda task, **_: task.name,
-            open=True,
-            params={'task'},
-            path='<task>/',
-            url=lambda task, **_: f"{Task.url_root}/{task.pk}/",
-            view=TaskDetail,
-
-            items=dict(
-                edit=M(
-                    icon='pencil',
-                    view=TaskEdit,
-                    include=lambda request, **_: request.user.is_staff,
-                ),
-                delete=M(
-                    icon='trash',
-                    view=TaskDelete,
-                    include=lambda request, **_: request.user.is_staff,
-                ),
-                # history=M(
-                #     icon='clock-rotate-left',
-                #     view=TaskHistory,
-                # )
-            )
-        )
-    )
 )

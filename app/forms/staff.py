@@ -20,7 +20,6 @@ class StaffForm(Form):
         fields__academic_group__group='row1'
         fields__academic_group__non_editable_input__template = 'app/choice_url.html'
         fields__gender__group='row1'
-        fields__type__group='row1'
         fields__fte_fraction__group='row2'
         fields__hours_fixed__group='row2'
         iommi_style = floating_fields_style

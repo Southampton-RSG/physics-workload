@@ -1,11 +1,9 @@
 # -*- encoding: utf-8 -*-
 from logging import getLogger
-from typing import Type
 
 from django.contrib.auth.models import AbstractUser
-from django.template.loader import render_to_string
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models import Model, ForeignKey, PROTECT, CharField, FloatField, TextField, IntegerField
+from django.db.models import PROTECT, CharField, FloatField, TextField, IntegerField, BooleanField, Q, CheckConstraint
 
 from django.urls import reverse
 from simple_history.models import HistoricForeignKey
@@ -29,11 +27,11 @@ class Task(ModelCommon):
     # === CACHED LOADS ===
     load_calc = FloatField(
         default=0.0, validators=[MinValueValidator(0.0)], blank=False, null=False,
-        verbose_name="Calculated Load"
+        verbose_name="Calculated Load",
     )
     load_calc_first = FloatField(
         default=0.0, validators=[MinValueValidator(0.0)], blank=False, null=False,
-        verbose_name="Calculated Load (first time)"
+        verbose_name="Calculated Load (first time)",
     )
 
     name = CharField(max_length=128, blank=False)
@@ -59,16 +57,22 @@ class Task(ModelCommon):
     )
     load_fixed_first = FloatField(
         default=0.0, validators=[MinValueValidator(0.0)], blank=True, null=True,
-        verbose_name="Extra load hours for first-time",
+        verbose_name="First-time load adjustment",
+        help_text="Load for first-time staff is fixed load plus first-time adjustment."
     )
 
+    load_coordinator = BooleanField(
+        default=False,
+        verbose_name="Unit co-ordinator",
+        help_text="If set, adds load as calculated using the standard co-ordinator load equation.",
+    )
     load_function = HistoricForeignKey(
         LoadFunction, blank=True, null=True, on_delete=PROTECT,
         help_text="Function by which student load for this task scales",
     )
     students = IntegerField(
         null=True, blank=True,
-        help_text="Number of students for scaling load, if not the whole unit",
+        help_text="Number of students for load function and/or co-ordinator equations. If this task belongs to a Unit, falls back to Unit students if empty.",
     )
 
     coursework_fraction = FloatField(
@@ -87,6 +91,23 @@ class Task(ModelCommon):
         ordering = ('unit', 'name',)
         verbose_name = 'Task'
         verbose_name_plural = 'Tasks'
+        constraints = [
+            CheckConstraint(
+                check=(Q(unit__isnull=False) & Q(load_coordinator=True)) | Q(load_coordinator=False),
+                name='unit_coordinator_required',
+                violation_error_message="Cannot be co-ordinator of a unit without a linked unit.",
+            ),
+            CheckConstraint(
+                check=(Q(exam_fraction__gt=0) & Q(load_coordinator=True)) | Q(load_coordinator=False),
+                name='exam_fraction_needs_coordinator',
+                violation_error_message="Must use the co-ordinator equations to have an exam fraction assigned."
+            ),
+            CheckConstraint(
+                check=(Q(coursework_fraction__gt=0) & Q(load_coordinator=True)) | Q(load_coordinator=False),
+                name='coursework_fraction_needs_coordinator',
+                violation_error_message="Must use the co-ordinator equations to have a coursework fraction assigned."
+            ),
+        ]
 
     def __str__(self):
         """
@@ -116,23 +137,22 @@ class Task(ModelCommon):
         else:
             return f"{self.name}"
 
-    def get_instance_header(self, text: str|None = None, suffix: str|None = None) -> str:
+    def get_instance_header(self, text: str|None = None) -> str:
         """
         Overrides the default instance header to include the unit, with link, if present.
         :param text: Override text.
-        :param suffix: Optional suffix.
         :return: The rendered HTML template for this model.
         """
-        return super().get_instance_header(text=self.get_name(), suffix=suffix)
+        return super().get_instance_header(text=self.get_name())
 
     def get_absolute_url(self) -> str:
         """
         Preprend the unit if this is a unit task
         """
         if self.unit:
-            return f"{Unit.url_root}/{self.unit.pk}/{self.pk}/"
+            return f"/{Unit.url_root}/{self.unit.pk}/{self.pk}/"
         elif self.academic_group:
-            return f"{AcademicGroup.url_root}/{self.academic_group.pk}/{self.pk}/"
+            return f"/{AcademicGroup.url_root}/{self.academic_group.pk}/{self.pk}/"
         else:
             return super().get_absolute_url()
 
@@ -155,6 +175,7 @@ class Task(ModelCommon):
         else:
             return user.staff in self.assignment_set.filter(is_removed=False).values_list('staff', flat=True)
 
+
     def update_load(self) -> True:
         """
         Updates the load for this task. Does not save to DB; that needs to be done in the calling function.
@@ -163,7 +184,7 @@ class Task(ModelCommon):
         load: float = 0
         logger.debug(f"{self}: Updating load...")
 
-        if self.unit and (self.coursework_fraction or self.exam_fraction):
+        if self.load_coordinator:
             # ==== IF THIS IS A UNIT CO-ORDINATOR ====
             # SPREADSHEET LOGIC
             from app.models.standard_load import StandardLoad

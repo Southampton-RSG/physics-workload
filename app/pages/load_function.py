@@ -2,12 +2,9 @@
 Handles the views for the Load Functions Groups
 """
 from typing import List
-from django.urls import path
 from django.template import Template
 
-from iommi import Page, Table, html, Form, EditTable, Column, Field, Fragment, Header
-from iommi.experimental.main_menu import M
-from iommi.path import register_path_decoding
+from iommi import Page, Table, html, Header
 
 from plotly.graph_objs import Layout, Figure, Scatter
 from plotly.graph_objs.layout import XAxis, YAxis
@@ -18,6 +15,7 @@ load_figure_template('bootstrap_dark')
 
 from app.models import LoadFunction
 from app.forms.load_function import LoadFunctionForm
+from app.pages.components.suffixes import SuffixCreate, SuffixEdit, SuffixDelete
 
 
 class LoadFunctionCreate(Page):
@@ -26,6 +24,7 @@ class LoadFunctionCreate(Page):
     """
     header = Header(
         lambda params, **_: LoadFunction.get_model_header_singular(),
+        children__suffix=SuffixCreate(),
     )
     form = LoadFunctionForm.create()
     examples = html.p(
@@ -39,6 +38,7 @@ class LoadFunctionDelete(Page):
     """
     header = Header(
         lambda params, **_: params.load_function.get_instance_header(),
+        children__suffix=SuffixDelete(),
     )
     form = LoadFunctionForm.delete(
         instance=lambda params, **_: params.load_function,
@@ -52,6 +52,7 @@ class LoadFunctionEdit(Page):
     """
     header = Header(
         lambda params, **_: params.load_function.get_instance_header(),
+        children__suffix=SuffixEdit(),
     )
     form = LoadFunctionForm.edit(
         instance=lambda params, **_: params.load_function,
@@ -119,70 +120,24 @@ class LoadFunctionList(Page):
     """
     Page listing the standard load over history
     """
-    header = Header(
-        lambda params, **_: LoadFunction.get_model_header()
-    )
-    list = Table(
-        h_tag=None,
-        auto__model=LoadFunction,
-        auto__exclude=['notes', 'is_removed'],
-        columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
-        columns__expression__cell__template=Template("<td class='font-monospace'>{{ value | truncatechars:32 }}</td>"),
-        columns__plot_minimum=dict(
-            group="Plot",
-            display_name="Minimum",
-        ),
-        columns__plot_maximum=dict(
-            group="Plot",
-            display_name="Maximum",
-        ),
-        rows=LoadFunction.available_objects.all(),
-    )
+    # header = Header(
+    #     lambda params, **_: LoadFunction.get_model_header()
+    # )
+    # list = Table(
+    #     h_tag=None,
+    #     auto__model=LoadFunction,
+    #     auto__exclude=['notes', 'is_removed'],
+    #     columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
+    #     columns__expression__cell__template=Template("<td class='font-monospace'>{{ value | truncatechars:32 }}</td>"),
+    #     columns__plot_minimum=dict(
+    #         group="Plot",
+    #         display_name="Minimum",
+    #     ),
+    #     columns__plot_maximum=dict(
+    #         group="Plot",
+    #         display_name="Maximum",
+    #     ),
+    #     rows=LoadFunction.available_objects.all(),
+    # )
 
 
-# Decode <load_function> in paths so a LoadFunction object is in the view parameters.
-register_path_decoding(
-    load_function=lambda string, **_: LoadFunction.objects.get(pk=int(string))
-)
-
-# This is imported into the main menu tree.
-load_function_submenu: M = M(
-    display_name=LoadFunction._meta.verbose_name_plural,
-    icon=LoadFunction.icon,
-    include=lambda request, **_: request.user.is_authenticated,
-    view=LoadFunctionList,
-
-    items=dict(
-        create=M(
-            icon="plus",
-            view=LoadFunctionCreate,
-            include=lambda request, **_: request.user.is_staff,
-        ),
-
-        detail=M(
-            display_name=lambda load_function, **_: load_function.name,
-            open=True,
-            params={'load_function'},
-            path='<load_function>/',
-            url=lambda load_function, **_: f"/{LoadFunction.url_root}/{load_function.pk}/",
-            view=LoadFunctionDetail,
-
-            items=dict(
-                edit=M(
-                    icon='pencil',
-                    view=LoadFunctionEdit,
-                    include=lambda request, **_: request.user.is_staff,
-                ),
-                delete=M(
-                    icon='trash',
-                    view=LoadFunctionDelete,
-                    include=lambda request, **_: request.user.is_staff,
-                ),
-                # history=M(
-                #     icon='clock-rotate-left',
-                #     view=LoadFunctionHistory
-                # )
-            ),
-        ),
-    ),
-)

@@ -3,16 +3,13 @@ Handles the views for the Academic Groups
 """
 from django.db.models import Count, Sum
 
-from iommi import Page, Table, html, Form, EditTable, Column, Action, Menu, Fragment, Header, Field
-from iommi.path import register_path_decoding
-from iommi.experimental.main_menu import M
+from iommi import Page, Table, html, Form, Column, Header, Field
 
-from app.auth import has_access_decoder
 from app.forms.task import TaskForm
-from app.models import AcademicGroup, Task, Unit
+from app.models import AcademicGroup, Unit
 from app.tables.task import TaskTable
 from app.tables.staff import StaffTable
-from app.pages.task import TaskEdit, TaskDelete, TaskDetail
+from app.pages.components.suffixes import SuffixCreate, SuffixEdit, SuffixDelete
 
 
 class AcademicGroupTaskCreate(Page):
@@ -20,11 +17,16 @@ class AcademicGroupTaskCreate(Page):
     Create a task associated with an academic group.
     """
     header = Header(
-        lambda params, **_: params.unit.get_instance_header(suffix="Create Task")
+        lambda params, **_: params.academic_group.get_instance_header(),
+        children__suffix=SuffixCreate(),
     )
     form = TaskForm.create(
         h_tag=None,
-        fields__unit=Field.non_rendered(
+        auto__exclude=[
+            'load_calc', 'load_calc_first', 'is_removed',
+            'academic_group',
+        ],
+        fields__academic_group=Field.non_rendered(
             initial=lambda params, **_: params.academic_group,
         ),
     )
@@ -40,18 +42,22 @@ class AcademicGroupDetail(Page):
     )
 
     staff = StaffTable(
-        rows=lambda params, **_: StaffTable.annotate_rows(params.academic_group.staff_set.filter(is_removed=False)),
+        attrs__class={'mb-3': True},
         columns__academic_group_code__include=False,
         query__include=False,
-        attrs__class={'mb-3': True},
+        rows=lambda params, **_: StaffTable.annotate_rows(params.academic_group.staff_set.filter(is_removed=False)),
     )
 
     tasks = TaskTable(
+        attrs__class={'mb-3': True},
+        columns=dict(
+            academic_group__include=False,
+            unit_code__include=False,
+            assignment_set__cell__template='app/academic_group/assignment_set.html',
+        ),
         h_tag=Header,
-        columns__unit_code__include=False,
         query__include=False,
         rows=lambda params, **_: TaskTable.annotate_query_set(params.academic_group.task_set.filter(is_removed=False).all()),
-        columns__assignment_set__cell__template='app/academic_group/assignment_set.html',
     )
 
     units = Table(
@@ -80,11 +86,13 @@ class AcademicGroupEdit(Page):
     Page showing an academic group to be edited
     """
     header = Header(
-        lambda params, **_: params.academic_group.get_instance_header()
+        lambda params, **_: params.academic_group.get_instance_header(),
+        children__suffix=SuffixEdit(),
     )
     form = Form.edit(
         h_tag=None,
         auto__model=AcademicGroup, instance=lambda params, **_: params.academic_group,
+        auto__exclude=['is_removed'],
         fields__code__group='row1',
         fields__short_name__group='row1',
         fields__name__group='row1',
@@ -102,6 +110,7 @@ class AcademicGroupCreate(Page):
     form = Form.create(
         h_tag=None,
         auto__model=AcademicGroup,
+        auto__exclude=['is_removed'],
         fields__code__group='row1',
         fields__short_name__group='row1',
         fields__name__group='row1',
@@ -114,6 +123,7 @@ class AcademicGroupDelete(Page):
     """
     header = Header(
         lambda params, **_: params.academic_group.get_instance_header(),
+        children__suffix=SuffixDelete(),
     )
     warning = html.p(
         "If this group has been used, edit it and remove the 'active' flag instead."
@@ -121,6 +131,7 @@ class AcademicGroupDelete(Page):
     form = Form.delete(
         h_tag=None,
         auto__model=AcademicGroup, instance=lambda params, **_: params.academic_group,
+        auto__exclude=['is_removed'],
         fields__code__group='row1',
         fields__short_name__group='row1',
         fields__name__group='row1',
@@ -146,84 +157,4 @@ class AcademicGroupList(Page):
             cell__value=lambda row, **_: row.unit_set.filter(is_removed=False).count(),
         ),
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
-        columns__edit=Column.edit(
-            cell__url=lambda row, **_: f"{row.get_absolute_url()}edit/",
-            include=lambda request, **_: request.user.is_staff,
-        ),
     )
-
-
-# Decodes "<academic_group>" in paths to add parmas.academic_group
-register_path_decoding(
-    academic_group=has_access_decoder(AcademicGroup, "You must be a member of this Group to view it."),
-)
-
-# Imported into the main menu
-academic_group_submenu: M = M(
-    display_name=AcademicGroup._meta.verbose_name_plural,
-    icon=AcademicGroup.icon,
-    include=lambda request, **_: request.user.is_authenticated,
-    view=AcademicGroupList,
-
-    items=dict(
-        create=M(
-            icon="plus",
-            view=AcademicGroupCreate,
-            include=lambda request, **_: request.user.is_staff,
-        ),
-        detail=M(
-            display_name=lambda academic_group, **_: academic_group.short_name,
-            open=True,
-            params={'academic_group'},
-            path='<academic_group>/',
-            url=lambda academic_group, **_: f"{AcademicGroup.url_root}/{academic_group.code}/",
-            view=AcademicGroupDetail,
-
-            items=dict(
-                edit=M(
-                    icon='pencil',
-                    view=AcademicGroupEdit,
-                    include=lambda request, **_: request.user.is_staff,
-                ),
-                delete=M(
-                    icon='trash',
-                    view=AcademicGroupDelete,
-                    include=lambda request, **_: request.user.is_staff,
-                ),
-                # history=M(
-                #     icon='clock-rotate-left',
-                #     view=AcademicGroupHistory,
-                # )
-
-                task_detail=M(
-                    display_name=lambda task, **_: task.name,
-                    icon=Task.icon,
-                    open=True,
-                    params={'academic_group', 'task'},
-                    path='<task>/',
-                    url=lambda task, **_: f"/{AcademicGroup.url_root}/{task.group.pk}/{task.pk}/",
-                    view=TaskDetail,
-
-                    items=dict(
-                        edit=M(
-                            icon='pencil',
-                            view=TaskEdit,
-                            include=lambda request, **_: request.user.is_staff,
-                        ),
-                        delete=M(
-                            icon='trash',
-                            view=TaskDelete,
-                            include=lambda request, **_: request.user.is_staff,
-                        ),
-                    )
-                ),
-                create=M(
-                    display_name="Create Task",
-                    icon='plus',
-                    view=AcademicGroupTaskCreate,
-                    include=lambda request, **_: request.user.is_staff,
-                ),
-            ),
-        )
-    )
-)

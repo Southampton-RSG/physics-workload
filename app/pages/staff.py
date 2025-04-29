@@ -23,13 +23,17 @@ from app.models.standard_load import StandardLoad
 from app.forms.staff import StaffForm
 from app.style import floating_fields_select2_inline_style
 from app.tables.staff import StaffTable
+from app.pages.components.suffixes import SuffixCreate, SuffixEdit, SuffixDelete, SuffixHistory
 
 
 class StaffDelete(Page):
     """
 
     """
-    header = Header(lambda params, **_: params.staff.get_instance_header())
+    header = Header(
+        lambda params, **_: params.staff.get_instance_header(),
+        children__suffix=SuffixDelete(),
+    )
     form = StaffForm.delete(
         h_tag=None,
         instance=lambda params, **_: params.staff,
@@ -48,7 +52,10 @@ class StaffEdit(Page):
     """
 
     """
-    header = Header(lambda params, **_: params.staff.get_instance_header())
+    header = Header(
+        lambda params, **_: params.staff.get_instance_header(),
+        children__suffix=SuffixEdit(),
+    )
     form = StaffForm.edit(
         h_tag=None,
         auto__instance=lambda params, **_: params.staff,
@@ -63,7 +70,8 @@ class StaffCreate(Page):
 
     """
     header = Header(
-        lambda params, **_: Staff.get_model_header_singular()
+        lambda params, **_: Staff.get_model_header_singular(),
+        children__suffix=SuffixCreate(),
     )
     form = StaffForm.create(
         h_tag=None,
@@ -140,7 +148,10 @@ class StaffHistoryDetail(Page):
     View showing the detail of a staff member at a point in time.
     """
     header = Header(
-        lambda params, **_: params.staff.get_instance_header(suffix=f"{params.staff_history.history_date.date()}")
+        lambda params, **_: params.staff.get_instance_header(),
+        children__suffix=SuffixHistory(
+             text=lambda params, **_: f" / {params.staff_history.history_date.date()} "
+        )
     )
     form = StaffForm(
         h_tag=None,
@@ -183,7 +194,10 @@ class StaffHistoryList(Page):
     """
     List of History entries for a staff member.
     """
-    header = Header(lambda params, **_: params.staff.get_instance_header(suffix="History"))
+    header = Header(
+        lambda params, **_: params.staff.get_instance_header(),
+        children__suffix=SuffixHistory(),
+    )
 
     plot = html.div(
         attrs__class={"mt-4": True},
@@ -298,56 +312,4 @@ class StaffList(Page):
 
 register_search_fields(
      model=Staff, search_fields=['name', 'gender', 'academic_group'], allow_non_unique=True,
-)
-register_path_decoding(
-    staff=has_access_decoder(Staff, "You may only view your own Staff details."),
-)
-register_path_decoding(
-    staff_history=lambda string, **_: Staff.history.get(history_id=int(string)),
-)
-
-staff_submenu: M = M(
-    icon=Staff.icon,
-    view=StaffList,
-    include=lambda request, **_: request.user.is_authenticated,
-    items=dict(
-        create=M(
-            icon="plus",
-            include=lambda request, **_: request.user.is_staff,
-            view=StaffCreate,
-        ),
-        detail=M(
-            display_name=lambda staff, **_: staff.name,
-            open=True,
-            params={'staff'},
-            path='<staff>/',
-            url=lambda staff, **_: f"/{Staff.url_root}/{staff.account}/",
-            view=StaffDetail,
-
-            items=dict(
-                edit=M(
-                    icon='pencil',
-                    view=StaffEdit,
-                    include=lambda request, **_: request.user.is_staff,
-                ),
-                delete=M(
-                    icon='trash',
-                    view=StaffDelete,
-                    include=lambda request, **_: request.user.is_staff,
-                ),
-                history=M(
-                    icon='clock-rotate-left',
-                    view=StaffHistoryList,
-                    items=dict(
-                        detail=M(
-                            display_name=lambda staff_history, **_: staff_history.history_date.date(),
-                            params={'staff_history'},
-                            path='<staff_history>/',
-                            view = StaffHistoryDetail,
-                        )
-                    )
-                ),
-            ),
-        ),
-    )
 )

@@ -26,6 +26,8 @@ staticfiles/*
 !staticfiles/.gitkeep 
 .vscode/symbols.json
 .idea/
+.idea/workspace.xml
+.idea/tasks.xml
 
 # Secret values
 .env

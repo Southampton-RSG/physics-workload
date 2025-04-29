@@ -3,7 +3,7 @@ from abc import abstractmethod
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.template.loader import render_to_string
-from django.db.models import FloatField
+from django.db.models import FloatField, CharField
 
 from model_utils.models import SoftDeletableModel
 from model_utils.managers import InheritanceManager
@@ -49,14 +49,12 @@ class ModelCommon(SoftDeletableModel):
         :param user: The user to check authorisation for.
         :return: The absolute URL for the detail view of this particular instance of the model if allowed, or blank.
         """
-        if settings.DEBUG_ACCESS:
-            return self.get_absolute_url()
-        elif user and user.is_authenticated and (user.is_staff or self.has_access(user)):
+        if user and user.is_authenticated and (user.is_staff or self.has_access(user)):
             return self.get_absolute_url()
         else:
             return ''
 
-    def get_instance_header(self, text: str|None = None, suffix: str|None = None) -> str:
+    def get_instance_header(self, text: str|None = None) -> str:
         """
         Creates a header for a view for an instance of this model.
         :param text: The text to use for the header, if not just the string representation of the instance.
@@ -70,7 +68,7 @@ class ModelCommon(SoftDeletableModel):
         return render_to_string(
             template_name='app/header/header.html',
             context={
-                'icon': self.icon, 'text': f"{text if text else self}"+(f" / {suffix}" if suffix else "")
+                'icon': self.icon, 'text': f"{text if text else self}"
             }
         )
 
@@ -83,7 +81,7 @@ class ModelCommon(SoftDeletableModel):
         return f"/{cls.url_root}/"
 
     @classmethod
-    def get_model_header(cls, suffix: str|None = None) -> str:
+    def get_model_header(cls) -> str:
         """
         Creates a header for the view listing all of this model.
         :return: The rendered template, for use on the page.
@@ -92,12 +90,12 @@ class ModelCommon(SoftDeletableModel):
             template_name='app/header/header.html',
             context={
                 'icon': cls.icon, 'url': cls.get_model_url(),
-                'text': cls._meta.verbose_name_plural.title()+(f' / {suffix}' if suffix else '')
+                'text': cls._meta.verbose_name_plural.title()
             }
         )
 
     @classmethod
-    def get_model_header_singular(cls, suffix: str|None = None) -> str:
+    def get_model_header_singular(cls) -> str:
         """
         Creates a header for a create view for this model.
         :return: The rendered template, for use on the page.
@@ -106,7 +104,7 @@ class ModelCommon(SoftDeletableModel):
             template_name='app/header/header.html',
             context={
                 'icon': cls.icon,
-                'text': cls._meta.verbose_name.title()+(f' / {suffix}' if suffix else '')
+                'text': cls._meta.verbose_name.title(),
             }
         )
 
@@ -116,26 +114,28 @@ class ModelCommon(SoftDeletableModel):
         :param user: The user checking access.
         :return: True if debug auth is on or the user is staff.
         """
-        if settings.DEBUG_ACCESS or user.is_staff:
+        if user.is_staff:
             return True
         else:
             return False
 
 
-class TaskOwner(ModelCommon):
-    """
-    Base class for things that can 'own' tasks, e.g. Academic Groups, Units
-    """
-    objects = InheritanceManager()
-
-    @abstractmethod
-    def get_task_prefix(self) -> str:
-        """
-        The prefix added to a task, e.g. "PHYS2001 - Taskname"
-        :return: The prefix.
-        """
-        raise NotImplementedError()
-
-
-class LoadBalanceField(FloatField):
-    pass
+# class TaskOwner(ModelCommon):
+#     """
+#     Base class for things that can 'own' tasks, e.g. Academic Groups, Units
+#
+#     Not implemented, as I realised it'd require a bit of complicated work to handle task prefixes.
+#     """
+#     objects = InheritanceManager()
+#     name = CharField(max_length=128, unique=True, blank=False)
+#
+#     def __str__(self) -> str:
+#         return self.name
+#
+#     @abstractmethod
+#     def get_task_prefix(self) -> str:
+#         """
+#         The prefix added to a task, e.g. "PHYS2001 - Taskname"
+#         :return: The prefix.
+#         """
+#         raise NotImplementedError()

@@ -137,7 +137,7 @@ class StandardLoad(ModelCommon):
         Prepend the instance name with 'Standard Load' for clarity
         :return: Header in the format "Standard Load ??/??"
         """
-        return super().get_instance_header(text=f"Standard Load {self}", suffix=suffix)
+        return super().get_instance_header(text=f"Standard Load {self}")
 
     def has_access(self, user: AbstractUser|AnonymousUser) -> bool:
         """

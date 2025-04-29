@@ -71,11 +71,17 @@ class Unit(ModelCommon):
                       (Q(exam_mark_fraction__isnull=True) & Q(coursework_mark_fraction__isnull=True)),
                 name='total_mark_fraction',
                 violation_error_message="Total mark fraction must be less than 1, or both mark fractions must be empty.",
-            )
+            ),
         ]
 
     def __str__(self) -> str:
         return f"{self.code} - {self.name}"
+
+    def get_instance_header_short(self) -> str:
+        """
+        :return: Wraps instance header, but only uses a short nane,
+        """
+        return super().get_instance_header(text=self.code)
 
     def get_marked_dissertation_count(self) -> int|None:
         """

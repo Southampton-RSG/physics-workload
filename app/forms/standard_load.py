@@ -1,16 +1,18 @@
+from datetime import datetime
 from logging import getLogger
 
 from django.conf import settings
 from django.contrib import messages
-from django.http import HttpResponseRedirect, HttpResponse
 from django.db.models import Sum
-
+from django.http import HttpResponseRedirect, HttpResponse
+from django.utils.timezone import localtime
 
 from iommi import Form, Action, Field
 
-from app.models import Staff, Unit, LoadFunction, AcademicGroup, Assignment, Task, StandardLoad
 from app.assets import mathjax_js
+from app.models import Staff, Unit, LoadFunction, AcademicGroup, Assignment, Task, StandardLoad
 from app.style import horizontal_fields_style, floating_fields_style
+
 
 logger = getLogger(__name__)
 
@@ -119,12 +121,14 @@ class StandardLoadFormNewYear(Form):
             # Save a timestamped version of all of the end-of-year models
             # ------------------------------------------------------------------
             settings.SIMPLE_HISTORY_ENABLED = True
+            current_date: datetime = localtime()
 
             standard_load_old: StandardLoad = StandardLoad.objects.get(pk=standard_load_new.pk)
             standard_load_old.save()
 
             for staff in Staff.available_objects.all():
                 staff.load_balance_final = staff.get_load_balance()
+                staff._history_date = current_date
                 staff.save()
 
             for assignment in Assignment.available_objects.all():
@@ -165,7 +169,7 @@ class StandardLoadFormNewYear(Form):
             if standard_load_new.update_calculated_loads(standard_load_old):
                 messages.success(
                     request,
-                    "Updated loads with new values."
+                    "Advanced to the next academic year."
                 )
 
             return HttpResponseRedirect(standard_load_new.get_absolute_url())

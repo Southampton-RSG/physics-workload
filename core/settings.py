@@ -1,12 +1,14 @@
 # -*- encoding: utf-8 -*-
 import os, random, string
 from pathlib import Path
+
 from decouple import AutoConfig, Csv
+
+from django.contrib import messages
 
 
 # Load settings.ini from the customisations dir
 config = AutoConfig()
-
 
 PROJECT_DIR = Path(__file__).parent  # physics-workload/core/
 BASE_DIR = Path(__file__).parent.parent  # physics-workload/
@@ -18,7 +20,6 @@ if not SECRET_KEY:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG: bool = config('DEBUG', default=False, cast=bool)
-DEBUG_ACCESS: bool = config('DEBUG_ACCESS', default=False, cast=bool)
 
 # HOSTs List
 ALLOWED_HOSTS = [
@@ -200,6 +201,17 @@ LOGIN_REDIRECT_URL = '/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ################################################################################
+# DJANGO CORE - MESSAGES
+################################################################################
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
+
+################################################################################
 # DJANGO CORE - SITES:
 ################################################################################
 SITE_ID = 1
@@ -211,7 +223,7 @@ from app.style import base_style
 
 IOMMI_DEFAULT_STYLE = base_style
 IOMMI_DEBUG = config("DEBUG_IOMMI", default=False, cast=bool)
-IOMMI_MAIN_MENU = 'app.pages.main_menu.main_menu'
+IOMMI_MAIN_MENU = 'app.urls.main_menu'
 
 ################################################################################
 # DJANGO SIMPLE HISTORY

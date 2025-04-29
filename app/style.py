@@ -14,8 +14,16 @@ base_style = Style(
     bootstrap5_base,
     font_awesome_6,
     MainMenu__template="app/main_menu/main_menu.html",
-    # base_template="app/iommi_base.html",
-    root__assets__custom_base_css=Asset.css(attrs__href="/static/css/custom-base.css"),
+    base_template="app/iommi_base.html",
+    root__assets=dict(
+        custom_font_css=Asset.css(
+            attrs__href="//fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,400&amp;display=swap",
+            attrs__media="all",
+        ),
+        custom_base_css=Asset.css(
+            attrs__href="/static/css/custom-base.css"
+        ),
+    ),
     Container__attrs__class={
         "mt-5": False,
         "mt-4": True,

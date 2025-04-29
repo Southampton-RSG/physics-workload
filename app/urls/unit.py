@@ -1,0 +1,93 @@
+from iommi.path import register_path_decoding
+from iommi.experimental.main_menu import M
+
+from app.auth import has_access_decoder
+from app.models.task import Task
+from app.models.unit import Unit
+from app.pages.task import TaskDetail, TaskEdit, TaskDelete
+from app.pages.unit import UnitList, UnitCreate, UnitDetail, UnitTaskCreate, UnitEdit, UnitDelete
+
+
+# Decodes "<unit>" in paths into `params.unit`
+register_path_decoding(
+    unit=has_access_decoder(Unit, "You must be assigned to a Unit to view it"),
+)
+# register_path_decoding(
+#     unit_history=lambda string, **_: Unit.history.get(history_id=int(string)),
+# )
+
+# Added to the main menu
+unit_submenu: M = M(
+    icon=Unit.icon,
+    include=lambda request, **_: request.user.is_authenticated,
+    view=UnitList,
+
+    items=dict(
+        create=M(
+            icon="plus",
+            include=lambda request, **_: request.user.is_staff,
+            view=UnitCreate,
+        ),
+        detail=M(
+            display_name=lambda unit, **_: unit.code,
+            open=True,
+            params={'unit'},
+            path='<unit>/',
+            url=lambda unit, **_: f"/{Unit.url_root}/{unit.pk}/",
+            view=UnitDetail,
+
+            items=dict(
+                edit=M(
+                    icon='pencil',
+                    view=UnitEdit,
+                    include=lambda request, **_: request.user.is_staff,
+                ),
+                delete=M(
+                    icon='trash',
+                    view=UnitDelete,
+                    include=lambda request, **_: request.user.is_staff,
+                ),
+                # history=M(
+                #     icon='clock-rotate-left',
+                #     view=UnitHistoryList,
+                #     items=dict(
+                #         detail=M(
+                #             display_name=lambda unit_history, **_: unit_history.history_date.date(),
+                #             params={'unit_history'},
+                #             path='<unit_history>/',
+                #             view=UnitHistoryDetail,
+                #         )
+                #     )
+                # ),
+                create=M(
+                    display_name="Create Task",
+                    icon='plus',
+                    view=UnitTaskCreate,
+                    include=lambda request, **_: request.user.is_staff,
+                ),
+                task_detail=M(
+                    display_name=lambda task, **_: task.name,
+                    icon=Task.icon,
+                    open=True,
+                    params={'unit', 'task'},
+                    path='<task>/',
+                    url=lambda task, **_: f"/{Unit.url_root}/{task.unit.pk}/{task.pk}/",
+                    view=TaskDetail,
+
+                    items=dict(
+                        edit=M(
+                            icon='pencil',
+                            view=TaskEdit,
+                            include=lambda request, **_: request.user.is_staff,
+                        ),
+                        delete=M(
+                            icon='trash',
+                            view=TaskDelete,
+                            include=lambda request, **_: request.user.is_staff,
+                        ),
+                    )
+                ),
+            ),
+        )
+    )
+)
