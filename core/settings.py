@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 import os, random, string
 from pathlib import Path
+from typing import Any, Dict, Tuple
 
 from decouple import AutoConfig, Csv
 
@@ -84,8 +85,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'core.urls'
-LOGIN_REDIRECT_URL = "home"  # Route defined in app/urls.py
-LOGOUT_REDIRECT_URL = "home"  # Route defined in app/urls.py
 TEMPLATE_DIR = BASE_DIR / "core" / "templates"  # ROOT dir for templates
 
 TEMPLATES = [
@@ -143,7 +142,10 @@ AUTHENTICATION_BACKENDS = [
 ################################################################################
 # DJANGO AUTH ADFS
 ################################################################################
-LOGIN_URL = '/oauth2/login'
+LOGIN_URL = "django_auth_adfs:login"
+LOGIN_REDIRECT_URL = "home"  # Route defined in app/urls.py
+LOGOUT_REDIRECT_URL = "home"  # Route defined in app/urls.py
+
 adfs_client_id = config('ADFS_CLIENT_ID', default="None")
 adfs_client_secret = config('ADFS_CLIENT_SECRET', default="None")
 adfs_tenant_id = config('ADFS_TENANT_ID', default="None")
@@ -166,6 +168,8 @@ AUTH_ADFS = {
 AUTHENTICATION_BACKENDS += [
     'django_auth_adfs.backend.AdfsAuthCodeBackend',
 ]
+# Ensures that the URL uses HTTPS, even if Django is serving to Nginx over HTTP
+SECURE_PROXY_SSL_HEADER = ("X-Forwarded-Proto", "https")
 
 ################################################################################
 # DJANGO CORE - INTERNATIONALISATION
@@ -182,11 +186,11 @@ USE_TZ = True
 ################################################################################
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATIC_URL = '/static/'
+STATIC_ROOT: Path = BASE_DIR / 'staticfiles'
+STATIC_URL: str = '/static/'
 
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (
+STATICFILES_DIRS: Tuple[Path] = (
     BASE_DIR / 'app' / 'static',
 )
 
@@ -195,15 +199,13 @@ STATICFILES_DIRS = (
 ################################################################################
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-LOGIN_REDIRECT_URL = '/'
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_AUTO_FIELD: str = "django.db.models.BigAutoField"
+EMAIL_BACKEND: str = 'django.core.mail.backends.console.EmailBackend'
 
 ################################################################################
 # DJANGO CORE - MESSAGES
 ################################################################################
-MESSAGE_TAGS = {
+MESSAGE_TAGS: Dict[int, str] = {
     messages.DEBUG: 'alert-info',
     messages.INFO: 'alert-info',
     messages.SUCCESS: 'alert-success',
@@ -212,36 +214,37 @@ MESSAGE_TAGS = {
 }
 
 ################################################################################
-# DJANGO CORE - SITES:
+# DJANGO CORE - SITES
 ################################################################################
-SITE_ID = 1
+SITE_ID: int = 1
 
 ################################################################################
 # IOMMI
 ################################################################################
+from iommi.style import Style
 from app.style import base_style
 
-IOMMI_DEFAULT_STYLE = base_style
-IOMMI_DEBUG = config("DEBUG_IOMMI", default=False, cast=bool)
-IOMMI_MAIN_MENU = 'app.urls.main_menu'
+IOMMI_DEFAULT_STYLE: Style = base_style
+IOMMI_DEBUG: bool = config("DEBUG_IOMMI", default=False, cast=bool)
+IOMMI_MAIN_MENU: str = 'app.urls.main_menu'
 
 ################################################################################
 # DJANGO SIMPLE HISTORY
 ################################################################################
 # We only want to take a snapshot on year end
-SIMPLE_HISTORY_ENABLED = False
+SIMPLE_HISTORY_ENABLED: bool = False
 
 ################################################################################
 # DJANGO PLOTLY DASH
 ################################################################################
 # Allow embedding plots as iframes
-X_FRAME_OPTIONS = 'SAMEORIGIN'
+X_FRAME_OPTIONS: str = 'SAMEORIGIN'
 
 ################################################################################
 # DJANGO CORE - LOGGING
 ################################################################################
 from logging import LogRecord
-LOG_DIRECTORY = BASE_DIR / 'logs'
+LOG_DIRECTORY: Path = BASE_DIR / 'logs'
 
 def skip_static_records(record: LogRecord) -> bool:
     """
@@ -253,7 +256,7 @@ def skip_static_records(record: LogRecord) -> bool:
     return hasattr(record, 'message') and not 'GET /static/' in record.message
 
 
-LOGGING = {
+LOGGING: Dict[str, Any] = {
     "version": 1,  # the dictConfig format version
     "disable_existing_loggers": False,  # retain the default loggers
     "handlers": {

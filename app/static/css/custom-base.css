@@ -32,11 +32,21 @@
     /*--bs-warning: var(--horizon-1);*/
     /*--bs-danger: var(--horizon-3);*/
 
-    --iommi-menu-background-color: var(--bs-tertiary-bg);
-    --iommi-menu-text-color-color: var(--bs-primary-text-emphasis);
+    --iommi-menu-background-color: var(--bs-primary);
+    --iommi-menu-text-color-color: var(--bs-gray-300);
 
     --bs-body-font-family: "Roboto";
 }
+
+
+/* Styles the active menu item to be white and bold */
+.menu {
+  & li.is_active > details > summary > a, & li.is_active > a {
+    color: var(--bs-white);
+    font-weight: 600;
+  }
+}
+
 
 .hidden {
     display: none;
@@ -54,6 +64,28 @@ h1 > a {
     text-decoration: none;
 }
 
+/* Otherwise the Iommi menu overrides the BS button colours on hover-over */
+div.menu > nav > a.btn {
+    color: var(--bs-btn-color) !important;
+    background-color: var(--bs-btn-bg) !important;
+
+    i {
+        color: var(--bs-btn-color) !important;
+        background-color: var(--bs-btn-bg) !important;
+
+
+    }
+}
+div.menu > nav > a.btn:hover {
+    color: var(--bs-btn-hover-color) !important;
+    background-color: var(--bs-btn-hover-bg) !important;
+
+    i {
+        color: var(--bs-btn-hover-color) !important;
+        background-color: var(--bs-btn-hover-bg) !important;
+    }
+}
+
 .form-floating > :disabled ~ label {
     color: rgba(var(--bs-body-color-rgb),.65);
 }
@@ -65,5 +97,6 @@ h1 > a {
     right: 0;
     height: 6rem;
     z-index: -10;
-    background-color: var(--bs-primary);
+    background-color: var(--bs-secondary);
 }
+
