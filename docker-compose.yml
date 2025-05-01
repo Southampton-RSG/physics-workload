@@ -10,6 +10,12 @@ services:
         source: "./nginx/app.conf"
         target: "/etc/nginx/conf.d/default.conf"
       - type: bind
+        source: "./nginx/"
+        target: "/var/www/physics-workload/nginx/"
+      - type: bind
+        source: "./staticfiles/"
+        target: "/var/www/physics-workload/staticfiles/"
+      - type: bind
         source: "/etc/tls/certs/"
         target: "/etc/tls/certs/"
       - type: bind
@@ -18,9 +24,7 @@ services:
       - type: bind
         source: "${PROJECT_PATH}/logs/"
         target: "/var/www/physics-workload/logs/"
-      - type: bind
-        source: "${PROJECT_PATH}/staticfiles/"
-        target: "/var/www/physics-workload/staticfiles/"
+
     restart: unless-stopped
     depends_on:
       - physics_workload_django
@@ -40,7 +44,7 @@ services:
         source: "${PROJECT_PATH}/data/"
         target: "/var/www/physics-workload/data/"
       - type: bind
-        source: "${PROJECT_PATH}/staticfiles/"
+        source: "./staticfiles/"
         target: "/var/www/physics-workload/staticfiles/"
       - type: bind
         source: "${PROJECT_PATH}/logs/"

@@ -1,6 +1,6 @@
 FROM ghcr.io/astral-sh/uv:alpine
 
-RUN apk add --update gcc musl-dev openldap-dev python3-dev bash
+RUN apk add --update gcc linux-headers musl-dev openldap-dev python3-dev bash
 
 # set environment variables
 ENV PIP_DISABLE_PIP_VERSION_CHECK 1
@@ -10,7 +10,9 @@ ENV PYTHONUNBUFFERED 1
 RUN mkdir /var/www && mkdir /var/www/physics-workload
 WORKDIR /var/www/physics-workload
 
-COPY . .
-
+# Copy across the project details and build the project environment
+COPY pyproject.toml uv.lock ./
 RUN uv run sync
-RUN uv run manage.py makemigrations && uv run manage.py migrate
+
+# Copy across the rest of the files
+COPY . .
