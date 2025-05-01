@@ -4,7 +4,8 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import (
-    Model, ForeignKey, TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index, CheckConstraint, Q, Sum
+    Model, ForeignKey, TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index, CheckConstraint, Q,
+    Sum, OneToOneField
 )
 from django.db.models.deletion import PROTECT, SET_NULL
 from django.db.models.signals import post_save
@@ -28,7 +29,7 @@ class Staff(ModelCommon):
     icon = 'user'
     url_root = 'staff'
 
-    user = HistoricForeignKey(
+    user = OneToOneField(
         CustomUser, blank=True, null=True, on_delete=SET_NULL,
     )
     account = CharField(

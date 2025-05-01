@@ -13,11 +13,7 @@ unit: school
 	uv run manage.py shell < ./scripts/import_units_from_csv.py
 
 task: unit
-	#uv run manage.py loaddata task
-	uv run manage.py importcsv --model="app.Task" fixture_tasks_nonunit.csv
-
-assignment: task staff
-	uv run manage.py loaddata assignment
+	uv run manage.py shell < ./scripts/import_nonunit_tasks_from_csv.py
 
 clean:
 	-rm -rf app/migrations/*.py
@@ -28,6 +24,9 @@ clean:
 
 superuser:
 	uv run manage.py shell < ./scripts/make_swm1r18_superuser.py
+
+initialise:
+    uv run manage.py initialise
 
 
 
