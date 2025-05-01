@@ -7,6 +7,7 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK 1
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+# Create the directory for the code and jump into it
 RUN mkdir /var/www && mkdir /var/www/physics-workload
 WORKDIR /var/www/physics-workload
 

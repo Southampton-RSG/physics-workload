@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 import os, random, string
 from pathlib import Path
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, List, Tuple
 
 from decouple import AutoConfig, Csv
 
@@ -11,11 +11,11 @@ from django.contrib import messages
 # Load settings.ini from the customisations dir
 config = AutoConfig()
 
-PROJECT_DIR = Path(__file__).parent  # physics-workload/core/
-BASE_DIR = Path(__file__).parent.parent  # physics-workload/
+PROJECT_DIR: Path = Path(__file__).parent  # physics-workload/core/
+BASE_DIR: Path = Path(__file__).parent.parent  # physics-workload/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='None')
+SECRET_KEY: str = config('SECRET_KEY', default='None')
 if not SECRET_KEY:
     SECRET_KEY = ''.join(random.choice( string.ascii_lowercase  ) for i in range( 32 ))
 
@@ -23,7 +23,7 @@ if not SECRET_KEY:
 DEBUG: bool = config('DEBUG', default=False, cast=bool)
 
 # HOSTs List
-ALLOWED_HOSTS = [
+ALLOWED_HOSTS: List[str] = [
     'localhost',
     '127.0.0.1',
     '172.18.0.2',
@@ -33,7 +33,7 @@ ALLOWED_HOSTS = [
     'srv04619',
 ]
 # Add here your deployment HOSTS
-CSRF_TRUSTED_ORIGINS = [
+CSRF_TRUSTED_ORIGINS: List[str] = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'http://0.0.0.0:8000',
@@ -43,8 +43,7 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # Application definition
-
-INSTALLED_APPS = [
+INSTALLED_APPS: List[str] = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -63,7 +62,7 @@ INSTALLED_APPS = [
     'app',  # Enable the inner app
 ]
 
-MIDDLEWARE = [
+MIDDLEWARE: List[str] = [
     'iommi.live_edit.Middleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -79,15 +78,14 @@ MIDDLEWARE = [
     'iommi.experimental.main_menu.main_menu_middleware',
 
     'simple_history.middleware.HistoryRequestMiddleware',
-    'app.middlewares.AjaxMiddleware',
 
     'iommi.middleware',
 ]
 
-ROOT_URLCONF = 'core.urls'
-TEMPLATE_DIR = BASE_DIR / "core" / "templates"  # ROOT dir for templates
+ROOT_URLCONF: str = 'core.urls'
+TEMPLATE_DIR: Path = BASE_DIR / "core" / "templates"  # ROOT dir for templates
 
-TEMPLATES = [
+TEMPLATES: List[Dict[str, Any]] = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [TEMPLATE_DIR],
@@ -103,12 +101,12 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+WSGI_APPLICATION: str = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
+DATABASES: Dict[str, Dict] = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'data' / 'db.sqlite3',
@@ -119,8 +117,8 @@ DATABASES = {
 # DJANGO CORE - AUTHENTICATION
 # Password validators: https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 ################################################################################
-AUTH_USER_MODEL = 'users.CustomUser'
-AUTH_PASSWORD_VALIDATORS = [
+AUTH_USER_MODEL: str = 'users.CustomUser'
+AUTH_PASSWORD_VALIDATORS: List[Dict] = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
@@ -135,7 +133,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = [
+AUTHENTICATION_BACKENDS: List[str] = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
