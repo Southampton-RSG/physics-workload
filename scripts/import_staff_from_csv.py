@@ -42,7 +42,7 @@ for idx, row in staff_df.iterrows():
         group = None
 
     staff: Staff = Staff(
-        account=f"PLACEHOLDER-{str(uuid4())[:8]}",
+        account=f"TBC-{str(uuid4())[:8]}",
         name=row['STAFF'],
         gender=row['Gender'],
         fte_fraction=row['fte frac'] if not isna(row['fte frac']) else 0,

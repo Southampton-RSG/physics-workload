@@ -120,24 +120,24 @@ class LoadFunctionList(Page):
     """
     Page listing the standard load over history
     """
-    # header = Header(
-    #     lambda params, **_: LoadFunction.get_model_header()
-    # )
-    # list = Table(
-    #     h_tag=None,
-    #     auto__model=LoadFunction,
-    #     auto__exclude=['notes', 'is_removed'],
-    #     columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
-    #     columns__expression__cell__template=Template("<td class='font-monospace'>{{ value | truncatechars:32 }}</td>"),
-    #     columns__plot_minimum=dict(
-    #         group="Plot",
-    #         display_name="Minimum",
-    #     ),
-    #     columns__plot_maximum=dict(
-    #         group="Plot",
-    #         display_name="Maximum",
-    #     ),
-    #     rows=LoadFunction.available_objects.all(),
-    # )
+    header = Header(
+        lambda params, **_: LoadFunction.get_model_header()
+    )
+    list = Table(
+        h_tag=None,
+        auto__model=LoadFunction,
+        auto__exclude=['notes', 'is_removed'],
+        columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
+        columns__expression__cell__template=Template("<td class='font-monospace'>{{ value | truncatechars:32 }}</td>"),
+        columns__plot_minimum=dict(
+            group="Plot",
+            display_name="Minimum",
+        ),
+        columns__plot_maximum=dict(
+            group="Plot",
+            display_name="Maximum",
+        ),
+        rows=LoadFunction.available_objects.all(),
+    )
 
 

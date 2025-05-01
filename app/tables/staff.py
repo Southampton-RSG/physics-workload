@@ -39,10 +39,11 @@ class StaffTable(Table):
                 render_column=False,
             ),
             academic_group_code=Column(
-                # Invisible column that's just here to pull data through from the unit for rendering
-                attr='academic_group__code',
+                # Short group name for display in the list.
+                attr='academic_group__short_name',
                 after='name',
                 display_name="Group",
+                filter__include=True,
                 cell__url=lambda row, request, **_: row.academic_group.get_absolute_url_authenticated(request.user) if row.academic_group else None,
             ),
             gender=dict(
@@ -61,7 +62,8 @@ class StaffTable(Table):
                         'text-success': True if row.load_balance_historic <= -1 else False,
                         'text-danger': True if row.load_balance_historic >= 1 else False,
                     }
-                )
+                ),
+                include=lambda request, **_: request.user.is_staff,
             ),
             load_balance=dict(
                 group="Load Balance",
@@ -73,6 +75,7 @@ class StaffTable(Table):
                         'text-danger': True if row.load_balance >= 1 else False,
                     }
                 ),
+                include=lambda request, **_: request.user.is_staff,
             ),
         )
         query=dict(

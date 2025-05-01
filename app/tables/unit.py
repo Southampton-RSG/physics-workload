@@ -10,7 +10,7 @@ from app.style import floating_fields_style
 class UnitTable(Table):
     class Meta:
         auto__model=Unit
-        auto__include=['code', 'name', 'academic_group', 'task_set', 'students']
+        auto__include=['code', 'name', 'task_set', 'students']
         # -------- HIDDEN COLUMNS --------
         columns__assignment_open=Column(render_column=False)
         columns__assignment_provisional=Column(render_column=False)

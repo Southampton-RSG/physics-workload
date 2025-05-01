@@ -1,15 +1,16 @@
-data: site school unit task assignment
+data: site school unit task
 
 site:
-	uv run manage.py loaddata site.json
+	uv run manage.py loaddata site
 
 school: site
-	uv run manage.py loaddata site standard_load academic_group
+	uv run manage.py loaddata standard_load academic_group
 
 staff: school
 	uv run manage.py shell < ./scripts/import_staff_from_csv.py
 
 unit: school
+	uv run manage.py loaddata load_function
 	uv run manage.py shell < ./scripts/import_units_from_csv.py
 
 task: unit
@@ -27,8 +28,5 @@ superuser:
 
 initialise:
     uv run manage.py initialise
-
-
-
 
 all: clean data
