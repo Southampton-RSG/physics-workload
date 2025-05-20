@@ -7,10 +7,11 @@ class SuffixCreate(Fragment):
     """
     Suffix for pages that create a file.
     """
+
     class Meta:
         tag = "span"
-        text = " / Create "
         attrs__class ={"text-success": True}
+        children__text = " / Create "
         children__icon = html.i(
             attrs__class={"fa-solid": True, "fa-plus": True},
         )
@@ -22,8 +23,9 @@ class SuffixEdit(Fragment):
     """
     class Meta:
         tag = "span"
-        text = " / Edit "
         attrs__class ={"text-warning": True}
+        children__text = " / Edit "
+
         children__icon = html.i(
             attrs__class={"fa-solid": True, "fa-pencil": True},
         )
@@ -35,8 +37,8 @@ class SuffixDelete(Fragment):
     """
     class Meta:
         tag = "span"
-        text = " / Delete "
         attrs__class ={"text-danger": True}
+        children__text = " / Delete "
         children__icon = html.i(
             attrs__class={"fa-solid": True, "fa-trash": True},
         )
@@ -45,8 +47,8 @@ class SuffixDelete(Fragment):
 class SuffixHistory(Fragment):
     class Meta:
         tag = "span"
-        text = " / History "
         attrs__class ={"text-secondary": True}
+        children__text = " / History "
         children__icon = html.i(
             attrs__class={"fa-solid": True, "fa-clock-rotate-left": True},
         )

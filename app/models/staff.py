@@ -26,6 +26,13 @@ class Staff(ModelCommon):
     """
     Member of staff; not necessarily a current user.
     """
+    DYNAMIC_FIELDS = [
+        'load_balance_historic',
+        'load_balance_final',
+        'load_target',
+        'load_assigned'
+    ]
+
     icon = 'user'
     url_root = 'staff'
 

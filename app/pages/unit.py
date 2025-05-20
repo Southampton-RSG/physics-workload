@@ -87,7 +87,7 @@ class UnitDelete(Page):
     form = UnitForm.delete(
         h_tag=None,
         instance=lambda params, **_: params.unit,
-         fields__name__include=False,
+        fields__name__include=False,
         fields__code__include=False,
         fields__lectures__include=lambda params, **_: params.unit.lectures,
         fields__problem_classes__include=lambda params, **_: params.unit.problem_classes,

@@ -7,6 +7,7 @@ from django.db.models import PROTECT, CharField, FloatField, TextField, IntegerF
 
 from django.urls import reverse
 from simple_history.models import HistoricForeignKey
+from model_utils.managers import InheritanceManager
 
 from app.models import AcademicGroup
 from app.models.load_function import LoadFunction
@@ -52,13 +53,30 @@ class Task(ModelCommon):
     )
 
     load_fixed = FloatField(
-        default=0.0, validators=[MinValueValidator(0.0)],
+        default=0.0,
+        validators=[
+            MinValueValidator(0.0)
+        ],
         verbose_name="Fixed load hours",
     )
     load_fixed_first = FloatField(
-        default=0.0, validators=[MinValueValidator(0.0)], blank=True, null=True,
+        default=0.0,
+        validators=[
+            MinValueValidator(0.0)
+        ],
+        blank=True, null=True,
         verbose_name="First-time load adjustment",
         help_text="Load for first-time staff is fixed load plus first-time adjustment."
+    )
+    load_multiplier = FloatField(
+        default=1.0,
+        validators=[
+            MinValueValidator(0.1),
+            MaxValueValidator(10.00)
+        ],
+        blank=False,
+        verbose_name="Final load multiplier",
+        help_text="Multiplier applied to final load calculation."
     )
 
     load_coordinator = BooleanField(
@@ -67,7 +85,9 @@ class Task(ModelCommon):
         help_text="If set, adds load as calculated using the standard co-ordinator load equation.",
     )
     load_function = HistoricForeignKey(
-        LoadFunction, blank=True, null=True, on_delete=PROTECT,
+        LoadFunction,
+        blank=True, null=True,
+        on_delete=PROTECT,
         help_text="Function by which student load for this task scales",
     )
     students = IntegerField(
@@ -76,11 +96,19 @@ class Task(ModelCommon):
     )
 
     coursework_fraction = FloatField(
-        default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
+        default=0.0,
+        validators=[
+            MinValueValidator(0.0),
+            MaxValueValidator(1.0)
+        ],
         verbose_name="Fraction of coursework marked",
     )
     exam_fraction = FloatField(
-        default=0.0, validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
+        default=0.0,
+        validators=[
+            MinValueValidator(0.0),
+            MaxValueValidator(1.0)
+        ],
         verbose_name="Fraction of exams marked",
     )
 

@@ -57,13 +57,21 @@ boolean_buttons: Dict[str, Any] = dict(
 # and move the label: https://getbootstrap.com/docs/5.3/forms/floating-labels/
 # ==============================================================================
 floating_fields: Dict[str, Any] = {
-    "label__after": "input",
-    "attrs": {
-        "class": {"form-floating": True, "mb-3": True},
+    'label__after': 'input',
+    'attrs': {
+        'class': {
+            'form-floating': True,
+            'mb-3': True
+        },
     },
-    "non_editable_input": {
-        "attrs": {
-            "class": {'form-control': False, 'form-control-plaintext': True, 'form-select': False, "mb-3": False},
+    'non_editable_input': {
+        'attrs': {
+            'class': {
+                'form-control': False,
+                'form-control-plaintext': True,
+                'form-select': False,
+                'mb-3': False
+            },
         }
     }
 }
@@ -128,3 +136,12 @@ horizontal_fields_style: Style = Style(
     Field__shortcuts__boolean=boolean_buttons,
 )
 register_style('horizontal_fields', horizontal_fields_style)
+
+
+def get_balance_classes(balance: float) -> Dict[str, bool]:
+    """
+    """
+    return {
+        'text-success': True if balance <= -1 else False,
+        'text-danger': True if balance >= 1 else False,
+    }

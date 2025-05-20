@@ -27,6 +27,6 @@ superuser:
 	uv run manage.py shell < ./scripts/make_swm1r18_superuser.py
 
 initialise:
-    uv run manage.py initialise
+	uv run manage.py initialise
 
 all: clean data

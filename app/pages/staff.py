@@ -6,7 +6,7 @@ from typing import List, Dict, Any
 
 from django.template import Template
 
-from iommi import EditTable, EditColumn, Page, Field, Header, html, Table, Column, register_search_fields
+from iommi import EditTable, EditColumn, Page, Field, Header, html, Table, Column, register_search_fields, LAST
 from iommi.path import register_path_decoding
 from iommi.experimental.main_menu import M
 
@@ -21,7 +21,8 @@ from app.auth import has_access_decoder
 from app.models import Staff, Assignment
 from app.models.standard_load import StandardLoad
 from app.forms.staff import StaffForm
-from app.style import floating_fields_select2_inline_style
+from app.style import floating_fields_select2_inline_style, get_balance_classes, floating_fields_style, \
+    horizontal_fields_style
 from app.tables.staff import StaffTable
 from app.pages.components.suffixes import SuffixCreate, SuffixEdit, SuffixDelete, SuffixHistory
 
@@ -37,14 +38,14 @@ class StaffDelete(Page):
     form = StaffForm.delete(
         h_tag=None,
         instance=lambda params, **_: params.staff,
-        auto__exclude=[
-            'is_removed', 'user',
-        ],
-        fields__fte_fraction__include=lambda params, **_: params.staff.fte_fraction,
-        fields__hours_fixed__include=lambda params, **_: params.staff.hours_fixed,
-        fields__load_target__group='row2',
-        fields__load_assigned__group='row2',
-        fields__load_balance_historic__group='row2',
+        auto__exclude=['is_removed', 'user'],
+        fields=dict(
+            fte_fraction__include=lambda params, **_: params.staff.fte_fraction,
+            hours_fixed__include=lambda params, **_: params.staff.hours_fixed,
+            load_target__group='row2',
+            load_assigned__group='row2',
+            load_balance_historic__group='row2',
+        )
     )
 
 
@@ -59,15 +60,28 @@ class StaffEdit(Page):
     form = StaffForm.edit(
         h_tag=None,
         auto__instance=lambda params, **_: params.staff,
-        auto__exclude=[
-            'load_target', 'load_assigned', 'load_balance_historic', 'is_removed', 'user',
-        ],
+        auto__exclude=Staff.DYNAMIC_FIELDS + ['is_removed', 'user'],
+        fields=dict(
+            load_external=dict(
+                group='row25'
+            ),
+            load_balance=Field.integer(
+                editable=False,
+                group='row25',
+                after='load_external',
+                initial=lambda params, **_: int(params.staff.get_load_balance()),
+                non_editable_input__attrs__class=lambda params, **_: {
+                    'form-control-plaintext': True
+                } | get_balance_classes(params.staff.get_load_balance()),
+                help_text="Load assigned minus target load. Positive if overloaded."
+            ),
+        )
     )
 
 
 class StaffCreate(Page):
     """
-
+    Create a new staff member
     """
     header = Header(
         lambda params, **_: Staff.get_model_header_singular(),
@@ -75,12 +89,12 @@ class StaffCreate(Page):
     )
     form = StaffForm.create(
         h_tag=None,
-        auto__exclude=[
-            'is_removed', 'user',
-        ],
-        fields__standard_load=Field.non_rendered(
-            include=True,
-            initial=lambda params, **_: StandardLoad.objects.latest(),
+        auto__exclude=Staff.DYNAMIC_FIELDS + ['is_removed', 'user'],
+        fields=dict(
+            standard_load=Field.non_rendered(
+                include=True,
+                initial=lambda params, **_: StandardLoad.objects.latest(),
+            )
         )
     )
 
@@ -94,48 +108,57 @@ class StaffDetail(Page):
     )
     form = StaffForm(
         h_tag=None,
-        auto__instance=lambda params, **_: params.staff,
-        auto__exclude=[
-            'notes', 'user', 'is_removed', 'load_balance_final',
-        ],
-        fields__fte_fraction__include=lambda params, **_: params.staff.fte_fraction,
-        fields__hours_fixed__include=lambda params, **_: params.staff.hours_fixed,
-        fields__notes__include=lambda request, **_: request.user.is_staff,
-        fields__load_target__group='row2',
-        fields__load_assigned__group = 'row2',
-        fields__load_external__group='row2',
-        fields__load_balance=Field.integer(
-            group='row3',
-            initial=lambda params, **_: int(params.staff.get_load_balance()),
-            non_editable_input__attrs__class=lambda params, **_: {
-                'form-control-plaintext': True,
-                'text-success': True if params.staff.get_load_balance() <= 1 else False,
-                'text-danger': True if params.staff.get_load_balance() >= 1 else False,
-            },
-            help_text="Load assigned minus target load. Positive if overloaded."
+        auto=dict(
+            instance=lambda params, **_: params.staff,
+            exclude=[
+                'notes', 'user', 'is_removed', 'load_balance_final',
+            ],
         ),
-        fields__load_balance_historic=dict(
-            group = 'row3',
-            after='load_balance',
-            initial=lambda params, **_: int(params.staff.load_balance_historic),
-            non_editable_input__attrs__class=lambda params, **_: {
-                'form-control-plaintext': True,
-                'text-success': True if params.staff.load_balance_historic <= -1 else False,
-                'text-danger': True if params.staff.load_balance_historic >= 1 else False,
-            }
+        fields=dict(
+            fte_fraction__include=lambda params, **_: params.staff.fte_fraction,
+            hours_fixed__include=lambda params, **_: params.staff.hours_fixed,
+            load_target__group='row2',
+            load_assigned__group='row2',
+            load_external__group='row2',
+            load_balance=Field.integer(
+                group='row3',
+                initial=lambda params, **_: int(params.staff.get_load_balance()),
+                non_editable_input__attrs__class=lambda params, **_: {
+                    'form-control-plaintext': True
+                } | get_balance_classes(params.staff.get_load_balance()),
+                help_text="Load assigned minus target load. Positive if overloaded."
+            ),
+            load_balance_historic=dict(
+                group = 'row3',
+                after='load_balance',
+                initial=lambda params, **_: int(params.staff.load_balance_historic),
+                non_editable_input__attrs__class=lambda params, **_: {
+                    'form-control-plaintext': True,
+                } | get_balance_classes(params.staff.get_load_balance()),
+            ),
+            notes=dict(
+                include=lambda request, **_: request.user.is_staff,
+                after=LAST,
+                non_editable_input__attrs__class=lambda params, **_: {
+                    'form-control-plaintext': True,
+                },
+            ),
         ),
         editable=False,
         actions__submit=None,
     )
+
     assignments = EditTable(
         auto__model=Assignment,
         auto__exclude=['notes', 'load_calc', 'is_removed',],
-        columns__task__field__include=True,
-        columns__is_first_time__field__include=True,
-        columns__is_provisional__field__include=True,
-        columns__staff=EditColumn.hardcoded(
-            render_column=False,
-            field__parsed_data=lambda params, **_: params.staff,
+        columns=dict(
+            task__field__include=True,
+            is_first_time__field__include=True,
+            is_provisional__field__include=True,
+            staff=EditColumn.hardcoded(
+                render_column=False,
+                field__parsed_data=lambda params, **_: params.staff,
+            ),
         ),
         rows=lambda params, **_: Assignment.available_objects.filter(staff=params.staff),
         columns__delete=EditColumn.delete(),
@@ -155,10 +178,12 @@ class StaffHistoryDetail(Page):
     )
     form = StaffForm(
         h_tag=None,
-        auto__instance=lambda params, **_: params.staff,
-        auto__exclude=[
-            'notes', 'user', 'is_removed', 'load_balance_final',
-        ],
+        auto=dict(
+            instance=lambda params, **_: params.staff,
+            exclude=[
+                'notes', 'user', 'is_removed', 'load_balance_final',
+            ],
+        ),
         fields__fte_fraction__include=lambda params, **_: params.staff.fte_fraction,
         fields__hours_fixed__include=lambda params, **_: params.staff.hours_fixed,
         fields__notes__include=lambda request, **_: request.user.is_staff,
@@ -169,10 +194,8 @@ class StaffHistoryDetail(Page):
             group='row3',
             initial=lambda params, **_: int(params.staff.get_load_balance()),
             non_editable_input__attrs__class=lambda params, **_: {
-                'form-control-plaintext': True,
-                'text-success': True if params.staff.get_load_balance() <= 1 else False,
-                'text-danger': True if params.staff.get_load_balance() >= 1 else False,
-            },
+                'form-control-plaintext': True
+            } | get_balance_classes(params.staff.get_load_balance()),
             help_text="Load assigned minus target load. Positive if overloaded."
         ),
         fields__load_balance_historic=dict(
@@ -181,9 +204,7 @@ class StaffHistoryDetail(Page):
             initial=lambda params, **_: int(params.staff.load_balance_historic),
             non_editable_input__attrs__class=lambda params, **_: {
                 'form-control-plaintext': True,
-                'text-success': True if params.staff.load_balance_historic <= -1 else False,
-                'text-danger': True if params.staff.load_balance_historic >= 1 else False,
-            }
+            } | get_balance_classes(params.staff.load_balance_historic),
         ),
         editable=False,
         actions__submit=None,
@@ -311,5 +332,7 @@ class StaffList(Page):
 
 
 register_search_fields(
-     model=Staff, search_fields=['name', 'gender', 'academic_group'], allow_non_unique=True,
+     model=Staff,
+    search_fields=['name', 'gender', 'academic_group'],
+    allow_non_unique=True,
 )

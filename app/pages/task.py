@@ -42,7 +42,7 @@ class TaskDetail(Page):
 
     list = EditTable(
         auto__model=Assignment,
-        auto__exclude=['notes', 'load_calc'],
+        auto__exclude=['notes', 'load_calc', 'is_removed'],
         columns__task=EditColumn.hardcoded(
             render_column=False,
             field__parsed_data=lambda params, **_: params.task,

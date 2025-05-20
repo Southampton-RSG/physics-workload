@@ -5,8 +5,9 @@ from django.db.models import Q, QuerySet, F
 
 from iommi import Table, Column, Field, Action, LAST
 
+from app.models import AcademicGroup
 from app.models.staff import Staff
-from app.style import floating_fields_style
+from app.style import floating_fields_style, get_balance_classes
 from app.auth import has_staff_access
 
 
@@ -26,21 +27,17 @@ class StaffTable(Table):
             'account', 'name', 'gender', 'academic_group', 'load_balance_historic', 'assignment_set',
         ]
         columns=dict(
-            name=dict(
-                cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
-                filter__include=True
-            ),
             account=dict(
                 cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
             ),
-            academic_group=dict(
-                # Invisible but used for filtering
-                filter__include=True,
-                render_column=False,
+            name=dict(
+                cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
+                filter=dict(
+                    include=True,
+                    freetext=True,
+                ),
             ),
-            academic_group_code=Column(
-                # Short group name for display in the list.
-                attr='academic_group__short_name',
+            academic_group=Column(
                 after='name',
                 display_name="Group",
                 filter__include=True,
@@ -58,10 +55,7 @@ class StaffTable(Table):
                 display_name='Historic',
                 cell=dict(
                     value=lambda request, row, **_: int(row.load_balance_historic) if row.has_access(request.user) else '',
-                    attrs__class=lambda row, **_: {
-                        'text-success': True if row.load_balance_historic <= -1 else False,
-                        'text-danger': True if row.load_balance_historic >= 1 else False,
-                    }
+                    attrs__class=lambda row, **_: get_balance_classes(row.load_balance_historic),
                 ),
                 include=lambda request, **_: request.user.is_staff,
             ),
@@ -70,10 +64,7 @@ class StaffTable(Table):
                 display_name='Current',
                 cell=dict(
                     value=lambda request, row, **_: int(row.load_balance) if row.has_access(request.user) else '',
-                    attrs__class=lambda row, **_: {
-                        'text-success': True if row.load_balance <= -1 else False,
-                        'text-danger': True if row.load_balance >= 1 else False,
-                    }
+                    attrs__class=lambda row, **_: get_balance_classes(row.load_balance),
                 ),
                 include=lambda request, **_: request.user.is_staff,
             ),
@@ -94,6 +85,10 @@ class StaffTable(Table):
                         choices=lambda params, **_: [''] + list(set(Staff.available_objects.values_list('gender', flat=True))),
                         after='academic_group',
                     ),
+                    academic_group=Field.choice(
+                        display_name='Group',
+                        choices=lambda params, **_: [''] + list(AcademicGroup.objects.all()),
+                    )
                 ),
                 actions__reset=Action.button(
                     display_name='Clear Filter',
@@ -106,7 +101,7 @@ class StaffTable(Table):
                 ),
             ),
         )
-        empty_message="No staff available."
+        # empty_message="No staff available."
         iommi_style=floating_fields_style
 
     @staticmethod
