@@ -1,7 +1,7 @@
 """
 Handles the views for the Academic Groups
 """
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, F
 
 from iommi import Page, Table, html, Form, Column, Header, Field
 
@@ -55,7 +55,6 @@ class AcademicGroupDetail(Page):
             unit_code__include=False,
             assignment_set__cell__template='app/academic_group/assignment_set.html',
         ),
-        h_tag=Header,
         query__include=False,
         rows=lambda params, **_: TaskTable.annotate_query_set(params.academic_group.task_set.filter(is_removed=False).all()),
     )
@@ -73,7 +72,7 @@ class AcademicGroupDetail(Page):
         rows=lambda params, **_: Unit.objects.filter(
             academic_group=params.academic_group
         ).annotate(
-            assignment_open=Sum('task_set__number_needed') - Count('task_set__assignment_set'),
+            assignment_open=F('is_required') & (Count('task_set__assignment_set') == 0),
         ),
         page_size=20,
         h_tag__tag='h2',
@@ -147,14 +146,18 @@ class AcademicGroupList(Page):
     )
     list = Table(
         h_tag=None,
-        auto__model=AcademicGroup,
+        auto=dict(
+            model=AcademicGroup,
+            include=['name'],
+        ),
         rows=AcademicGroup.available_objects.all(),
-        auto__include=['name'],
-        columns__staff=Column(
-            cell__value=lambda row, **_: row.staff_set.filter(is_removed=False).count(),
-        ),
-        columns__units=Column(
-            cell__value=lambda row, **_: row.unit_set.filter(is_removed=False).count(),
-        ),
-        columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
+        columns=dict(
+            staff=Column(
+                cell__value=lambda row, **_: row.staff_set.filter(is_removed=False).count(),
+            ),
+            units=Column(
+                cell__value=lambda row, **_: row.unit_set.filter(is_removed=False).count(),
+            ),
+            name__cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
+        )
     )

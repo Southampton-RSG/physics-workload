@@ -1,7 +1,7 @@
-from logging import getLogger
+from logging import getLogger, Logger
 from typing import Type
 
-from django.db.models import Model, ForeignKey, PROTECT, TextField, BooleanField, Index, FloatField, Manager
+from django.db.models import Model, PROTECT, TextField, BooleanField, Index, FloatField, IntegerField, CheckConstraint, Q
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
@@ -12,7 +12,7 @@ from app.models.staff import Staff
 from app.models.common import ModelCommon
 
 
-logger = getLogger(__name__)
+logger: Logger = getLogger(__name__)
 
 
 class Assignment(ModelCommon, Model):
@@ -30,6 +30,10 @@ class Assignment(ModelCommon, Model):
         Staff, blank=False, null=False, on_delete=PROTECT,
         limit_choices_to={'is_removed': False},
         related_name='assignment_set',
+    )
+    students = IntegerField(
+        null=True, blank=True,
+        help_text="If not specified, defaults to student count on Task or Unit.",
     )
 
     notes = TextField(blank=True)
@@ -52,6 +56,14 @@ class Assignment(ModelCommon, Model):
         verbose_name = 'Assignment'
         verbose_name_plural = 'Assignments'
 
+        constraints = [
+            CheckConstraint(
+                check=(Q(students__isnull=True) | Q(students__gte=0)),
+                name='assignment_students_null',
+                violation_error_message="Cannot have less than zero students."
+            ),
+        ]
+
     def __str__(self) -> str:
         return f"{self.task.get_name()} - {self.staff.name} [{self.load_calc}]"
 
@@ -69,18 +81,17 @@ class Assignment(ModelCommon, Model):
         Updates the load for this assignment.
         :return: True if the load has changed.
         """
-        if self.is_first_time:
-            if self.load_calc != self.task.load_calc_first:
-                self.load_calc = self.task.load_calc_first
-                self.save()
-                return True
-        else:
-            if self.load_calc != self.task.load_calc:
-                self.load_calc = self.task.load_calc
-                self.save()
-                return True
+        load: float = self.task.calculate_load(
+            students=self.students,
+            is_first_time=self.is_first_time,
+        )
+        if self.load_calc != load:
+            self.load_calc = load
+            self.save()
+            return True
 
-        return False
+        else:
+            return False
 
 
 @receiver(post_delete, sender=Assignment)
@@ -99,4 +110,3 @@ def apply_load(
     instance.task = None
     instance.staff = None
     instance.save()
-

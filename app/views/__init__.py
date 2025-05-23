@@ -13,7 +13,7 @@ def home_view_redirect(request: HttpRequest) -> HttpResponseRedirect:
     """
     if request.user.is_authenticated:
         if request.user.is_staff:
-            return HttpResponseRedirect(reverse('about'))
+            return HttpResponseRedirect(request.user.staff.get_absolute_url())
         else:
             try:
                 return HttpResponseRedirect(request.user.staff.get_absolute_url())

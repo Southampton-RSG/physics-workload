@@ -5,10 +5,10 @@ from datetime import datetime
 from typing import List, Dict, Any
 
 from django.template import Template
+from django.utils.html import format_html
 
-from iommi import EditTable, EditColumn, Page, Field, Header, html, Table, Column, register_search_fields, LAST
-from iommi.path import register_path_decoding
-from iommi.experimental.main_menu import M
+from iommi import EditTable, EditColumn, Page, Field, Header, html, Table, Column, register_search_fields, LAST, Action
+
 
 from plotly.graph_objs import Layout, Figure, Scatter
 from plotly.graph_objs.layout import XAxis, YAxis
@@ -18,12 +18,12 @@ from dash_bootstrap_templates import load_figure_template
 load_figure_template('bootstrap_dark')
 
 from app.auth import has_access_decoder
-from app.models import Staff, Assignment
+from app.models import Staff, Assignment, Task
 from app.models.standard_load import StandardLoad
 from app.forms.staff import StaffForm
-from app.style import floating_fields_select2_inline_style, get_balance_classes, floating_fields_style, \
-    horizontal_fields_style
+from app.style import floating_fields_select2_inline_style, get_balance_classes
 from app.tables.staff import StaffTable
+from app.tables.assignment import AssignmentStaffTable
 from app.pages.components.suffixes import SuffixCreate, SuffixEdit, SuffixDelete, SuffixHistory
 
 
@@ -147,23 +147,7 @@ class StaffDetail(Page):
         editable=False,
         actions__submit=None,
     )
-
-    assignments = EditTable(
-        auto__model=Assignment,
-        auto__exclude=['notes', 'load_calc', 'is_removed',],
-        columns=dict(
-            task__field__include=True,
-            is_first_time__field__include=True,
-            is_provisional__field__include=True,
-            staff=EditColumn.hardcoded(
-                render_column=False,
-                field__parsed_data=lambda params, **_: params.staff,
-            ),
-        ),
-        rows=lambda params, **_: Assignment.available_objects.filter(staff=params.staff),
-        columns__delete=EditColumn.delete(),
-        iommi_style=floating_fields_select2_inline_style,
-    )
+    assignments = AssignmentStaffTable()
 
 
 class StaffHistoryDetail(Page):

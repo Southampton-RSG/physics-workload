@@ -1,45 +1,12 @@
 """
 Pages for academic units
 """
-from iommi import Page, Field, Header, Column, Table
-from iommi.path import register_path_decoding
-from iommi.experimental.main_menu import M
+from iommi import Page, Header
 
-from app.auth import has_access_decoder
-from app.forms.task import TaskForm
 from app.forms.unit import UnitForm
-from app.pages.components.suffixes import SuffixCreate
-from app.pages.task import TaskDetail, TaskEdit, TaskDelete
-from app.models import Unit, Task
+from app.models import Unit
 from app.tables.task import TaskTable
 from app.tables.unit import UnitTable
-
-
-class UnitTaskCreate(Page):
-    """
-    Create a task associated with a unit
-    """
-    header = Header(
-        lambda params, **_: params.unit.get_instance_header_short(),
-        children__suffix=SuffixCreate(),
-    )
-    form = TaskForm.create(
-        h_tag=None,
-        auto__exclude=[
-            'load_calc', 'load_calc_first', 'is_removed',
-            'academic_group',
-        ],
-        fields=dict(
-            unit=Field.non_rendered(
-                initial=lambda params, **_: params.unit,
-                include=True,
-            ),
-            load_coordinator=dict(
-                include=True,
-            ),
-            load_fixed_first__include=True,
-        )
-    )
 
 
 class UnitDetail(Page):
@@ -57,7 +24,9 @@ class UnitDetail(Page):
         ),
         h_tag=Header,
         query__include=False,
-        rows=lambda params, **_: TaskTable.annotate_query_set(params.unit.task_set.filter(is_removed=False).all()),
+        rows=lambda params, **_: TaskTable.annotate_query_set(
+            params.unit.task_set.filter(is_removed=False).all()
+        ),
     )
     form = UnitForm(
         title="Details",

@@ -1,4 +1,4 @@
-from django.db.models import Q, QuerySet, F, Count
+from django.db.models import Q, QuerySet, F, Count, Sum
 from django.template import Template
 
 from iommi import Table, Column, Field, LAST
@@ -9,7 +9,6 @@ from app.style import floating_fields_style
 
 class TaskTable(Table):
     class Meta:
-        h_tag = None
         auto = dict(
             model=Task,
             include=[
@@ -106,6 +105,6 @@ class TaskTable(Table):
         :return: Annotated QuerySet, with the number of assignments yet needed added as `assignment_open`
         """
         return query_set.annotate(
-            assignment_open=F('number_needed') - Count('assignment_set'),
+            assignment_required=Count('is_required') - Count('assignment_set'),
             assignment_provisional=Count('assignment_set__is_provisional'),
         )

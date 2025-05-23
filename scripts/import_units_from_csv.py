@@ -8,19 +8,19 @@ Needs to be run within the Django context; feed it into the management shell wit
     ```
 """
 from datetime import datetime
-from logging import getLogger, Logger
+from logging import getLogger, Logger, DEBUG, INFO, WARNING, ERROR, CRITICAL
 from os import getcwd
 from pathlib import Path
 
 import pandas
 from pandas import DataFrame, read_csv, isnull, to_numeric
 from django.conf import settings
-from app.models import Unit
+from app.models import Unit, Task
 
 
 # Set up logging
 logger: Logger = getLogger(__name__)
-logger.propagate = False
+# logger.propagate = True
 
 # Hardcoded for ease of dealing with the manage.py shell.
 CSV_PATH: Path = Path(getcwd()) / "spreadsheet_load_master.csv"
@@ -29,10 +29,8 @@ logger.info(f"Importing units from: {CSV_PATH}")
 # Track the history of creation
 settings.SIMPLE_HISTORY_ENABLED = True
 
-
 # Read the staff CSV, and convert the empty cells to 0.
 load_df: DataFrame = read_csv(CSV_PATH, header=0, index_col=False)
-load_df.info()
 load_df.rename(
     columns={
         'Deputy /Assessors etc': 'hours_fixed_deputy',
@@ -73,10 +71,13 @@ for column in [
     'task__coursework_fraction', 'task__exam_fraction',
 ]:
     equation_rows = load_df[column].str.contains('=').fillna(False)
-    load_df[column][equation_rows] = load_df[column][equation_rows].str.lstrip('=').apply(pandas.eval)
+    load_df.loc[equation_rows, column] = load_df.loc[equation_rows, column].str.lstrip('=').apply(pandas.eval)
     percentage_rows = load_df[column].str.contains('%').fillna(False)
-    load_df[column][percentage_rows] = load_df[column][percentage_rows].str.rstrip('%').astype('float')/100.0
+    load_df.loc[percentage_rows, column] = load_df.loc[percentage_rows, column].str.rstrip('%').astype('float')/100.0
 
+# Track what's made
+units_created: int = 0
+tasks_created: int = 0
 
 for idx, row in load_df.iterrows():
     # Iterate through the dataframe, and for each row create a new unit and save the details.
@@ -110,7 +111,7 @@ for idx, row in load_df.iterrows():
         )
 
     else:
-        unit: Unit = Unit(
+        unit, created = Unit.objects.get_or_create(
             code=code,
             name=row.unit_name,
             description=row.unit_name,
@@ -126,8 +127,26 @@ for idx, row in load_df.iterrows():
         )
         unit._history_date = datetime(year=2024, month=9, day=20, hour=0, minute=0, second=0)
         unit.save()
+        units_created += created
+
+        task, created = Task.objects.get_or_create(
+            unit=unit,
+            name="Unit Lead",
+            description="Co-ordinates/teaches unit.",
+            is_lead=True,
+            is_required=True,
+            is_unique=True,
+            coursework_fraction=row.task__coursework_fraction if not isnull(row.task__coursework_fraction) else 0,
+            exam_fraction=row.task__exam_fraction if not isnull(row.task__exam_fraction) else 0,
+        )
+        task._history_date = datetime(year=2024, month=9, day=20, hour=0, minute=0, second=0)
+        task.save()
+        tasks_created += 1
+
 
 # Stop tracking history changes.
 settings.SIMPLE_HISTORY_ENABLED = False
 
-logger.info("Import complete")
+logger.info(
+    f"Import complete. Created {units_created} units, {tasks_created} tasks"
+)

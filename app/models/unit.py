@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Model, CharField, BooleanField, TextField, IntegerField, FloatField, CheckConstraint, Q, F
 from django.db.models.deletion import PROTECT
+from django.utils.html import format_html
+
 from simple_history.models import HistoricForeignKey
 
 from app.models.academic_group import AcademicGroup
@@ -12,7 +14,7 @@ from app.models.common import ModelCommon
 
 class Unit(ModelCommon):
     """
-    Academic unit, e.g. PHYS!001
+    Academic unit, e.g. PHYS1001
     """
     icon = 'book'
     url_root = 'unit'

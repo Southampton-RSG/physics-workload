@@ -1,59 +1,73 @@
 <td>
-    {% for task in value.all %}
-        {% if task.assignment_set.count == task.number_needed %}
-            {% if task.has_any_first_time and task.has_any_provisional %}
-                <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-outline-success">
-                    {{ task.name }}
-                    {% for assignment in task.assignment_set.all %}
-                        {% if assignment.is_provisional %}
-                            <i class="fa-solid fa-clipboard-user"></i>
-                        {% else %}
-                            <i class="fa-solid fa-clipboard-check"></i>
-                        {% endif %}
-                        {% if assignment.is_first_time %}
-                            <i class="fa-solid fa-plus"></i>
-                        {% endif %}
-                    {% endfor %}
-                </a>
+    {% if value %}
+        {% for task in value.all %}
+            {% if task.assignment_set.count %}
+                <!--? This task is staffed -->
+                {% if task.has_any_first_time and task.has_any_provisional %}
+                    <!--? This task assigned, with potentially first time and/or provisional staff -->
+                    <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-outline-success">
+                        {{ task.name }}
+                        {% for assignment in task.assignment_set.all %}
+                            {% if assignment.is_provisional %}
+                                <i class="fa-solid fa-clipboard-user"></i>
+                            {% else %}
+                                <i class="fa-solid fa-clipboard-check"></i>
+                            {% endif %}
+                            {% if assignment.is_first_time %}
+                                <i class="fa-solid fa-plus"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </a>
 
-            {% elif task.has_any_first_time %}
-                <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-success">
-                    {{ task.name }}
-                    {% for assignment in task.assignment_set.all %}
+                {% elif task.has_any_first_time %}
+                    <!--? This task assigned, but at least one is first-time -->
+                    <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-success">
+                        {{ task.name }}
+                        {% for assignment in task.assignment_set.all %}
+                            <i class="fa-solid fa-clipboard-check"></i>
+                            {% if assignment.is_first_time %}
+                                <i class="fa-solid fa-plus"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </a>
+
+                {% elif task.has_any_provisional %}
+                    <!--? This task has at least one provisional assignment -->
+                    <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-outline-primary">
+                        {{ task.name }}
+                        {% for assignment in task.assignment_set.all %}
+                            {% if assignment.is_provisional %}
+                                <i class="fa-solid fa-clipboard-user"></i>
+                            {% else %}
+                                <i class="fa-solid fa-clipboard-check"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </a>
+
+                {% else %}
+                    <!--? This task is assigned -->
+                    <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-primary">
+                        {{ task.name }}
                         <i class="fa-solid fa-clipboard-check"></i>
-                        {% if assignment.is_first_time %}
-                            <i class="fa-solid fa-plus"></i>
-                        {% endif %}
-                    {% endfor %}
-                </a>
-
-            {% elif task.has_any_provisional %}
-                <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-outline-primary">
-                    {{ task.name }}
-                    {% for assignment in task.assignment_set.all %}
-                        {% if assignment.is_provisional %}
-                            <i class="fa-solid fa-clipboard-user"></i>
-                        {% else %}
-                            <i class="fa-solid fa-clipboard-check"></i>
-                        {% endif %}
-                    {% endfor %}
-                </a>
+                    </a>
+                {% endif %}
 
             {% else %}
-                <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-primary">
-                    {{ task.name }}
-                    <i class="fa-solid fa-clipboard-check"></i>
-                </a>
-            {% endif %}
-
-        {% else %}
-            <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-outline-danger">
-                {% if task.number_needed > 1 or task.assignment_set.count > 1 %}
-                    {{ task.number_needed }}
+                <!--? This task is not assigned -->
+                {% if task.is_required %}
+                    <!--? This task is not assigned and must be -->
+                    <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-outline-danger">
+                        {{ task.name }}
+                        <i class="fa-solid fa-clipboard-question"></i>
+                    </a>
+                {% else %}
+                    <!--? This task is not assigned but that's OK -->
+                    <a href='{{ task.get_absolute_url }}' class="btn btn-sm btn-outline-warning">
+                        {{ task.name }}
+                        <i class="fa-solid fa-clipboard-question"></i>
+                    </a>
                 {% endif %}
-                {{ task.name }}
-                <i class="fa-solid fa-clipboard-question"></i>
-            </a>
-        {% endif %}
-    {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 </td>

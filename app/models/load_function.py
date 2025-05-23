@@ -1,11 +1,9 @@
+from typing import Dict
+
 from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.core.validators import MinValueValidator
-from django.db.models import Model, CharField, TextField, BooleanField, Manager, IntegerField, CheckConstraint, Q, F
+from django.db.models import CharField, TextField, IntegerField, CheckConstraint, Q, F
 from django.utils.html import format_html
-
-from model_utils.managers import QueryManager
-from model_utils.models import SoftDeletableModel
-from simple_history.models import HistoricalRecords
 
 from app.models.common import ModelCommon
 
@@ -59,15 +57,28 @@ class LoadFunction(ModelCommon):
             )
         ]
 
-    def evaluate(self, students: int) -> float|None:
+    def evaluate(self, students: int, unit: object|None = None) -> float|None:
         """
         Runs the equation for a given number of students.
 
-        :param students: The number of students
+        :param students: The number of students.
+        :param unit: The unit.
         :return: The output of the equation.
         """
+        names: Dict[str, int] = {}
+
         if students:
-            return simple_eval(self.expression, names={'s': students})
+            names['s'] = students
+
+        if unit:
+            names['l'] = unit.lectures
+            names['e'] = unit.exams
+
+        if len(names.keys()):
+            return simple_eval(
+                self.expression,
+                names=names
+            )
         else:
             return 0
 

@@ -1,1 +1,5 @@
-<a id="{{ field.input.attrs.id }}" class="form-control-plaintext" style="color: rgba(var(--bs-link-color-rgb),1)!important;" href="{{ field.value.get_absolute_url }}">{{ field.value }}</a>
+{% if field.value %}
+    <a id="{{ field.input.attrs.id }}" class="form-control-plaintext" style="color: rgba(var(--bs-link-color-rgb),1)!important;" href="{{ field.value.get_absolute_url }}">{{ field.value }}</a>
+{% else %}
+    <a id="{{ field.input.attrs.id }}" class="form-control-plaintext"></a>
+{% endif %}

@@ -1,6 +1,5 @@
 from logging import getLogger, Logger
 
-from django.http import HttpResponseRedirect
 from iommi import Form
 
 from app.models import Unit, StandardLoad

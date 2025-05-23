@@ -1,4 +1,4 @@
-:root {
+:root, [data-bs-theme="light"] {
     --rich-black: #00131D;
     --neutral-1: #495961;  /* Text: White */
     --neutral-2: #758D9A;  /* Text: Black */
@@ -34,8 +34,8 @@
 
     --iommi-menu-background-color: var(--bs-primary);
     --iommi-menu-text-color-color: var(--bs-gray-300);
-
-    --bs-body-font-family: "Roboto";
+    --bs-font-sans-serif: "Roboto" !important;
+    --bs-body-font-family: "Roboto" !important;
 }
 
 

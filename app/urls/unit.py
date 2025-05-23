@@ -4,9 +4,9 @@ from iommi.experimental.main_menu import M
 from app.auth import has_access_decoder
 from app.models.task import Task
 from app.models.unit import Unit
-from app.pages.task import TaskDetail, TaskEdit, TaskDelete
-from app.pages.unit import UnitList, UnitCreate, UnitDetail, UnitTaskCreate, UnitEdit, UnitDelete
-
+from app.pages.task import TaskDetail, TaskDelete, TaskEdit
+from app.pages.unit import UnitList, UnitCreate, UnitDetail, UnitEdit, UnitDelete
+from app.pages.unit.task import UnitTaskLeadCreate, UnitTaskCreate
 
 # Decodes "<unit>" in paths into `params.unit`
 register_path_decoding(
@@ -64,6 +64,12 @@ unit_submenu: M = M(
                     icon='plus',
                     view=UnitTaskCreate,
                     include=lambda request, **_: request.user.is_staff,
+                ),
+                create_lead=M(
+                    display_name="Create Lead Task",
+                    include=lambda request, **_: request.user.is_staff,
+                    icon="user-plus",
+                    view=UnitTaskLeadCreate,
                 ),
                 task_detail=M(
                     display_name=lambda task, **_: task.name,

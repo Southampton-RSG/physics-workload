@@ -2,7 +2,7 @@ from iommi import LAST, Asset
 from iommi.evaluate import evaluate_strict
 from iommi.style import Style, register_style
 from iommi.style_base import select2_enhanced_forms
-from iommi.style_bootstrap5 import bootstrap5_base
+from iommi.style_bootstrap5 import bootstrap5
 from iommi.style_font_awesome_6 import font_awesome_6
 from typing import Dict, Any
 
@@ -11,7 +11,7 @@ from typing import Dict, Any
 # Base style for the website
 # ==============================================================================
 base_style = Style(
-    bootstrap5_base,
+    bootstrap5,
     font_awesome_6,
     MainMenu__template="app/main_menu/main_menu.html",
     base_template="app/iommi_base.html",

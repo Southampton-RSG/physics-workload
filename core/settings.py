@@ -62,6 +62,12 @@ INSTALLED_APPS: List[str] = [
     'app',  # Enable the inner app
 ]
 
+if DEBUG:
+    INSTALLED_APPS += [
+        'django_fastdev',
+        'django_pycharm_breakpoint',
+    ]
+
 MIDDLEWARE: List[str] = [
     'iommi.live_edit.Middleware',
     'django.middleware.security.SecurityMiddleware',
@@ -220,9 +226,9 @@ SITE_ID: int = 1
 # IOMMI
 ################################################################################
 from iommi.style import Style
-from app.style import base_style
+from app.style import floating_fields_style
 
-IOMMI_DEFAULT_STYLE: Style = base_style
+IOMMI_DEFAULT_STYLE: Style = floating_fields_style
 IOMMI_DEBUG: bool = config("DEBUG_IOMMI", default=False, cast=bool)
 IOMMI_MAIN_MENU: str = 'app.urls.main_menu'
 
@@ -243,6 +249,7 @@ X_FRAME_OPTIONS: str = 'SAMEORIGIN'
 ################################################################################
 from logging import LogRecord
 LOG_DIRECTORY: Path = BASE_DIR / 'logs'
+
 
 def skip_static_records(record: LogRecord) -> bool:
     """
@@ -280,15 +287,18 @@ LOGGING: Dict[str, Any] = {
     "loggers": {
         "": {
             "level": "DEBUG",
-            "handlers": ["file_django", "console"],
+            "handlers": ["file_django"],
+            "propagate": False,
         },
         "app": {
             "level": "DEBUG",
-            "handlers": ["file_app", "console"],
+            "handlers": ["file_app"],
+            "propagate": False,
         },
         "users": {
             "level": "DEBUG",
-            "handlers": ["file_users", "console"],
+            "handlers": ["file_users"],
+            "propagate": False,
         },
     },
     "formatters": {

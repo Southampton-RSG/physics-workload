@@ -21,8 +21,8 @@ task_submenu: M = M(
     items=dict(
         create=M(
             icon="plus",
-            view=TaskCreate,
             include=lambda request, **_: request.user.is_staff,
+            view=TaskCreate,
         ),
         detail=M(
             display_name=lambda task, **_: task.name,

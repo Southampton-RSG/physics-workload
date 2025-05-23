@@ -6,10 +6,10 @@ from typing import List
 
 from django.db.models import QuerySet
 
-from iommi import Page, html, EditTable, Column, Field, EditColumn, Header, register_search_fields
+from iommi import Page, html, EditTable, Column, EditColumn, Header, register_search_fields, Form
 
-from app.models import Task, Assignment, Staff, StandardLoad
-from app.forms.task import TaskForm
+from app.models import Task, Assignment, Staff
+from app.forms.task import TaskDetailForm, TaskEditForm, TaskCreateForm
 from app.tables.task import TaskTable
 
 
@@ -57,43 +57,14 @@ class TaskDetail(Page):
         columns__delete=EditColumn.delete(),
         rows=lambda params, **_: params.task.assignment_set.filter(is_removed=False).all(),
     )
+
     br = html.br()
-    form = TaskForm(
-        title="Details",
-        auto__exclude=[
-            'is_removed', 'academic_group', 'unit', 'name',
-        ],
-        instance=lambda params, **_: params.task,
-        fields=dict(
-            name__include=False,
-            load_calc=dict(
-                group="Calculated Load",
-            ),
-            load_calc_first=dict(
-                include=lambda params, **_: params.task.load_calc_first and params.task.load_calc_first != params.task.load_calc,
-                group="Calculated Load",
-            ),
-            load_coordinator=dict(
-                include=lambda params, **_: params.task.unit,
-                group="Calculation Details",
-                after='load_calc_first',
-            ),
-            load_fixed_first=dict(
-                include=lambda params, **_: params.task.load_fixed_first
-            ),
-            coursework_fraction=dict(
-                include=lambda params, **_: params.task.load_coordinator,
-                group="Calculation Details",
-                after='load_coordinator',
-            ),
-            exam_fraction=dict(
-                include=lambda params, **_: params.task.load_coordinator,
-                group="Calculation Details",
-            ),
-            load_function__include=lambda params, **_: params.task.load_function,
-            students__include=lambda params, **_: params.task.students,
-        ),
-        editable=False,
+    form = TaskDetailForm()
+    text = html.span(
+        children=dict(
+            header=Header("Description"),
+            description=html.p(lambda task, **_: task.description),
+        )
     )
 
 
@@ -104,16 +75,7 @@ class TaskEdit(Page):
     header = Header(
         lambda params, **_: params.task.get_instance_header()
     )
-    form = TaskForm.edit(
-        h_tag=None,
-        fields=dict(
-            load_coordinator__include=lambda params, **_: params.task.unit,
-            load_calc__include=False,
-            load_calc_first__include=False,
-        ),
-        instance=lambda params, **_: params.task,
-        extra__redirect_to='..',
-    )
+    form = TaskEditForm.edit()
 
 
 class TaskCreate(Page):
@@ -123,20 +85,7 @@ class TaskCreate(Page):
     header = Header(
         lambda params, **_: Task.get_model_header_singular()
     )
-    form = TaskForm.create(
-        h_tag=None,
-        fields=dict(
-            unit__include=False,
-            load_calc_first__include=False,
-            load_calc__include=False,
-            load_fixed_first__include=True,
-            load_coordinator__include=False,
-            standard_load=Field.non_rendered(
-                include=True,
-                initial=lambda params, **_: StandardLoad.objects.latest(),
-            )
-        ),
-    )
+    form = TaskCreateForm.create()
 
 
 class TaskDelete(Page):
@@ -146,16 +95,7 @@ class TaskDelete(Page):
     header = Header(
         lambda params, **_: params.task.get_instance_header()
     )
-    form = TaskForm.delete(
-        h_tag=None,
-        instance=lambda params, **_: params.task,
-        fields=dict(
-            load_calc_first__include=lambda params, **_: params.task.load_calc_first,
-            load_fixed_first=dict(
-                include=lambda params, **_: params.task.load_fixed_first
-            ),
-        ),
-    )
+    form = TaskDetailForm.delete()
 
 
 class TaskList(Page):

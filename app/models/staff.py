@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import (
     Model, ForeignKey, TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index, CheckConstraint, Q,
-    Sum, OneToOneField
+    Sum, OneToOneField, UniqueConstraint
 )
 from django.db.models.deletion import PROTECT, SET_NULL
 from django.db.models.signals import post_save

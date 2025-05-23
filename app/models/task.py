@@ -3,7 +3,8 @@ from logging import getLogger
 
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models import PROTECT, CharField, FloatField, TextField, IntegerField, BooleanField, Q, CheckConstraint
+from django.db.models import PROTECT, CharField, FloatField, TextField, IntegerField, BooleanField, Q, CheckConstraint, UniqueConstraint
+from django.utils.html import format_html
 
 from django.urls import reverse
 from simple_history.models import HistoricForeignKey
@@ -13,6 +14,7 @@ from app.models import AcademicGroup
 from app.models.load_function import LoadFunction
 from app.models.unit import Unit
 from app.models.common import ModelCommon
+
 
 # Set up logging for this file
 logger = getLogger(__name__)
@@ -35,18 +37,20 @@ class Task(ModelCommon):
         verbose_name="Calculated Load (first time)",
     )
 
+    # === CHANGEABLE FIELDS ===
     name = CharField(max_length=128, blank=False)
 
-    number_needed = IntegerField(
-        null=False, blank=False, default=1,
-        validators=[MinValueValidator(1)],
-        verbose_name="Required",
+    is_required = BooleanField(
+        default=False,
+        verbose_name="Is required",
+        help_text=format_html("Does this task <i>have</i> to be assigned?"),
+    )
+    is_unique = BooleanField(
+        default=False,
+        verbose_name="Is unique",
+        help_text=format_html("Can multiple staff perform this task, or only one?"),
     )
 
-    unit = HistoricForeignKey(
-        Unit, on_delete=PROTECT, null=True, blank=True,
-        related_name='task_set',
-    )
     academic_group = HistoricForeignKey(
         AcademicGroup, on_delete=PROTECT, null=True, blank=True,
         related_name='task_set',
@@ -79,11 +83,9 @@ class Task(ModelCommon):
         help_text="Multiplier applied to final load calculation."
     )
 
-    load_coordinator = BooleanField(
-        default=False,
-        verbose_name="Unit co-ordinator",
-        help_text="If set, adds load as calculated using the standard co-ordinator load equation.",
-    )
+    # ==========================================================================
+    # *Not* used by TaskUnitLead.
+    # ==========================================================================
     load_function = HistoricForeignKey(
         LoadFunction,
         blank=True, null=True,
@@ -94,7 +96,20 @@ class Task(ModelCommon):
         null=True, blank=True,
         help_text="Number of students for load function and/or co-ordinator equations. If this task belongs to a Unit, falls back to Unit students if empty.",
     )
+    # ==========================================================================
 
+    # ==========================================================================
+    # TaskUnitLead components. Polymorphism and SimpleHistory don't play nice.
+    # ==========================================================================
+    unit = HistoricForeignKey(
+        Unit, on_delete=PROTECT, null=True, blank=True,
+        related_name='task_set',
+    )
+    is_lead = BooleanField(
+        default=False,
+        verbose_name="Is Unit Lead",
+        help_text="If set, adds load as calculated using the equations for unit leads.",
+    )
     coursework_fraction = FloatField(
         default=0.0,
         validators=[
@@ -111,6 +126,7 @@ class Task(ModelCommon):
         ],
         verbose_name="Fraction of exams marked",
     )
+    # ==========================================================================
 
     description = TextField(blank=False)
     notes = TextField(blank=True)
@@ -120,20 +136,20 @@ class Task(ModelCommon):
         verbose_name = 'Task'
         verbose_name_plural = 'Tasks'
         constraints = [
-            CheckConstraint(
-                check=(Q(unit__isnull=False) & Q(load_coordinator=True)) | Q(load_coordinator=False),
-                name='unit_coordinator_required',
-                violation_error_message="Cannot be co-ordinator of a unit without a linked unit.",
+            UniqueConstraint(
+                fields=['unit', 'name'],
+                name='unit_task_name',
+                violation_error_message="Units cannot have multiple tasks with the same name."
+            ),
+            UniqueConstraint(
+                fields=['academic_group', 'name'],
+                name='unit_group_name',
+                violation_error_message="Academic groups cannot have multiple tasks with the same name."
             ),
             CheckConstraint(
-                check=(Q(exam_fraction__gt=0) & Q(load_coordinator=True)) | Q(load_coordinator=False),
-                name='exam_fraction_needs_coordinator',
-                violation_error_message="Must use the co-ordinator equations to have an exam fraction assigned."
-            ),
-            CheckConstraint(
-                check=(Q(coursework_fraction__gt=0) & Q(load_coordinator=True)) | Q(load_coordinator=False),
-                name='coursework_fraction_needs_coordinator',
-                violation_error_message="Must use the co-ordinator equations to have a coursework fraction assigned."
+                check=(Q(unit__isnull=False) & Q(is_lead=True)) | Q(is_lead=False),
+                name='unit_lead_required',
+                violation_error_message="Cannot be co-ordinator of a Unit without a linked unit.",
             ),
         ]
 
@@ -203,16 +219,49 @@ class Task(ModelCommon):
         else:
             return user.staff in self.assignment_set.filter(is_removed=False).values_list('staff', flat=True)
 
-
     def update_load(self) -> True:
         """
         Updates the load for this task. Does not save to DB; that needs to be done in the calling function.
         :return: True if the load has changed, false if not.
         """
-        load: float = 0
         logger.debug(f"{self}: Updating load...")
 
-        if self.load_coordinator:
+        students: int = self.students
+        if not self.students and self.unit:
+            students = self.unit.students
+
+        load_calc = self.calculate_load(
+            students=students,
+            is_first_time=False,
+        )
+        load_calc_first = self.calculate_load(
+            students=students,
+            is_first_time=True,
+        )
+
+        if self.load_calc != load_calc or self.load_calc_first != load_calc_first:
+            # If this has changed any of the values, then update the assignments and return that it has
+            self.load_calc_first = load_calc_first
+            self.load_calc = load_calc
+            self.save()
+
+            for assignment in self.assignment_set.filter(is_removed=False).all():
+                assignment.update_load()
+
+            return True
+        else:
+            return False
+
+    def calculate_load(
+            self,
+            students: int|None,
+            is_first_time: bool = False
+    ) -> float:
+        """
+
+        :return:
+        """
+        if self.is_lead:
             # ==== IF THIS IS A UNIT CO-ORDINATOR ====
             # SPREADSHEET LOGIC
             from app.models.standard_load import StandardLoad
@@ -250,38 +299,26 @@ class Task(ModelCommon):
 
             load: float = load_coursework + load_exam
 
-            if self.load_function:
-                load += self.load_function.evaluate(self.students)
-            elif self.students:
-                raise Exception("Task has students but no load function")
-
             load_calc_first = load + self.load_fixed + load_lecture_first + self.load_fixed_first
             load_calc = load + self.load_fixed + load_lecture
 
         else:
             # ==== IF THIS IS NOT A UNIT CO-ORDINATOR ====
             # Much simpler logic
+            load_calc = self.load_fixed
+
             if self.load_function:
                 try:
-                    load += self.load_function.evaluate(self.students)
+                    load_calc += self.load_function.evaluate(students, self.unit)
                 except Exception as calculation_exception:
                     raise calculation_exception
 
-            load_calc = self.load_fixed + load
             load_calc_first = load_calc + self.load_fixed_first
 
-        if self.load_calc != load_calc or self.load_calc_first != load_calc_first:
-            # If this has changed any of the values, then update the assignments and return that it has
-            self.load_calc_first = load_calc_first
-            self.load_calc = load_calc
-            self.save()
-
-            for assignment in self.assignment_set.filter(is_removed=False).all():
-                assignment.update_load()
-
-            return True
+        if is_first_time:
+            return load_calc_first * self.load_multiplier
         else:
-            return False
+            return load_calc * self.load_multiplier
 
 #
 # @receiver(post_delete, sender=Task)
