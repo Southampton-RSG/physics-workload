@@ -37,10 +37,12 @@ class Staff(ModelCommon):
     url_root = 'staff'
 
     user = OneToOneField(
-        CustomUser, blank=True, null=True, on_delete=SET_NULL,
+        CustomUser,
+        blank=True, null=True, on_delete=SET_NULL,
     )
     account = CharField(
-        max_length=16, unique=True, blank=False, primary_key=True,
+        max_length=16,
+        unique=True, blank=False, primary_key=True,
         help_text=format_html("Active Directory account e.g. <tt>js1a25</tt>")
     )
     name = CharField(
@@ -56,17 +58,19 @@ class Staff(ModelCommon):
         help_text="Single-letter code"
     )
 
-    load_target = FloatField(
-        default=0, validators=[MinValueValidator(0.0)],
+    load_target = IntegerField(
+        default=0,
+        validators=[MinValueValidator(0)],
         verbose_name='Load target',
         help_text="Load hours calculated for the current year.",
     )
-    load_assigned = FloatField(
-        default=0, validators=[MinValueValidator(0.0)],
+    load_assigned = IntegerField(
+        default=0,
+        validators=[MinValueValidator(0)],
         verbose_name='Load assigned',
         help_text="Load hours assigned for the current year.",
     )
-    load_external = FloatField(
+    load_external = IntegerField(
         default=0,
         verbose_name="External load",
         help_text='Teaching load accrued externally to this tool this year.',
@@ -90,32 +94,18 @@ class Staff(ModelCommon):
         help_text="Must be 0 if staff are fixed-hours.",
     )
 
-    load_balance_final = FloatField(
+    load_balance_final = IntegerField(
         default=0,
         verbose_name='Load balance',
         help_text="Final load balance for the current year. Positive if overloaded.",
     )
-    load_balance_historic = FloatField(
+    load_balance_historic = IntegerField(
         default=0,
         verbose_name='Historic load balance',
         help_text="Total of previous end-of-year load balances. Positive if overloaded.",
     )
 
     notes = TextField(blank=True)
-
-    # --------------------------------------------------------------------------
-    # This block allow custom historical dating, used when importing data.
-    # --------------------------------------------------------------------------
-    __history_date = None
-
-    @property
-    def _history_date(self):
-        return self.__history_date
-
-    @_history_date.setter
-    def _history_date(self, value):
-        self.__history_date = value
-    # --------------------------------------------------------------------------
 
     class Meta:
         ordering = ('is_removed', 'name')

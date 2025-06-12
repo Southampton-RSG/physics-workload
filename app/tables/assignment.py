@@ -8,7 +8,7 @@ from django.utils.html import format_html
 from iommi import Table, EditTable, EditColumn, Action, Form
 
 from app.models import Assignment, Staff, Task, StandardLoad
-from app.style import floating_fields_select2_inline_style
+from app.style import floating_fields_select2_inline_style, base_style
 
 
 logger: Logger = getLogger(__name__)
@@ -39,7 +39,7 @@ class AssignmentStaffTable(EditTable):
             staff=EditColumn.hardcoded(
                 render_column=False,
                 field__include=lambda user, **_: user.is_staff,
-                field__parsed_data=lambda params, **_: params.staff,
+                field__parsed_data=lambda staff, **_: staff,
             ),
             students=dict(
                 field__include=lambda user, **_: user.is_staff,
@@ -48,18 +48,35 @@ class AssignmentStaffTable(EditTable):
             load_calc=dict(
                 after='task',
                 field__include=False,
-                cell__value=lambda row, **_: f"{row.load_calc:.0f}",
+                cell=dict(
+                    value=lambda row, **_: f"{row.load_calc:.0f}",
+                    attrs__class={'align-middle': True},
+                ),
             ),
             is_first_time=dict(
-                field__include=lambda user, **_: user.is_staff,
+                field=dict(
+                    include=lambda user, **_: user.is_staff,
+                    iommi_style=base_style,
+                ),
                 cell__attrs__style={'width': '6em'},
+                cell__attrs__class={'align-middle': True},
             ),
             is_provisional=dict(
-                field__include=lambda user, **_: user.is_staff,
+                field=dict(
+                    include=lambda user, **_: user.is_staff,
+                    iommi_style=base_style,
+                ),
                 cell__attrs__style={'width': '6em'},
+                cell__attrs__class={'align-middle': True},
             ),
             task=dict(
-                field__choices=lambda staff, instance, **_: AssignmentStaffTable.task_choices(staff, instance, **_),
+                field=dict(
+                    include=lambda user, **_: user.is_staff,
+                ),
+                cell=dict(
+                    value=lambda row, **_: row.task.get_name() if hasattr(row, 'task') else None,
+                    url=lambda row, **_: row.task.get_absolute_url() if hasattr(row, 'task') else None,
+                ),
             ),
             delete=EditColumn.delete(
                 include=lambda user, **_: user.is_staff,
@@ -69,7 +86,7 @@ class AssignmentStaffTable(EditTable):
                 cell__attrs__style={'width': '3em'},
             ),
         )
-        rows=lambda params, **_: Assignment.available_objects.filter(staff=params.staff)
+        rows=lambda staff, **_: Assignment.available_objects.filter(staff=staff)
         iommi_style=floating_fields_select2_inline_style
         edit_actions=dict(
             save__include=lambda user, **_: user.is_staff,
@@ -85,22 +102,17 @@ class AssignmentStaffTable(EditTable):
                staff: Staff, **_
         ):
             """
-
             :param staff:
             :param _:
             :return:
             """
-            needs_update: bool = False
-
             for assignment in staff.assignment_set.all():
-                needs_update += assignment.update_load()
+                assignment.update_load()
 
-            if needs_update:
+            if staff.update_load_assigned():
+                logger.info(
+                    "Staff has updated load, requiring update to total load target."
+                )
                 standard_load: StandardLoad = StandardLoad.objects.latest()
                 standard_load.update_target_load_per_fte()
 
-    @staticmethod
-    def task_choices(staff: Staff, instance: Assignment, **_):
-        tasks_current = staff.assignment_set.values_list('task_id', flat=True)
-        tasks_allowed = Task.objects.none() | Task.available_objects.exclude(id__in=tasks_current)
-        return tasks_allowed.order_by('name', 'unit', 'academic_group')

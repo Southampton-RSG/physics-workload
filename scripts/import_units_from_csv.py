@@ -8,6 +8,7 @@ Needs to be run within the Django context; feed it into the management shell wit
     ```
 """
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from logging import getLogger, Logger, DEBUG, INFO, WARNING, ERROR, CRITICAL
 from os import getcwd
 from pathlib import Path
@@ -28,6 +29,10 @@ logger.info(f"Importing units from: {CSV_PATH}")
 
 # Track the history of creation
 settings.SIMPLE_HISTORY_ENABLED = True
+history_date: datetime = datetime(
+    year=2024, month=9, day=20, hour=0, minute=0, second=0,
+    tzinfo=ZoneInfo("GMT")
+)
 
 # Read the staff CSV, and convert the empty cells to 0.
 load_df: DataFrame = read_csv(CSV_PATH, header=0, index_col=False)

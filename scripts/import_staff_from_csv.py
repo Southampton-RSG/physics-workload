@@ -8,6 +8,7 @@ Needs to be run within the Django context; open the management shell with:
     ```
 """
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from os import getcwd
 from pathlib import Path
 from uuid import uuid4
@@ -23,6 +24,10 @@ print(f"Importing staff from: {CSV_PATH}")
 
 # Track the history of creation
 settings.SIMPLE_HISTORY_ENABLED = True
+history_date: datetime = datetime(
+    year=2024, month=9, day=20, hour=0, minute=0, second=0,
+    tzinfo=ZoneInfo("GMT")
+)
 
 # Read the staff CSV, and convert the empty cells to 0.
 staff_df: DataFrame = read_csv(CSV_PATH, header=0, index_col=False)
@@ -53,7 +58,7 @@ for idx, row in staff_df.iterrows():
 
     # Now, for each historical balance associated with a given year,
     # add it to the model then save timestamped to the 'end of year' date.
-    staff._history_date = datetime(year=2022, month=9, day=20, hour=0, minute=0, second=0)
+    staff._history_date = history_date
     staff.load_balance_final = row['Cumulative to AY21/22']
     staff.load_balance_historic = row['Cumulative to AY21/22']
     staff.save()

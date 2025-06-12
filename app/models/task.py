@@ -28,12 +28,16 @@ class Task(ModelCommon):
     url_root = "task"
 
     # === CACHED LOADS ===
-    load_calc = FloatField(
-        default=0.0, validators=[MinValueValidator(0.0)], blank=False, null=False,
+    load_calc = IntegerField(
+        default=0,
+        validators=[MinValueValidator(0)],
+        blank=False, null=False,
         verbose_name="Calculated Load",
     )
-    load_calc_first = FloatField(
-        default=0.0, validators=[MinValueValidator(0.0)], blank=False, null=False,
+    load_calc_first = IntegerField(
+        default=0,
+        validators=[MinValueValidator(0)],
+        blank=False, null=False,
         verbose_name="Calculated Load (first time)",
     )
 
@@ -56,17 +60,17 @@ class Task(ModelCommon):
         related_name='task_set',
     )
 
-    load_fixed = FloatField(
-        default=0.0,
+    load_fixed = IntegerField(
+        default=0,
         validators=[
-            MinValueValidator(0.0)
+            MinValueValidator(0)
         ],
         verbose_name="Fixed load hours",
     )
-    load_fixed_first = FloatField(
-        default=0.0,
+    load_fixed_first = IntegerField(
+        default=0,
         validators=[
-            MinValueValidator(0.0)
+            MinValueValidator(0)
         ],
         blank=True, null=True,
         verbose_name="First-time load adjustment",

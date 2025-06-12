@@ -6,7 +6,8 @@ load_figure_template('bootstrap_dark')
 
 from app.auth import has_access_decoder
 from app.models.staff import Staff
-from app.pages.staff import StaffEdit, StaffDelete, StaffList, StaffDetail, StaffHistoryDetail, StaffHistoryList, StaffCreate
+from app.pages.staff import StaffEdit, StaffDelete, StaffList, StaffDetail, StaffCreate
+from app.pages.staff.history import StaffHistoryDetail, StaffHistoryList
 
 
 register_path_decoding(

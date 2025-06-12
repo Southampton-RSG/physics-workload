@@ -17,12 +17,12 @@ class StandardLoadEdit(Page):
     Edit the standard load
     """
     header = Header(
-        lambda params, **_: params.standard_load.get_instance_header(),
+        lambda standard_load, **_: standard_load.get_instance_header(),
         children__suffix=SuffixEdit(),
     )
     form = StandardLoadForm.edit(
         h_tag=None,
-        instance=lambda params, **_: params.standard_load,
+        instance=lambda standard_load, **_: standard_load,
         iommi_style=horizontal_fields_style,
         fields=dict(
             notes__iommi_style=floating_fields_style,
@@ -39,15 +39,15 @@ class StandardLoadNewYear(Page):
     Edit the standard load, to produce a new year
     """
     header = Header(
-        lambda params, **_: format_html(
-            params.standard_load.get_instance_header(),
+        lambda standard_load, **_: format_html(
+            standard_load.get_instance_header(),
         ),
         children__suffix=SuffixCreate(
             text=" / New Year ",
         )
     )
     form = StandardLoadFormNewYear.create(
-        instance=lambda params, **_: params.standard_load,
+        instance=lambda standard_load, **_: standard_load,
     )
 
 
@@ -56,7 +56,7 @@ class StandardLoadDetail(Page):
     Shows details of the standard load
     """
     header = Header(
-        lambda params, **_: params.standard_load.get_instance_header(),
+        lambda standard_load, **_: standard_load.get_instance_header(),
     )
 
     assignment = html.p(
@@ -66,7 +66,8 @@ class StandardLoadDetail(Page):
                 template="app/standard_load/equation_assignment.html",
             ),
             form=Form(
-                auto__model=StandardLoad, instance=lambda params, **_: params.standard_load,
+                auto__model=StandardLoad,
+                instance=lambda standard_load, **_: standard_load,
                 auto__include=[
                     'load_lecture', 'load_lecture_first',
                     'load_coursework_set',  'load_coursework_credit', 'load_coursework_marked',
@@ -85,16 +86,17 @@ class StandardLoadDetail(Page):
                 template="app/standard_load/equation_target.html",
             ),
             form=Form(
-                auto__model=StandardLoad, instance=lambda params, **_: params.standard_load,
+                auto__model=StandardLoad,
+                instance=lambda standard_load, **_: standard_load,
                 auto__include=[
                     'load_fte_misc', 'target_load_per_fte', 'target_load_per_fte_calc'
                 ],
                 fields=dict(
                     target_load_per_fte=dict(
-                        initial=lambda params, **_: int(params.standard_load.target_load_per_fte),
+                        initial=lambda standard_load, **_: standard_load.target_load_per_fte,
                     ),
                     target_load_per_fte_calc=dict(
-                        initial=lambda params, **_: int(params.standard_load.target_load_per_fte_calc) if params.standard_load.target_load_per_fte_calc else '',
+                        initial=lambda standard_load, **_: standard_load.target_load_per_fte_calc if standard_load.target_load_per_fte_calc else '',
                     )
                 ),
                 iommi_style=horizontal_fields_style,
@@ -104,10 +106,13 @@ class StandardLoadDetail(Page):
         )
     )
     notes = Form(
-        auto__model=StandardLoad, instance=lambda params, **_: params.standard_load,
-        auto__include=[
-            'notes'
-        ],
+        auto=dict(
+            model=StandardLoad,
+            include=[
+                'notes'
+            ],
+        ),
+        instance=lambda standard_load, **_: standard_load,
         iommi_style=floating_fields_style,
         editable=False,
     )

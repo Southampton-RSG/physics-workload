@@ -24,6 +24,7 @@ class Assignment(ModelCommon, Model):
 
     task = HistoricForeignKey(
         Task, blank=False, null=False, on_delete=PROTECT,
+        limit_choices_to={'is_removed': False},
         related_name='assignment_set',
     )
     staff = HistoricForeignKey(
@@ -41,8 +42,8 @@ class Assignment(ModelCommon, Model):
     is_first_time = BooleanField(default=False)
     is_provisional = BooleanField(default=False)
 
-    load_calc = FloatField(
-        default=0.0,
+    load_calc = IntegerField(
+        default=0,
         verbose_name='Load',
     )
 
@@ -81,7 +82,7 @@ class Assignment(ModelCommon, Model):
         Updates the load for this assignment.
         :return: True if the load has changed.
         """
-        load: float = self.task.calculate_load(
+        load: int = self.task.calculate_load(
             students=self.students,
             is_first_time=self.is_first_time,
         )

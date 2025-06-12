@@ -1,5 +1,5 @@
 from datetime import datetime
-from logging import getLogger
+from logging import getLogger, Logger
 
 from django.conf import settings
 from django.contrib import messages
@@ -14,7 +14,7 @@ from app.models import Staff, Unit, LoadFunction, AcademicGroup, Assignment, Tas
 from app.style import horizontal_fields_style, floating_fields_style
 
 
-logger = getLogger(__name__)
+logger: Logger = getLogger(__name__)
 
 
 class StandardLoadForm(Form):
@@ -124,6 +124,7 @@ class StandardLoadFormNewYear(Form):
             current_date: datetime = localtime()
 
             standard_load_old: StandardLoad = StandardLoad.objects.get(pk=standard_load_new.pk)
+            standard_load_old._history_date = current_date
             standard_load_old.save()
 
             for staff in Staff.available_objects.all():
@@ -132,18 +133,23 @@ class StandardLoadFormNewYear(Form):
                 staff.save()
 
             for assignment in Assignment.available_objects.all():
+                assignment._history_date = current_date
                 assignment.save()
 
             for task in Task.available_objects.all():
+                task._history_date = current_date
                 task.save()
 
             for unit in Unit.available_objects.all():
+                unit._history_date = current_date
                 unit.save()
 
             for load_function in LoadFunction.available_objects.all():
+                load_function._history_date = current_date
                 load_function.save()
 
             for academic_group in AcademicGroup.available_objects.all():
+                academic_group._history_date = current_date
                 academic_group.save()
 
             settings.SIMPLE_HISTORY_ENABLED = False
@@ -172,4 +178,6 @@ class StandardLoadFormNewYear(Form):
                     "Advanced to the next academic year."
                 )
 
-            return HttpResponseRedirect(standard_load_new.get_absolute_url())
+            return HttpResponseRedirect(
+                standard_load_new.get_absolute_url()
+            )

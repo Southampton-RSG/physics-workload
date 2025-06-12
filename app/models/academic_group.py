@@ -1,12 +1,12 @@
-from logging import getLogger
+from logging import getLogger, Logger
 
-from django.db.models import CharField
+from django.db.models import CharField, IntegerField
 
 from app.models.common import ModelCommon
 from users.models import CustomUser
 
 
-logger = getLogger(__name__)
+logger: Logger = getLogger(__name__)
 
 
 class AcademicGroup(ModelCommon):
@@ -23,6 +23,17 @@ class AcademicGroup(ModelCommon):
     short_name = CharField(max_length=16, unique=True, blank=False, db_index=True)
     name = CharField(max_length=128, unique=True, blank=False)
 
+    load_balance_final = IntegerField(
+        default=0,
+        verbose_name='Load balance',
+        help_text="Final load balance for the current year. Positive if overloaded.",
+    )
+    load_balance_historic = IntegerField(
+        default=0,
+        verbose_name='Historic load balance',
+        help_text="Total of previous end-of-year load balances. Positive if overloaded.",
+    )
+
     class Meta:
         ordering = ('name',)
         verbose_name = 'Group'
@@ -33,7 +44,8 @@ class AcademicGroup(ModelCommon):
 
     def get_instance_header(self, text: str|None = None) -> str:
         """
-        Uses the full name for the header of one of these
+        Uses the full name for the header of one of these.
+
         :param text: Text of the header, unused.
         :return: A rendered header string with the name of the instance.
         """
@@ -42,6 +54,7 @@ class AcademicGroup(ModelCommon):
     def has_access(self, user: CustomUser) -> bool:
         """
         Only users assigned who are members of an academic group can view it.
+
         :param user: The user.
         :return: True if the user is allowed to view the group.
         """

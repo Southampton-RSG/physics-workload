@@ -1,12 +1,9 @@
 from abc import abstractmethod
 
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.template.loader import render_to_string
-from django.db.models import FloatField, CharField
 
 from model_utils.models import SoftDeletableModel
-from model_utils.managers import InheritanceManager
 
 from simple_history.models import HistoricalRecords
 
@@ -18,6 +15,20 @@ class ModelCommon(SoftDeletableModel):
     Classes implement `icon` (a font-awesome icon name) and `url_root` (the Django URL resolver root for that model).
     """
     history = HistoricalRecords(inherit=True)
+
+    # --------------------------------------------------------------------------
+    # This block allow custom historical dating, used when importing data.
+    # --------------------------------------------------------------------------
+    # __history_date = None
+    #
+    # @property
+    # def _history_date(self):
+    #     return self.__history_date
+    #
+    # @_history_date.setter
+    # def _history_date(self, value):
+    #     self.__history_date = value
+    # --------------------------------------------------------------------------
 
     class Meta:
         abstract = True

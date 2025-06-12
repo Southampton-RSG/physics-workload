@@ -8,12 +8,15 @@ Needs to be run within the Django context; feed it into the management shell wit
     ```
 """
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from logging import getLogger, Logger, INFO
 from os import getcwd
 from pathlib import Path
 
 from pandas import DataFrame, read_csv, isnull
+
 from django.conf import settings
+
 from app.models import Task, AcademicGroup
 
 
@@ -31,6 +34,10 @@ settings.SIMPLE_HISTORY_ENABLED = True
 load_df: DataFrame = read_csv(CSV_PATH, header=0, index_col=False)
 
 tasks_created: int = 0
+history_date: datetime = datetime(
+    year=2024, month=9, day=20, hour=0, minute=0, second=0,
+    tzinfo=ZoneInfo("GMT")
+)
 
 for idx, row in load_df.iterrows():
     # Iterate through the dataframe, and for each row create a new task and save the details.
@@ -43,7 +50,7 @@ for idx, row in load_df.iterrows():
             notes=row.notes,
             load_fixed=row.load_fixed,
         )
-        task._history_date = datetime(year=2024, month=9, day=20, hour=0, minute=0, second=0)
+        task._history_date = history_date
         task.save()
         tasks_created += created
 

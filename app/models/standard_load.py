@@ -100,16 +100,16 @@ class StandardLoad(ModelCommon):
         verbose_name="Staff misc. load per FTE fraction",
         help_text=r"$L_m$, basic allowance apart from explicit task loads"
     )
-    target_load_per_fte = FloatField(
+    target_load_per_fte = IntegerField(
         blank=False, null=False,
         validators=[
-            MinValueValidator(0.0),
+            MinValueValidator(0),
         ],
         verbose_name="Default teaching load per FTE",
         help_text="Used when calculating target load hours",
     )
 
-    target_load_per_fte_calc = FloatField(
+    target_load_per_fte_calc = IntegerField(
         blank=True, null=True,
         verbose_name="Calculated teaching load per FTE",
     )
