@@ -15,7 +15,7 @@ from app.models.common import ModelCommon
 logger: Logger = getLogger(__name__)
 
 
-class Assignment(ModelCommon, Model):
+class Assignment(ModelCommon):
     """
     Pairs a Staff member up with the task they're performing.
     """

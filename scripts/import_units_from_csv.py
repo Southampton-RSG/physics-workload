@@ -16,8 +16,7 @@ from pathlib import Path
 import pandas
 from pandas import DataFrame, read_csv, isnull, to_numeric
 from django.conf import settings
-from app.models import Unit, Task
-
+from app.models import Unit, Task, AcademicGroup
 
 # Set up logging
 logger: Logger = getLogger(__name__)
@@ -116,6 +115,16 @@ for idx, row in load_df.iterrows():
         )
 
     else:
+        academic_group: AcademicGroup|None = None
+        if "laser" in str(row.name).lower():
+            academic_group = AcademicGroup.objects.get(code='Q')
+        elif "astro" in str(row.name).lower():
+            academic_group = AcademicGroup.objects.get(code='A')
+        elif "particle" in str(row.name).lower():
+            academic_group = AcademicGroup.objects.get(code='T')
+        else:
+            academic_group = None
+
         unit, created = Unit.objects.get_or_create(
             code=code,
             name=row.unit_name,
@@ -128,7 +137,8 @@ for idx, row in load_df.iterrows():
             exams=1 if not isnull(row.exam_mark_fraction) else 0,
             exam_mark_fraction=row.exam_mark_fraction if not isnull(row.exam_mark_fraction) else None,
             credits=row.credits if not isnull(row.credits) else None,
-            notes=row.notes,
+            notes=row.notes if not isnull(row.notes) else "",
+            academic_group=academic_group,
         )
         unit._history_date = datetime(year=2024, month=9, day=20, hour=0, minute=0, second=0)
         unit.save()

@@ -473,15 +473,15 @@ wheels = [
 
 [[package]]
 name = "iommi"
-version = "7.13.0"
+version = "7.14.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "pyparsing" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/95/17/691b05f5c50eca0588276c94e35f93b8373a1f857183e8b0d6f0d8913c44/iommi-7.13.0.tar.gz", hash = "sha256:406e62cccea071bdd3fa9978f982de2f8163028445a6393ccbc17293af6f7e9f", size = 198365 }
+sdist = { url = "https://files.pythonhosted.org/packages/93/71/02553c278e5e662ead4476c97544c13687b3ede5b35bc76c650a1058cb72/iommi-7.14.4.tar.gz", hash = "sha256:a18754cb80d3274a8dd626398ebe1385cdf93c95f67db09793d93e01db1a8a6d", size = 200028 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e4/e0/5a34714189f6bf6d55cd02e8f5aa498137d26f096157e831fa050d989e5e/iommi-7.13.0-py2.py3-none-any.whl", hash = "sha256:3ef50bed6d97e27cb875bdbcb6154907becaf4469a48b382deda77cda2a4ac4c", size = 336450 },
+    { url = "https://files.pythonhosted.org/packages/65/f8/4e954c2137c22d83b974d7a921170f7f41ba1baf33b8aa78cba780894c03/iommi-7.14.4-py2.py3-none-any.whl", hash = "sha256:9ea9ff0dcb83f1f34e19b26cbeeabdab35759c0ee03de0baa6e96f1dc753fd15", size = 338925 },
 ]
 
 [[package]]
@@ -711,7 +711,7 @@ requires-dist = [
     { name = "django-plotly-dash", specifier = ">=2.4.5" },
     { name = "django-simple-history", specifier = ">=3.8.0" },
     { name = "gunicorn", specifier = ">=23.0.0" },
-    { name = "iommi", specifier = "==7.13.0" },
+    { name = "iommi", specifier = "==7.14.4" },
     { name = "pandas", specifier = ">=2.2.3" },
     { name = "parso", specifier = ">=0.8.4" },
     { name = "pycodestyle", specifier = ">=2.12.1" },

@@ -80,7 +80,6 @@ class AssignmentStaffTable(EditTable):
             ),
             delete=EditColumn.delete(
                 include=lambda user, **_: user.is_staff,
-                display_name=format_html("<i class='fa-solid fa-trash'></i>"),
                 header__attrs__class={'text-center': True},
                 cell__attrs__class={'text-center': True},
                 cell__attrs__style={'width': '3em'},

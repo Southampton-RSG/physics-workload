@@ -11,7 +11,7 @@ dependencies = [
     "django==5.2.1",
     "django-import-export>=4.3.5",
     "gunicorn>=23.0.0",
-    "iommi==7.13.0",
+    "iommi==7.14.4",
     "pycodestyle>=2.12.1",
     "python-dotenv>=1.0.1",
     "pytz>=2025.1",

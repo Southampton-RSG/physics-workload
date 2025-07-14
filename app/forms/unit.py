@@ -42,6 +42,6 @@ class UnitForm(Form):
         @staticmethod
         def extra__on_save(form, instance, **_):
             logger.info(f"Editing unit {instance}, as {form.extra.crud_type}")
-            if instance.update_load_target():
+            if instance.update_load():
                 logger.info(f"Staff changes require recalculation of global load target.")
                 StandardLoad.objects.latest().update_target_load_per_fte()

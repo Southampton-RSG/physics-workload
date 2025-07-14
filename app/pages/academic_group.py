@@ -72,7 +72,7 @@ class AcademicGroupDetail(Page):
         rows=lambda params, **_: Unit.objects.filter(
             academic_group=params.academic_group
         ).annotate(
-            assignment_open=F('is_required') & (Count('task_set__assignment_set') == 0),
+            assignment_open=Count('task_set__is_required') - Count('task_set__assignment_set'),
         ),
         page_size=20,
         h_tag__tag='h2',
