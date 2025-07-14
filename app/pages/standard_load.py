@@ -27,7 +27,6 @@ class StandardLoadEdit(Page):
         fields=dict(
             notes__iommi_style=floating_fields_style,
             year__include=False,
-            is_removed__include=False,
             target_load_per_fte_calc__include=False,
         ),
         editable=True

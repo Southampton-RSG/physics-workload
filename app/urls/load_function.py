@@ -1,3 +1,4 @@
+from django.conf import settings
 from iommi.experimental.main_menu import M
 from iommi.path import register_path_decoding
 
@@ -19,7 +20,7 @@ load_function_submenu: M = M(
 
     items=dict(
         create=M(
-            icon="plus",
+            icon=settings.ICON_CREATE,
             view=LoadFunctionCreate,
             include=lambda request, **_: request.user.is_staff,
         ),
@@ -34,12 +35,12 @@ load_function_submenu: M = M(
 
             items=dict(
                 edit=M(
-                    icon='pencil',
+                    icon=settings.ICON_EDIT,
                     view=LoadFunctionEdit,
                     include=lambda request, **_: request.user.is_staff,
                 ),
                 delete=M(
-                    icon='trash',
+                    icon=settings.ICON_DELETE,
                     view=LoadFunctionDelete,
                     include=lambda request, **_: request.user.is_staff,
                 ),

@@ -88,8 +88,12 @@ class Task(ModelCommon):
     )
 
     # ==========================================================================
-    # *Not* used by TaskUnitLead.
+    # Generic task
     # ==========================================================================
+    FIELDS_TASK_GENERIC = (
+        'load_function', 'students',
+    )
+
     load_function = HistoricForeignKey(
         LoadFunction,
         blank=True, null=True,
@@ -105,6 +109,10 @@ class Task(ModelCommon):
     # ==========================================================================
     # TaskUnitLead components. Polymorphism and SimpleHistory don't play nice.
     # ==========================================================================
+    FIELDS_TASK_UNIT_LEAD = (
+        'unit', 'is_lead', 'coursework_fraction', 'exam_fraction',
+    )
+
     unit = HistoricForeignKey(
         Unit, on_delete=PROTECT, null=True, blank=True,
         related_name='task_set',
@@ -129,6 +137,21 @@ class Task(ModelCommon):
             MaxValueValidator(1.0)
         ],
         verbose_name="Fraction of exams marked",
+    )
+    # ==========================================================================
+
+    # ==========================================================================
+    # TaskFullTime components. Polymorphism and SimpleHistory don't play nice.
+    # ==========================================================================
+    FIELDS_TASK_FULL_TIME = (
+        'name', 'description', 'is_required',
+        'is_unique', 'is_full_time',
+    )
+
+    is_full_time = BooleanField(
+        default=False,
+        verbose_name="Is full-time",
+        help_text="If set, makes this task counts as being 1 FTE worth of load. Recursively defined."
     )
     # ==========================================================================
 
@@ -205,10 +228,10 @@ class Task(ModelCommon):
             return super().get_absolute_url()
 
     def has_any_provisional(self) -> bool:
-        return any(self.assignment_set.filter(is_removed=False).values_list('is_provisional', flat=True))
+        return any(self.assignment_set.values_list('is_provisional', flat=True))
 
     def has_any_first_time(self) -> bool:
-        return any(self.assignment_set.filter(is_removed=False).values_list('is_first_time', flat=True))
+        return any(self.assignment_set.values_list('is_first_time', flat=True))
 
     def has_access(self, user: AbstractUser) -> bool:
         """
@@ -221,7 +244,7 @@ class Task(ModelCommon):
         elif user.is_anonymous:
             return False
         else:
-            return user.staff in self.assignment_set.filter(is_removed=False).values_list('staff', flat=True)
+            return user.staff in self.assignment_set.values_list('staff', flat=True)
 
     def update_load(self) -> True:
         """
@@ -230,30 +253,44 @@ class Task(ModelCommon):
         """
         logger.debug(f"{self}: Updating load...")
 
-        students: int = self.students
-        if not self.students and self.unit:
-            students = self.unit.students
+        if self.is_full_time:
+            # This is not great
+            # If a task is 'full time', then it takes as long as the 'target load per FTE'
+            # This is, of course, leads to recursion.
 
-        load_calc = self.calculate_load(
-            students=students,
-            is_first_time=False,
-        )
-        load_calc_first = self.calculate_load(
-            students=students,
-            is_first_time=True,
-        )
+            load_calc = self.calculate_load(students=None)
+            load_calc_first = 0
+
+        else:
+            # If this is a marginally more sane task
+
+            students: int = self.students
+            if not self.students and self.unit:
+                students = self.unit.students
+
+            load_calc = self.calculate_load(
+                students=students,
+                is_first_time=False,
+            )
+            load_calc_first = self.calculate_load(
+                students=students,
+                is_first_time=True,
+            )
 
         if self.load_calc != load_calc or self.load_calc_first != load_calc_first:
             # If this has changed any of the values, then update the assignments and return that it has
+
             self.load_calc_first = load_calc_first
             self.load_calc = load_calc
             self.save()
 
-            for assignment in self.assignment_set.filter(is_removed=False).all():
+            for assignment in self.assignment_set.all():
                 assignment.update_load()
 
             return True
+
         else:
+            # The calculated load hasn't changed, so we don't need to cascade that up
             return False
 
     def calculate_load(
@@ -265,11 +302,18 @@ class Task(ModelCommon):
 
         :return:
         """
-        if self.is_lead:
+        if self.is_full_time:
+            # ==== IF THIS IS A FULL-TIME TASK ====
+            from app.models.standard_load import StandardLoad
+            standard_load: StandardLoad = StandardLoad.objects.latest()
+
+            load_calc = standard_load.target_load_per_fte_calc
+
+        elif self.is_lead:
             # ==== IF THIS IS A UNIT CO-ORDINATOR ====
             # SPREADSHEET LOGIC
             from app.models.standard_load import StandardLoad
-            standard_load: StandardLoad = StandardLoad.available_objects.latest()
+            standard_load: StandardLoad = StandardLoad.objects.latest()
 
             unit: Unit = self.unit
 

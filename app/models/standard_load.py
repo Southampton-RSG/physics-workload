@@ -169,10 +169,10 @@ class StandardLoad(ModelCommon):
 
         target_old: float = self.target_load_per_fte_calc
 
-        staff_aggregation: Dict[str, float] = Staff.available_objects.aggregate(Sum('fte_fraction'), Sum('hours_fixed'))
+        staff_aggregation: Dict[str, float] = Staff.objects.aggregate(Sum('fte_fraction'), Sum('hours_fixed'))
         total_fixed_hours: float = staff_aggregation.get('hours_fixed__sum', 0)
         total_fte_fraction: float = staff_aggregation.get('fte_fraction__sum', 0)
-        assignment_aggregation: Dict[str, float] = Assignment.available_objects.aggregate(Sum('load_calc'))
+        assignment_aggregation: Dict[str, float] = Assignment.objects.aggregate(Sum('load_calc'))
         total_assigned_hours: float = assignment_aggregation.get('load_calc__sum', 0)
 
         if total_fte_fraction and total_assigned_hours:
@@ -202,13 +202,13 @@ class StandardLoad(ModelCommon):
             # A staff member has been created/task has been deleted/whatever
             recalculate_target_load: bool = True
 
-        for task in Task.available_objects.all():
+        for task in Task.objects.all():
             # Step over all tasks, and see if the changes to this form have changed the total load
             logger.debug(f"Updating task {task}...")
             if task.update_load():
                 logger.debug(f"Updating task assignments...")
 
-                for assignment in task.assignment_set.filter(is_removed=False).all():
+                for assignment in task.assignment_set.all():
                     logger.debug(f"Updating {assignment}...")
                     if assignment.update_load():
                         logger.debug(f"updating {assignment} staff...")
@@ -219,7 +219,7 @@ class StandardLoad(ModelCommon):
             logger.debug("Updating standard load year with new assigned total")
             self.update_target_load_per_fte()
 
-            for staff in Staff.available_objects.all():
+            for staff in Staff.objects.all():
                 staff.update_load_target()
 
         return recalculate_target_load

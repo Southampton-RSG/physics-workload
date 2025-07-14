@@ -76,7 +76,7 @@ class StandardLoadFormNewYear(Form):
         """
         auto=dict(
             model = StandardLoad,
-            exclude = ['is_removed', 'target_load_per_fte_calc']
+            exclude = ['target_load_per_fte_calc']
         )
         fields=dict(
             year=dict(
@@ -127,28 +127,28 @@ class StandardLoadFormNewYear(Form):
             standard_load_old._history_date = current_date
             standard_load_old.save()
 
-            for staff in Staff.available_objects.all():
+            for staff in Staff.objects.all():
                 staff.load_balance_final = staff.get_load_balance()
                 staff._history_date = current_date
                 staff.save()
 
-            for assignment in Assignment.available_objects.all():
+            for assignment in Assignment.objects.all():
                 assignment._history_date = current_date
                 assignment.save()
 
-            for task in Task.available_objects.all():
+            for task in Task.objects.all():
                 task._history_date = current_date
                 task.save()
 
-            for unit in Unit.available_objects.all():
+            for unit in Unit.objects.all():
                 unit._history_date = current_date
                 unit.save()
 
-            for load_function in LoadFunction.available_objects.all():
+            for load_function in LoadFunction.objects.all():
                 load_function._history_date = current_date
                 load_function.save()
 
-            for academic_group in AcademicGroup.available_objects.all():
+            for academic_group in AcademicGroup.objects.all():
                 academic_group._history_date = current_date
                 academic_group.save()
 
@@ -160,14 +160,14 @@ class StandardLoadFormNewYear(Form):
             form.apply(standard_load_new)
             standard_load_new.save()
 
-            for staff in Staff.available_objects.all():
+            for staff in Staff.objects.all():
                 staff.load_balance_historic = staff.history.aggregate(
                     Sum('load_balance_final')
                 )['load_balance_final__sum']
                 staff.load_balance_final = 0
                 staff.save()
 
-            for assignment in Assignment.available_objects.all():
+            for assignment in Assignment.objects.all():
                 assignment.is_provisional = True
                 assignment.save()
 

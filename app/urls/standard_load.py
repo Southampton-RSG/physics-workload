@@ -10,7 +10,7 @@ from app.pages.standard_load import StandardLoadDetail, StandardLoadEdit, Standa
 
 # Decode <standard_load> in paths so a StandardLoad object is in the view parameters.
 register_path_decoding(
-    standard_load=lambda string, **_: StandardLoad.available_objects.get(year=int(string))
+    standard_load=lambda string, **_: StandardLoad.objects.get(year=int(string))
 )
 
 
@@ -32,13 +32,13 @@ standard_load_submenu: M = M(
             items=dict(
                 edit=M(
                     icon='pencil',
-                    include=lambda request, standard_load, **_: request.user.is_staff and (StandardLoad.available_objects.latest() == standard_load),
+                    include=lambda request, standard_load, **_: request.user.is_staff and (StandardLoad.objects.latest() == standard_load),
                     view=StandardLoadEdit,
                 ),
                 create=M(
                     display_name="New Year",
                     icon='plus',
-                    include=lambda request, standard_load, **_: request.user.is_staff and (StandardLoad.available_objects.latest() == standard_load),
+                    include=lambda request, standard_load, **_: request.user.is_staff and (StandardLoad.objects.latest() == standard_load),
                     view=StandardLoadNewYear,
                 ),
             )

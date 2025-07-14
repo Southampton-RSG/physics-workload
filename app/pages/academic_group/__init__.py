@@ -23,7 +23,7 @@ class AcademicGroupTaskCreate(Page):
     form = TaskForm.create(
         h_tag=None,
         auto__exclude=[
-            'load_calc', 'load_calc_first', 'is_removed',
+            'load_calc', 'load_calc_first',
             'academic_group',
         ],
         fields__academic_group=Field.non_rendered(
@@ -45,7 +45,18 @@ class AcademicGroupDetail(Page):
         attrs__class={'mb-3': True},
         columns__academic_group_code__include=False,
         query__include=False,
-        rows=lambda params, **_: StaffTable.annotate_rows(params.academic_group.staff_set.filter(is_removed=False)),
+        rows=lambda params, **_: StaffTable.annotate_rows(params.academic_group.staff_set),
+    )
+    details = Table(
+        auto=dict(
+            model=AcademicGroup,
+            include=['load_balance_historic']
+        ),
+        columns__load_balance=Column(
+            display_name="Load Balance",
+            cell__value=lambda row, **_: row.get_load_balance(),
+            include=lambda request, **_: request.user.is_staff,
+        )
     )
 
     tasks = TaskTable(
@@ -56,7 +67,7 @@ class AcademicGroupDetail(Page):
             assignment_set__cell__template='app/academic_group/assignment_set.html',
         ),
         query__include=False,
-        rows=lambda params, **_: TaskTable.annotate_query_set(params.academic_group.task_set.filter(is_removed=False).all()),
+        rows=lambda params, **_: TaskTable.annotate_query_set(params.academic_group.task_set),
     )
 
     units = Table(
@@ -91,7 +102,6 @@ class AcademicGroupEdit(Page):
     form = Form.edit(
         h_tag=None,
         auto__model=AcademicGroup, instance=lambda params, **_: params.academic_group,
-        auto__exclude=['is_removed'],
         fields__code__group='row1',
         fields__short_name__group='row1',
         fields__name__group='row1',
@@ -109,7 +119,7 @@ class AcademicGroupCreate(Page):
     form = Form.create(
         h_tag=None,
         auto__model=AcademicGroup,
-        auto__exclude=['is_removed'],
+
         fields__code__group='row1',
         fields__short_name__group='row1',
         fields__name__group='row1',
@@ -130,7 +140,6 @@ class AcademicGroupDelete(Page):
     form = Form.delete(
         h_tag=None,
         auto__model=AcademicGroup, instance=lambda params, **_: params.academic_group,
-        auto__exclude=['is_removed'],
         fields__code__group='row1',
         fields__short_name__group='row1',
         fields__name__group='row1',
@@ -150,14 +159,16 @@ class AcademicGroupList(Page):
             model=AcademicGroup,
             include=['name'],
         ),
-        rows=AcademicGroup.available_objects.all(),
+        rows=AcademicGroup.objects.all(),
         columns=dict(
             staff=Column(
-                cell__value=lambda row, **_: row.staff_set.filter(is_removed=False).count(),
+                cell__value=lambda row, **_: row.staff_set.count(),
             ),
             units=Column(
-                cell__value=lambda row, **_: row.unit_set.filter(is_removed=False).count(),
+                cell__value=lambda row, **_: row.unit_set.count(),
             ),
             name__cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
+            load_balance_historic__include=lambda request, **_: request.user.is_staff,
+            load_balance_final__include=False,
         )
     )

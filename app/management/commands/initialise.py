@@ -13,7 +13,7 @@ class Command(BaseCommand):
         :param options:
         :return:
         """
-        standard_load: StandardLoad = StandardLoad.available_objects.latest()
+        standard_load: StandardLoad = StandardLoad.objects.latest()
         standard_load.update_calculated_loads()
         standard_load.update_target_load_per_fte()
         self.stdout.write(

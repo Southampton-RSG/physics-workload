@@ -42,7 +42,7 @@ for idx, row in staff_df.iterrows():
     # Iterate through the dataframe, and for each row create a new staff member and save their details.
     print(f"Importing staff {idx}: {row['STAFF']}")
     if not isna(row['Group']):
-        group: AcademicGroup|None = AcademicGroup.available_objects.get(code=row['Group'])
+        group: AcademicGroup|None = AcademicGroup.objects.get(code=row['Group'])
     else:
         group = None
 

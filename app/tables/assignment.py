@@ -33,7 +33,6 @@ class AssignmentStaffTable(EditTable):
     class Meta:
         auto__model=Assignment
         columns=dict(
-            is_removed__include=False,
             notes__include=False,
 
             staff=EditColumn.hardcoded(
@@ -85,7 +84,7 @@ class AssignmentStaffTable(EditTable):
                 cell__attrs__style={'width': '3em'},
             ),
         )
-        rows=lambda staff, **_: Assignment.available_objects.filter(staff=staff)
+        rows=lambda staff, **_: Assignment.objects.filter(staff=staff)
         iommi_style=floating_fields_select2_inline_style
         edit_actions=dict(
             save__include=lambda user, **_: user.is_staff,

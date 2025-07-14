@@ -1,3 +1,4 @@
+from django.conf import settings
 from iommi.path import register_path_decoding
 from iommi.experimental.main_menu import M
 
@@ -23,7 +24,7 @@ staff_submenu: M = M(
     include=lambda request, **_: request.user.is_authenticated,
     items=dict(
         create=M(
-            icon="plus",
+            icon=settings.ICON_CREATE,
             include=lambda request, **_: request.user.is_staff,
             view=StaffCreate,
         ),
@@ -37,17 +38,17 @@ staff_submenu: M = M(
 
             items=dict(
                 edit=M(
-                    icon='pencil',
+                    icon=settings.ICON_EDIT,
                     view=StaffEdit,
                     include=lambda request, **_: request.user.is_staff,
                 ),
                 delete=M(
-                    icon='trash',
+                    icon=settings.ICON_DELETE,
                     view=StaffDelete,
                     include=lambda request, **_: request.user.is_staff,
                 ),
                 history=M(
-                    icon='clock-rotate-left',
+                    icon=settings.ICON_HISTORY,
                     view=StaffHistoryList,
                     items=dict(
                         detail=M(

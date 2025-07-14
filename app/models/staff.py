@@ -25,6 +25,12 @@ logger = getLogger(__name__)
 class Staff(ModelCommon):
     """
     Member of staff; not necessarily a current user.
+
+    :attribute icon: Icon to use in the front end.
+    :attribute url_root: Root URL for the model.
+    :attribute user: The user account corresponding to this staff member, may be none.
+    :attribute account: The active directory account name for this staff member.
+    :attribute name: The name of this staff member.
     """
     DYNAMIC_FIELDS = [
         'load_balance_historic',
@@ -108,7 +114,9 @@ class Staff(ModelCommon):
     notes = TextField(blank=True)
 
     class Meta:
-        ordering = ('is_removed', 'name')
+        ordering = [
+            'name'
+        ]
         verbose_name = 'Staff Member'
         verbose_name_plural = 'Staff Members'
         indexes = [
@@ -126,8 +134,10 @@ class Staff(ModelCommon):
 
     def has_access(self, user: AbstractUser|AnonymousUser) -> bool:
         """
-        :param user:
-        :return:
+        Does the user have access to this object?
+
+        :param user: The user in question.
+        :return: True if the user has access, or the user is this staff member.
         """
         if super().has_access(user):
             return True
@@ -137,6 +147,7 @@ class Staff(ModelCommon):
     def __str__(self):
         """
         Default rendering of a staff member shows their load balance
+
         :return: Their name plus load balance.
         """
         return f"{self.name} [{self.load_assigned - self.load_target:.0f}]"
@@ -144,19 +155,24 @@ class Staff(ModelCommon):
     def get_instance_header(self, text:str|None = None) -> str:
         """
         Creates a header for staff, without their load balance in.
-        :return: A header with just the name
+
+        :param text: Ignored, only exists to match signature.
+        :return: A header with just the name.
         """
         return super().get_instance_header(text=self.name)
 
     def get_load_balance(self):
         """
-        :return: The load balance
+        Gets how much under or overloaded the staff member is.
+
+        :return: The balance of assigned load against target load, negative if underloaded.
         """
         return self.load_assigned - self.load_target
 
     def update_load_assigned(self):
         """
         Updates own assigned load by summing the load of the assignments.
+
         :return: True if the total load has changed, false if not.
         """
         from app.models.standard_load import StandardLoad
@@ -175,6 +191,7 @@ class Staff(ModelCommon):
     def update_load_target(self):
         """
         Updates the target load from the standard load settings.
+
         :return: True if the load target has changed, false if not.
         """
         from app.models import StandardLoad
@@ -182,7 +199,7 @@ class Staff(ModelCommon):
         if self.hours_fixed:
             load_target = self.hours_fixed
         elif self.fte_fraction:
-            load_target = self.fte_fraction * StandardLoad.available_objects.latest().target_load_per_fte_calc
+            load_target = self.fte_fraction * StandardLoad.objects.latest().target_load_per_fte_calc
         else:
             # This is someone who doesn't have set teaching hours, ignore
             return False
@@ -199,6 +216,7 @@ class Staff(ModelCommon):
 def update_staff_link(sender, instance, created, **kwargs):
     """
     Link newly created CustomUser to a staff member.
+
     :param sender:
     :param instance:
     :param created:

@@ -9,7 +9,7 @@ from django.contrib import messages
 
 
 # Load settings.ini from the customisations dir
-config = AutoConfig()
+config: AutoConfig = AutoConfig()
 
 PROJECT_DIR: Path = Path(__file__).parent  # physics-workload/core/
 BASE_DIR: Path = Path(__file__).parent.parent  # physics-workload/
@@ -146,15 +146,15 @@ AUTHENTICATION_BACKENDS: List[str] = [
 ################################################################################
 # DJANGO AUTH ADFS
 ################################################################################
-LOGIN_URL = "django_auth_adfs:login"
-LOGIN_REDIRECT_URL = "home"  # Route defined in app/urls.py
-LOGOUT_REDIRECT_URL = "home"  # Route defined in app/urls.py
+LOGIN_URL: str = 'django_auth_adfs:login'
+LOGIN_REDIRECT_URL: str = 'home'  # Route defined in app/urls.py
+LOGOUT_REDIRECT_URL: str = 'home'  # Route defined in app/urls.py
 
-adfs_client_id = config('ADFS_CLIENT_ID', default="None")
-adfs_client_secret = config('ADFS_CLIENT_SECRET', default="None")
-adfs_tenant_id = config('ADFS_TENANT_ID', default="None")
+adfs_client_id: str = config('ADFS_CLIENT_ID', default="None")
+adfs_client_secret: str = config('ADFS_CLIENT_SECRET', default="None")
+adfs_tenant_id: str = config('ADFS_TENANT_ID', default="None")
 
-AUTH_ADFS = {
+AUTH_ADFS: Dict[str, Any] = {
     'AUDIENCE': adfs_client_id,
     'CLIENT_ID': adfs_client_id,
     'CLIENT_SECRET': adfs_client_secret,
@@ -173,17 +173,17 @@ AUTHENTICATION_BACKENDS += [
     'django_auth_adfs.backend.AdfsAuthCodeBackend',
 ]
 # Ensures that the URL uses HTTPS, even if Django is serving to Nginx over HTTP
-SECURE_PROXY_SSL_HEADER = ("X-Forwarded-Proto", "https")
+SECURE_PROXY_SSL_HEADER: Tuple[str, str] = ("X-Forwarded-Proto", "https")
 
 ################################################################################
 # DJANGO CORE - INTERNATIONALISATION
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 ################################################################################
-LANGUAGE_CODE = 'en-uk'
-TIME_ZONE = 'GMT'
-USE_I18N = True
-USE_L10N = True
-USE_TZ = True
+LANGUAGE_CODE: str = 'en-uk'
+TIME_ZONE: str = 'GMT'
+USE_I18N: bool = True
+USE_L10N: bool = True
+USE_TZ: bool = True
 
 ################################################################################
 # DJANGO CORE - DIRECTORIES
@@ -318,3 +318,8 @@ LOGGING: Dict[str, Any] = {
 ################################################################################
 YEAR_MINIMUM_VALUE: int = 2000
 HOURS_MAXIMUM_VALUE: int = 2000
+
+ICON_HISTORY: str = 'clock-rotate-left'
+ICON_EDIT: str = 'pencil'
+ICON_DELETE: str = 'trash'
+ICON_CREATE: str = 'plus'

@@ -1,3 +1,4 @@
+from django.conf import settings
 from iommi.path import register_path_decoding
 from iommi.experimental.main_menu import M
 
@@ -7,14 +8,16 @@ from app.models.unit import Unit
 from app.pages.task import TaskDetail, TaskDelete, TaskEdit
 from app.pages.unit import UnitList, UnitCreate, UnitDetail, UnitEdit, UnitDelete
 from app.pages.unit.task import UnitTaskLeadCreate, UnitTaskCreate
+from app.pages.unit.history import UnitHistoryList, UnitHistoryDetail
+
 
 # Decodes "<unit>" in paths into `params.unit`
 register_path_decoding(
     unit=has_access_decoder(Unit, "You must be assigned to a Unit to view it"),
 )
-# register_path_decoding(
-#     unit_history=lambda string, **_: Unit.history.get(history_id=int(string)),
-# )
+register_path_decoding(
+    unit_history=lambda string, **_: Unit.history.get(history_id=int(string)),
+)
 
 # Added to the main menu
 unit_submenu: M = M(
@@ -24,7 +27,7 @@ unit_submenu: M = M(
 
     items=dict(
         create=M(
-            icon="plus",
+            icon=settings.ICON_CREATE,
             include=lambda request, **_: request.user.is_staff,
             view=UnitCreate,
         ),
@@ -38,30 +41,30 @@ unit_submenu: M = M(
 
             items=dict(
                 edit=M(
-                    icon='pencil',
+                    icon=settings.ICON_EDIT,
                     view=UnitEdit,
                     include=lambda request, **_: request.user.is_staff,
                 ),
                 delete=M(
-                    icon='trash',
+                    icon=settings.ICON_DELETE,
                     view=UnitDelete,
                     include=lambda request, **_: request.user.is_staff,
                 ),
-                # history=M(
-                #     icon='clock-rotate-left',
-                #     view=UnitHistoryList,
-                #     items=dict(
-                #         detail=M(
-                #             display_name=lambda unit_history, **_: unit_history.history_date.date(),
-                #             params={'unit_history'},
-                #             path='<unit_history>/',
-                #             view=UnitHistoryDetail,
-                #         )
-                #     )
-                # ),
+                history=M(
+                    icon=settings.ICON_HISTORY,
+                    view=UnitHistoryList,
+                    items=dict(
+                        detail=M(
+                            display_name=lambda unit_history, **_: unit_history.history_date.date(),
+                            params={'unit_history'},
+                            path='<unit_history>/',
+                            view=UnitHistoryDetail,
+                        )
+                    )
+                ),
                 create=M(
                     display_name="Create Task",
-                    icon='plus',
+                    icon=settings.ICON_CREATE,
                     view=UnitTaskCreate,
                     include=lambda request, **_: request.user.is_staff,
                 ),
@@ -82,12 +85,12 @@ unit_submenu: M = M(
 
                     items=dict(
                         edit=M(
-                            icon='pencil',
+                            icon=settings.ICON_EDIT,
                             view=TaskEdit,
                             include=lambda request, **_: request.user.is_staff,
                         ),
                         delete=M(
-                            icon='trash',
+                            icon=settings.ICON_DELETE,
                             view=TaskDelete,
                             include=lambda request, **_: request.user.is_staff,
                         ),

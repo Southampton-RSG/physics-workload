@@ -35,12 +35,11 @@ class TaskDetailForm(TaskForm):
         instance = lambda task, **_: task
         auto__exclude=[
             'name',
-            'unit', 'academic_group', 'is_lead',
+            'unit', 'academic_group', 'is_lead', 'is_full_time',
             'load_fixed', 'load_fixed_first', 'load_multiplier',
             'is_unique',
             'description',
             'notes',
-            'is_removed',
         ]
         title = "Details"
         fields = dict(
@@ -82,8 +81,7 @@ class TaskCreateForm(TaskForm):
         h_tag=None
         instance=lambda task, **_: task
         auto__exclude=[
-            'is_removed',
-            'unit', 'is_lead', 'coursework_fraction', 'exam_fraction'
+            'unit', 'is_lead', 'coursework_fraction', 'exam_fraction',
             'load_calc', 'load_calc_first',
         ]
         fields=dict(
@@ -102,7 +100,6 @@ class TaskEditForm(TaskForm):
         h_tag=None
         instance=lambda task, **_: task
         auto__exclude=[
-            'is_removed',
             'unit', 'academic_group',
             'load_calc', 'load_calc_first',
         ]
@@ -114,6 +111,11 @@ class TaskEditForm(TaskForm):
             load_fixed_first__group="Load",
             load_multiplier__group="Load",
 
+            is_full_time=dict(
+                include=lambda task, **_: task.is_full_time,
+                group="Calculation Details",
+                editable=False,
+            ),
             is_lead=dict(
                 include=lambda task, **_: task.is_lead,
                 group="Calculation Details",
@@ -128,11 +130,11 @@ class TaskEditForm(TaskForm):
                 group="Calculation Details",
             ),
             load_function=dict(
-                include=lambda task, **_: not task.is_lead,
+                include=lambda task, **_: not task.is_lead and not task.is_full_time,
                 group="Calculation Details",
             ),
             students=dict(
-                include=lambda task, **_: not task.is_lead,
+                include=lambda task, **_: not task.is_lead and not task.is_full_time,
                 group="Calculation Details",
             ),
         )
@@ -142,7 +144,6 @@ class UnitTaskLeadCreateForm(TaskForm):
     class Meta:
         h_tag = None
         auto__exclude = [
-            'is_removed',
             'academic_group', 'load_function', 'students',
             'load_calc', 'load_calc_first',
         ]
@@ -183,7 +184,6 @@ class UnitTaskCreateForm(TaskForm):
     class Meta:
         h_tag = None
         auto__exclude = [
-            'is_removed',
             'academic_group',
             'is_lead', 'coursework_fraction', 'exam_fraction',
             'load_calc', 'load_calc_first',
@@ -203,4 +203,27 @@ class UnitTaskCreateForm(TaskForm):
 
             load_function__group="Calculation",
             students__group="Calculation",
+        )
+
+
+class TaskFullTimeCreateForm(TaskForm):
+    class Meta:
+        h_tag=None
+        instance=lambda task, **_: task
+        auto__include=[
+            'name', 'is_unique', 'is_required', 'is_full_time',
+            'name', 'description',
+        ]
+        fields=dict(
+            is_full_time=dict(
+                group="Switches",
+                initial=True,
+                editable=False,
+            ),
+            is_unique=dict(
+                group="Switches",
+                initial=True,
+                editable=False,
+            ),
+            is_required__group="Switches",
         )

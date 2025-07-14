@@ -24,12 +24,10 @@ class Assignment(ModelCommon):
 
     task = HistoricForeignKey(
         Task, blank=False, null=False, on_delete=PROTECT,
-        limit_choices_to={'is_removed': False},
         related_name='assignment_set',
     )
     staff = HistoricForeignKey(
         Staff, blank=False, null=False, on_delete=PROTECT,
-        limit_choices_to={'is_removed': False},
         related_name='assignment_set',
     )
     students = IntegerField(

@@ -126,7 +126,7 @@ class LoadFunctionList(Page):
     list = Table(
         h_tag=None,
         auto__model=LoadFunction,
-        auto__exclude=['notes', 'is_removed'],
+        auto__exclude=['notes'],
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
         columns__expression__cell__template=Template("<td class='font-monospace'>{{ value | truncatechars:32 }}</td>"),
         columns__plot_minimum=dict(
@@ -137,7 +137,7 @@ class LoadFunctionList(Page):
             group="Plot",
             display_name="Maximum",
         ),
-        rows=LoadFunction.available_objects.all(),
+        rows=LoadFunction.objects.all(),
     )
 
 

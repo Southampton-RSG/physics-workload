@@ -1,10 +1,12 @@
+from django.conf import settings
 from iommi.path import register_path_decoding
 from iommi.experimental.main_menu import M
 
 from app.auth import has_access_decoder
 from app.models import AcademicGroup, Task
-from app.pages.task import TaskEdit, TaskDelete, TaskDetail
 from app.pages.academic_group import AcademicGroupTaskCreate, AcademicGroupCreate, AcademicGroupEdit, AcademicGroupDelete, AcademicGroupList, AcademicGroupDetail
+from app.pages.academic_group.history import AcademicGroupHistoryList
+from app.pages.task import TaskDetail, TaskDelete, TaskEdit
 
 
 # Decodes "<academic_group>" in paths to add parmas.academic_group
@@ -21,7 +23,7 @@ academic_group_submenu: M = M(
 
     items=dict(
         create=M(
-            icon="plus",
+            icon=settings.ICON_CREATE,
             view=AcademicGroupCreate,
             include=lambda request, **_: request.user.is_staff,
         ),
@@ -35,23 +37,24 @@ academic_group_submenu: M = M(
 
             items=dict(
                 edit=M(
-                    icon='pencil',
+                    icon=settings.ICON_EDIT,
                     view=AcademicGroupEdit,
                     include=lambda request, **_: request.user.is_staff,
                 ),
                 delete=M(
-                    icon='trash',
+                    icon=settings.ICON_DELETE,
                     view=AcademicGroupDelete,
                     include=lambda request, **_: request.user.is_staff,
                 ),
-                # history=M(
-                #     icon='clock-rotate-left',
-                #     view=AcademicGroupHistory,
-                # )
+                history=M(
+                    icon=settings.ICON_HISTORY,
+                    view=AcademicGroupHistoryList,
+                    include=lambda request, **_: request.user.is_staff,
+                ),
 
                 create=M(
                     display_name="Create Task",
-                    icon='plus',
+                    icon=settings.ICON_CREATE,
                     view=AcademicGroupTaskCreate,
                     include=lambda request, **_: request.user.is_staff,
                 ),
@@ -66,12 +69,12 @@ academic_group_submenu: M = M(
 
                     items=dict(
                         edit=M(
-                            icon='pencil',
+                            icon=settings.ICON_EDIT,
                             view=TaskEdit,
                             include=lambda request, **_: request.user.is_staff,
                         ),
                         delete=M(
-                            icon='trash',
+                            icon=settings.ICON_DELETE,
                             view=TaskDelete,
                             include=lambda request, **_: request.user.is_staff,
                         ),

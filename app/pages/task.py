@@ -6,10 +6,10 @@ from typing import List
 
 from django.db.models import QuerySet
 
-from iommi import Page, html, EditTable, Column, EditColumn, Header, register_search_fields, Form
+from iommi import Page, html, EditTable, Column, EditColumn, Header, register_search_fields
 
 from app.models import Task, Assignment, Staff
-from app.forms.task import TaskDetailForm, TaskEditForm, TaskCreateForm
+from app.forms.task import TaskDetailForm, TaskEditForm, TaskCreateForm, TaskFullTimeCreateForm
 from app.tables.task import TaskTable
 
 
@@ -27,8 +27,8 @@ class TaskDetail(Page):
 
     @staticmethod
     def filter_staff(task):
-        staff_allocated: List[Staff] = task.assignment_set.filter(is_removed=False).values_list('staff', flat=True)
-        staff_allowed: QuerySet[Staff] = Staff.available_objects.exclude(pk__in=staff_allocated)
+        staff_allocated: List[Staff] = task.assignment_set.values_list('staff', flat=True)
+        staff_allowed: QuerySet[Staff] = Staff.objects.exclude(pk__in=staff_allocated)
 
         print(staff_allowed)
 
@@ -42,7 +42,7 @@ class TaskDetail(Page):
 
     list = EditTable(
         auto__model=Assignment,
-        auto__exclude=['notes', 'load_calc', 'is_removed'],
+        auto__exclude=['notes', 'load_calc'],
         columns__task=EditColumn.hardcoded(
             render_column=False,
             field__parsed_data=lambda params, **_: params.task,
@@ -55,7 +55,7 @@ class TaskDetail(Page):
         #     )
         ),
         columns__delete=EditColumn.delete(),
-        rows=lambda params, **_: params.task.assignment_set.filter(is_removed=False).all(),
+        rows=lambda params, **_: params.task.assignment_set.all(),
     )
 
     br = html.br()
@@ -107,9 +107,19 @@ class TaskList(Page):
     )
     list = TaskTable(
         rows=TaskTable.annotate_query_set(
-            Task.available_objects.all()
+            Task.objects.all()
         ),
     )
+
+
+class TaskFullTimeCreate(Page):
+    """
+    Page for creating a task that's full time
+    """
+    header = Header(
+        lambda params, **_: Task.get_model_header_singular()
+    )
+    form = TaskFullTimeCreateForm.create()
 
 
 # Register tasks to be searched using the "name" field.

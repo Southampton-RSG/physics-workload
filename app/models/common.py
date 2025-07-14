@@ -1,14 +1,13 @@
 from abc import abstractmethod
 
+from django.db.models import Model
 from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.template.loader import render_to_string
-
-from model_utils.models import SoftDeletableModel
 
 from simple_history.models import HistoricalRecords
 
 
-class ModelCommon(SoftDeletableModel):
+class ModelCommon(Model):
     """
     Contains the framework for a DB model to have an icon and title associated with it
 

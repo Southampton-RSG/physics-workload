@@ -1,6 +1,7 @@
 from logging import getLogger, Logger
+from typing import Dict
 
-from django.db.models import CharField, IntegerField
+from django.db.models import CharField, IntegerField, Sum
 
 from app.models.common import ModelCommon
 from users.models import CustomUser
@@ -65,3 +66,12 @@ class AcademicGroup(ModelCommon):
             return user.staff.academic_group == self
 
         return False
+
+    def get_load_balance(self) -> int:
+        """
+        Gets the load balance of all the group members.
+
+        :return: The load balance.
+        """
+        aggregates: Dict[str, int] = self.staff_set.aggregate(Sum('load_assigned'), Sum('load_target'))
+        return aggregates['load_assigned__sum'] - aggregates['load_target__sum']

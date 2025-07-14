@@ -14,7 +14,7 @@ class UnitForm(Form):
     """
     class Meta:
         auto__model = Unit
-        auto__exclude = ['task_set', 'is_removed']
+        auto__exclude = ['task_set']
         fields__code__group = "Basics"
         fields__name__group = "Basics"
         fields__academic_group__group = "Basics"

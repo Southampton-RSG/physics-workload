@@ -82,7 +82,7 @@ class StaffTable(Table):
                     ),
                     gender=Field.choice(
                         display_name='Gender',
-                        choices=lambda params, **_: [''] + list(set(Staff.available_objects.values_list('gender', flat=True))),
+                        choices=lambda params, **_: [''] + list(set(Staff.objects.values_list('gender', flat=True))),
                         after='academic_group',
                     ),
                     academic_group=Field.choice(

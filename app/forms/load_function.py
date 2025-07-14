@@ -21,7 +21,6 @@ class LoadFunctionForm(Form):
         assets = mathjax_js
         auto=dict(
             model=LoadFunction,
-            exclude=['is_removed'],
         )
         fields=dict(
             plot_minimum=dict(
@@ -62,7 +61,7 @@ class LoadFunctionForm(Form):
         def extra__on_save(form, instance, **_):
             logger.info(f"Editing load function {instance}, as {form.extra.crud_type}")
 
-            if any(task.update_load() for task in instance.task_set.filter(is_removed=False).all()):
+            if any(task.update_load() for task in instance.task_set.all()):
                 logger.info(f"Load function changes require recalculation of global load target.")
                 standard_load: StandardLoad = StandardLoad.objects.latest()
                 standard_load.update_target_load_per_fte()

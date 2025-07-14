@@ -26,7 +26,7 @@ class StaffDelete(Page):
     form = StaffForm.delete(
         h_tag=None,
         instance=lambda staff, **_: staff,
-        auto__exclude=['is_removed', 'user'],
+        auto__exclude=['user'],
         fields=dict(
             fte_fraction__include=lambda staff, **_: staff.fte_fraction,
             hours_fixed__include=lambda staff, **_: staff.hours_fixed,
@@ -48,7 +48,7 @@ class StaffEdit(Page):
     form = StaffForm.edit(
         h_tag=None,
         auto__instance=lambda staff, **_: staff,
-        auto__exclude=Staff.DYNAMIC_FIELDS + ['is_removed', 'user'],
+        auto__exclude=Staff.DYNAMIC_FIELDS + ['user'],
         fields=dict(
             load_external=dict(
                 group='row25'
@@ -77,7 +77,7 @@ class StaffCreate(Page):
     )
     form = StaffForm.create(
         h_tag=None,
-        auto__exclude=Staff.DYNAMIC_FIELDS + ['is_removed', 'user'],
+        auto__exclude=Staff.DYNAMIC_FIELDS + ['user'],
         fields=dict(
             standard_load=Field.non_rendered(
                 include=True,
@@ -99,7 +99,7 @@ class StaffDetail(Page):
         auto=dict(
             instance=lambda staff, **_: staff,
             exclude=[
-                'user', 'is_removed', 'load_balance_final',
+                'user', 'load_balance_final',
             ],
         ),
         fields=dict(
@@ -145,7 +145,7 @@ class StaffList(Page):
     list = StaffTable(
         h_tag=None,
         rows=StaffTable.annotate_rows(
-            Staff.available_objects
+            Staff.objects
         ),
     )
 

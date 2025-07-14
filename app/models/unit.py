@@ -91,7 +91,7 @@ class Unit(ModelCommon):
         """
         if self.has_dissertation:
             return sum(
-                self.task_set.filter(is_removed=False).values_list('student', flat=True)
+                self.task_set.values_list('student', flat=True)
             )
 
     def has_access(self, user: AbstractUser) -> bool:
@@ -104,7 +104,7 @@ class Unit(ModelCommon):
             return True
         elif not user.is_anonymous:
             for task in self.task_set.all():
-                if user.staff in task.assignment_set.filter(is_removed=False).values_list('staff', flat=True):
+                if user.staff in task.assignment_set.values_list('staff', flat=True):
                     return True
 
         return False
@@ -116,7 +116,7 @@ class Unit(ModelCommon):
         """
         recalculate_loads: bool = False
 
-        for task in self.task_set.filter(is_removed=False).all():
+        for task in self.task_set.all():
             task_old_load_calc = task.load_calc
             task_old_load_calc_first = task.load_calc_first
             task_load_has_changed: bool = task.update_load()
@@ -126,7 +126,7 @@ class Unit(ModelCommon):
                 task.save()
                 recalculate_loads = True
 
-                for assignment in task.assignment_set.filter(is_removed=False).all():
+                for assignment in task.assignment_set.all():
                     if assignment.update_load():
                         # If this has actually changed the assignment loads too, then update them and the staff
                         assignment.staff.update_load_assigned()
