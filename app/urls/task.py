@@ -3,8 +3,10 @@ from iommi.path import register_path_decoding
 from iommi.experimental.main_menu import M
 
 from app.auth import has_access_decoder
+from app.forms.assignment import AssignmentTaskUniqueForm
 from app.models.task import Task
 from app.pages.task import TaskList, TaskCreate, TaskDetail, TaskEdit, TaskDelete, TaskFullTimeCreate
+from app.tables.assignment import AssignmentTaskTable
 
 
 # Decode <task> in paths so a LoadFunction object is in the view parameters.
@@ -23,13 +25,11 @@ task_submenu: M = M(
         create=M(
             icon=settings.ICON_CREATE,
             include=lambda request, **_: request.user.is_staff,
-            path='create/',
             view=TaskCreate,
         ),
         create_full_time=M(
             display_name="Create Full-Time Task",
             icon='square-plus',
-            path='create/full-time/',
             include=lambda request, **_: request.user.is_staff,
             view=TaskFullTimeCreate,
         ),

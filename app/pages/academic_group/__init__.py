@@ -45,7 +45,7 @@ class AcademicGroupDetail(Page):
         attrs__class={'mb-3': True},
         columns__academic_group_code__include=False,
         query__include=False,
-        rows=lambda params, **_: StaffTable.annotate_rows(params.academic_group.staff_set),
+        rows=lambda academic_group, **_: StaffTable.annotate_rows(academic_group.staff_set),
     )
     details = Table(
         auto=dict(
@@ -56,7 +56,8 @@ class AcademicGroupDetail(Page):
             display_name="Load Balance",
             cell__value=lambda row, **_: row.get_load_balance(),
             include=lambda request, **_: request.user.is_staff,
-        )
+        ),
+        rows=lambda academic_group, **_: [academic_group],
     )
 
     tasks = TaskTable(

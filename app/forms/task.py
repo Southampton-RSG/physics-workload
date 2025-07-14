@@ -106,16 +106,17 @@ class TaskEditForm(TaskForm):
         fields=dict(
             is_unique__group="Basic",
             is_required__group="Basic",
+            is_full_time=dict(
+                include=lambda task, **_: task.is_full_time,
+                group="Basic",
+                editable=False,
+                after='is_unique',
+            ),
 
             load_fixed__group="Load",
             load_fixed_first__group="Load",
             load_multiplier__group="Load",
 
-            is_full_time=dict(
-                include=lambda task, **_: task.is_full_time,
-                group="Calculation Details",
-                editable=False,
-            ),
             is_lead=dict(
                 include=lambda task, **_: task.is_lead,
                 group="Calculation Details",
@@ -129,6 +130,10 @@ class TaskEditForm(TaskForm):
                 include=lambda task, **_: task.is_lead,
                 group="Calculation Details",
             ),
+            load_fixed__include=lambda task, **_: not task.is_full_time,
+            load_fixed_first__include=lambda task, **_: not task.is_full_time,
+            load_multiplier__include=lambda task, **_: not task.is_full_time,
+
             load_function=dict(
                 include=lambda task, **_: not task.is_lead and not task.is_full_time,
                 group="Calculation Details",
@@ -138,6 +143,7 @@ class TaskEditForm(TaskForm):
                 group="Calculation Details",
             ),
         )
+        extra__redirect_to = '..'
 
 
 class UnitTaskLeadCreateForm(TaskForm):
@@ -209,7 +215,6 @@ class UnitTaskCreateForm(TaskForm):
 class TaskFullTimeCreateForm(TaskForm):
     class Meta:
         h_tag=None
-        instance=lambda task, **_: task
         auto__include=[
             'name', 'is_unique', 'is_required', 'is_full_time',
             'name', 'description',
@@ -219,6 +224,7 @@ class TaskFullTimeCreateForm(TaskForm):
                 group="Switches",
                 initial=True,
                 editable=False,
+                after='is_unique',
             ),
             is_unique=dict(
                 group="Switches",

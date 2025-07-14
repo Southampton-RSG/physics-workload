@@ -1,4 +1,4 @@
-from django.db.models import Q, QuerySet, F, Count, Sum
+from django.db.models import Q, QuerySet, F, Count, Sum, Case, When
 from django.template import Template
 
 from iommi import Table, Column, Field, LAST
@@ -25,7 +25,7 @@ class TaskTable(Table):
                 freetext=True,
             )
         )
-        columns__assignment_open=Column(render_column=False)
+        columns__assignment_required=Column(render_column=False)
         columns__assignment_provisional=Column(render_column=False)
         # -------- VISIBLE COLUMNS --------
         columns__unit_code=Column(
@@ -36,7 +36,7 @@ class TaskTable(Table):
             filter=dict(
                 include=True,
                 freetext=True,
-            )
+            ),
         )
         columns__name=dict(
             after='unit_code',
@@ -44,7 +44,7 @@ class TaskTable(Table):
             filter=dict(
                 include=True,
                 freetext=True,
-            )
+            ),
         )
         columns__academic_group=dict(
             display_name="Group",
@@ -56,13 +56,11 @@ class TaskTable(Table):
             group='Load',
             display_name='Normal',
             after='name',
-            cell__template='app/integer_cell.html',
         )
         columns__load_calc_first=dict(
             group='Load',
             display_name='First time',
             after='load_calc',
-            cell__template='app/integer_cell.html',
         )
         columns__assignment_set=dict(
             cell__template='app/task/assignment_set.html',
@@ -78,7 +76,7 @@ class TaskTable(Table):
                     choices=[
                         '---',
                         'Has Provisional',
-                        'Has Unassigned',
+                        'Missing Required',
                     ],
                 ),
             ),
@@ -89,8 +87,8 @@ class TaskTable(Table):
 
         @staticmethod
         def query__filters__status__value_to_q(value_string_or_f, **_) -> Q:
-            if value_string_or_f == "Has Unassigned":
-                return Q(assignment_open__gt=0)
+            if value_string_or_f == "Missing Required":
+                return Q(assignment_required__gt=0)
             elif value_string_or_f == "Has Provisional":
                 return Q(assignment_provisional__gt=0)
             else:
@@ -105,6 +103,11 @@ class TaskTable(Table):
         :return: Annotated QuerySet, with the number of assignments yet needed added as `assignment_open`
         """
         return query_set.annotate(
-            assignment_required=Count('is_required') - Count('assignment_set'),
+            assignment_required=Case(
+                When(
+                    is_required=True, then=1
+                ),
+                default=0,
+            ) - Count('assignment_set'),
             assignment_provisional=Count('assignment_set__is_provisional'),
         )

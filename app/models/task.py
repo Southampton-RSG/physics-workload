@@ -305,9 +305,12 @@ class Task(ModelCommon):
         if self.is_full_time:
             # ==== IF THIS IS A FULL-TIME TASK ====
             from app.models.standard_load import StandardLoad
-            standard_load: StandardLoad = StandardLoad.objects.latest()
 
-            load_calc = standard_load.target_load_per_fte_calc
+            standard_load: StandardLoad = StandardLoad.objects.latest()
+            if standard_load.target_load_per_fte_calc:
+                load_calc = standard_load.target_load_per_fte_calc
+            else:
+                load_calc = standard_load.target_load_per_fte
 
         elif self.is_lead:
             # ==== IF THIS IS A UNIT CO-ORDINATOR ====

@@ -1,20 +1,22 @@
 """
 
 """
-from logging import getLogger
+from logging import Logger, getLogger
 from typing import List
 
 from django.db.models import QuerySet
 
 from iommi import Page, html, EditTable, Column, EditColumn, Header, register_search_fields
 
-from app.models import Task, Assignment, Staff
+from app.models import Task, Staff
+from app.forms.assignment import AssignmentTaskUniqueForm
 from app.forms.task import TaskDetailForm, TaskEditForm, TaskCreateForm, TaskFullTimeCreateForm
+from app.tables.assignment import AssignmentTaskTable
 from app.tables.task import TaskTable
 
 
 # Set up logging for this file
-logger = getLogger(__name__)
+logger: Logger = getLogger(__name__)
 
 
 class TaskDetail(Page):
@@ -22,15 +24,13 @@ class TaskDetail(Page):
     Page for showing task details
     """
     header = Header(
-        lambda params, **_: params.task.get_instance_header(),
+        lambda task, **_: task.get_instance_header(),
     )
 
     @staticmethod
     def filter_staff(task):
         staff_allocated: List[Staff] = task.assignment_set.values_list('staff', flat=True)
         staff_allowed: QuerySet[Staff] = Staff.objects.exclude(pk__in=staff_allocated)
-
-        print(staff_allowed)
 
         if task.unit and task.unit.academic_group:
             staff_allowed = staff_allowed.filter(academic_group=task.unit.academic_group)
@@ -40,22 +40,12 @@ class TaskDetail(Page):
 
         return staff_allowed
 
-    list = EditTable(
-        auto__model=Assignment,
-        auto__exclude=['notes', 'load_calc'],
-        columns__task=EditColumn.hardcoded(
-            render_column=False,
-            field__parsed_data=lambda params, **_: params.task,
-        ),
-        columns__staff=Column.choice_queryset(
-            cell__url=lambda row, **_: row.staff.get_absolute_url() if hasattr(row, 'staff') else '',
-            choices=lambda params, **_: TaskDetail.filter_staff(params.task),
-        #     choices=lambda params, **_: Staff.objects.filter(
-        #         pk__in=params.task.assignment_set.values_list('staff__pk', flat=True)
-        #     )
-        ),
-        columns__delete=EditColumn.delete(),
-        rows=lambda params, **_: params.task.assignment_set.all(),
+    assignments = AssignmentTaskTable(
+        include=lambda task, **_: not task.is_unique,
+    )
+    assignment_create = AssignmentTaskUniqueForm.create_or_edit(
+        include=lambda task, **_: task.is_unique,
+        instance=lambda task, **_: task.assignment_set.first() if task.assignment_set.count() else None,
     )
 
     br = html.br()
@@ -66,6 +56,7 @@ class TaskDetail(Page):
             description=html.p(lambda task, **_: task.description),
         )
     )
+
 
 
 class TaskEdit(Page):

@@ -74,4 +74,6 @@ class AcademicGroup(ModelCommon):
         :return: The load balance.
         """
         aggregates: Dict[str, int] = self.staff_set.aggregate(Sum('load_assigned'), Sum('load_target'))
-        return aggregates['load_assigned__sum'] - aggregates['load_target__sum']
+        load_assigned: int = aggregates['load_assigned__sum'] if aggregates['load_assigned__sum'] else 0
+        load_target: int = aggregates['load_target__sum'] if aggregates['load_target__sum'] else 0
+        return load_assigned - load_target

@@ -9,7 +9,7 @@ from iommi import Table, EditTable, EditColumn, Action, Form
 
 from app.models import Assignment, Staff, Task, StandardLoad
 from app.style import floating_fields_select2_inline_style, base_style
-
+from scripts.import_units_from_csv import tasks_created
 
 logger: Logger = getLogger(__name__)
 
@@ -114,3 +114,83 @@ class AssignmentStaffTable(EditTable):
                 standard_load: StandardLoad = StandardLoad.objects.latest()
                 standard_load.update_target_load_per_fte()
 
+
+
+class AssignmentTaskTable(EditTable):
+    """
+
+    """
+    class Meta:
+        auto=dict(
+            model=Assignment,
+            exclude=['load_calc'],
+        )
+        columns=dict(
+            notes__include=False,
+
+            task=EditColumn.hardcoded(
+                render_column=False,
+                field__include=lambda user, **_: user.is_staff,
+                field__parsed_data=lambda task, **_: task,
+            ),
+            students=dict(
+                field__include=lambda user, **_: user.is_staff,
+                cell__attrs__style={'width': '6em'},
+            ),
+            is_first_time=dict(
+                field=dict(
+                    include=lambda user, **_: user.is_staff,
+                    iommi_style=base_style,
+                ),
+                cell__attrs__style={'width': '6em'},
+                cell__attrs__class={'align-middle': True},
+            ),
+            is_provisional=dict(
+                field=dict(
+                    include=lambda user, **_: user.is_staff,
+                    iommi_style=base_style,
+                ),
+                cell__attrs__style={'width': '6em'},
+                cell__attrs__class={'align-middle': True},
+            ),
+            staff=dict(
+                field=dict(
+                    include=lambda user, **_: user.is_staff,
+                ),
+                cell=dict(
+                    value=lambda row, **_: row.staff if hasattr(row, 'staff') else None,
+                    url=lambda row, **_: row.staff.get_absolute_url() if hasattr(row, 'staff') else None,
+                ),
+            ),
+            delete=EditColumn.delete(
+                include=lambda user, **_: user.is_staff,
+                header__attrs__class={'text-center': True},
+                cell__attrs__class={'text-center': True},
+                cell__attrs__style={'width': '3em'},
+            ),
+        )
+        rows=lambda task, **_: Assignment.objects.filter(task=task)
+        iommi_style=floating_fields_select2_inline_style
+        edit_actions=dict(
+            save__include=lambda user, **_: user.is_staff,
+            # add_row__include=lambda user, **_: user.is_staff,
+        )
+
+        @staticmethod
+        def extra__post_save(
+               task: Task, **_
+        ):
+            """
+            :param task:
+            :param _:
+            :return:
+            """
+            for assignment in task.assignment_set.all():
+                assignment.update_load()
+
+            if task.update_load():
+                logger.info(
+                    "Task has updated load, requiring update to total load target."
+                )
+                standard_load: StandardLoad = StandardLoad.objects.latest()
+                standard_load.update_target_load_per_fte()
