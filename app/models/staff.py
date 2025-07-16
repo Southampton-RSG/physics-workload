@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import (
-    Model, ForeignKey, TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index, CheckConstraint, Q,
+    TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index, CheckConstraint, Q,
     Sum, OneToOneField, UniqueConstraint
 )
 from django.db.models.deletion import PROTECT, SET_NULL
@@ -150,7 +150,7 @@ class Staff(ModelCommon):
 
         :return: Their name plus load balance.
         """
-        return f"{self.name} [{self.load_assigned - self.load_target:.0f}]"
+        return f"{self.name} [{self.load_assigned - self.load_target}]"
 
     def get_instance_header(self, text:str|None = None) -> str:
         """
@@ -177,8 +177,9 @@ class Staff(ModelCommon):
         """
         from app.models.standard_load import StandardLoad
 
-        load_assigned = self.assignment_set.aggregate(Sum('load_calc'))['load_calc__sum']
-        load_assigned += StandardLoad.objects.latest().load_fte_misc * self.fte_fraction
+        load_assigned: int = StandardLoad.objects.latest().load_fte_misc * self.fte_fraction
+        if assignment_total := self.assignment_set.aggregate(Sum('load_calc'))['load_calc__sum']:
+            load_assigned += assignment_total
 
         if self.load_assigned !=- load_assigned:
             self.load_assigned = load_assigned
@@ -223,53 +224,37 @@ def update_staff_link(sender, instance, created, **kwargs):
     :param kwargs:
     :return:
     """
-    logger.info(f"Inside User post_save for {instance}")
-    # django_auth_adfs will first create, Django user with just the username (email), then
-    # on a second call, update with first name, lastname, email etc.
+    if not hasattr(instance, 'staff') and not instance.is_superuser:
+        # If this user isn't linked to a staff member
+        account: str = instance.username.split('@')[0]
 
-    try:
-        logger.info(f"Looking up a staff member for user {instance.username}")
-        staff: Staff|None = Staff.objects.get(account=instance.username.split('@')[0])
-
-    except Staff.DoesNotExist:
-        # There's no staff member with this account name, so let's try surname...
         try:
-            logger.info(f"No account match for {instance.username}, looking for last name")
-            staff = Staff.objects.get(name=instance.last_name)
+            logger.info(f"Looking up a staff member for user {instance.username}")
+            staff: Staff|None = Staff.objects.get(account=account)
 
         except Staff.DoesNotExist:
-            staff = None
+            # There's no staff member with this account name, so let's try surname...
+            try:
+                logger.info(f"No account match for {account}, looking for last name {instance.last_name}")
+                staff = Staff.objects.get(name=instance.last_name)
 
-    if staff:
-        # If we found a staff member using either of those two methods...
-        if not staff.user:
-            # If they're not linked to the current user, then link them
-            logger.info(f"Found existing staff member who is unlinked - linking.")
+            except Staff.DoesNotExist:
+                logger.info(f"No staff with last name {instance.last_name}")
+                staff = None
+
+        if staff:
+            # If we did find a staff member, then update that member with account number, name from AD, link them.
             staff.user = instance
+            staff.account = account
+            staff.name = f"{instance.first_name} {instance.last_name}"
             staff.save()
-
-        elif staff.user != instance:
-            # If they're linked, but not to the current user, then relink them
-            logger.info(f"Found incorrectly linked staff member - relinking.")
-            staff.user = instance
-            staff.save()
-
-        else:
-            # If they're linked, and to the current user, then we don't have to do anything.
-            logger.info(f"Found existing linked staff member.")
-
-    if not instance.is_superuser:
-        # Don't create a staff record for the manual Django superuser
-        # Otherwise, either create a new Staff model from their ActiveDirectory account,
-        # or just update their Staff model with their full name from the AD account.
-
-        staff, staff_created = Staff.objects.update_or_create(
-            account=instance.username.split('@')[0],
-            defaults={
-                'name': f"{instance.first_name} {instance.last_name}",
-            }
-        )
-        if staff_created:
-            logger.info(f"Created Staff: {instance.username} - {staff}")
-        else:
             logger.info(f"Updated Staff: {instance.username} - {staff}")
+
+        else:
+            # If there's no staff member for this user, create one
+            staff = Staff(
+                account=account,
+                user=instance,
+                name=f"{instance.first_name} {instance.last_name}",
+            )
+            logger.info(f"Created Staff: {instance.username} - {staff}")

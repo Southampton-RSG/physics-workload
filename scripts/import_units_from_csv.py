@@ -82,6 +82,7 @@ for column in [
 # Track what's made
 units_created: int = 0
 tasks_created: int = 0
+history_date: datetime = datetime(year=2024, month=9, day=20, hour=0, minute=0, second=0)
 
 for idx, row in load_df.iterrows():
     # Iterate through the dataframe, and for each row create a new unit and save the details.
@@ -140,9 +141,10 @@ for idx, row in load_df.iterrows():
             notes=row.notes if not isnull(row.notes) else "",
             academic_group=academic_group,
         )
-        unit._history_date = datetime(year=2024, month=9, day=20, hour=0, minute=0, second=0)
-        unit.save()
-        units_created += created
+        if created:
+            unit._history_date = history_date
+            unit.save()
+            units_created += 1
 
         task, created = Task.objects.get_or_create(
             unit=unit,
@@ -154,10 +156,24 @@ for idx, row in load_df.iterrows():
             coursework_fraction=row.task__coursework_fraction if not isnull(row.task__coursework_fraction) else 0,
             exam_fraction=row.task__exam_fraction if not isnull(row.task__exam_fraction) else 0,
         )
-        task._history_date = datetime(year=2024, month=9, day=20, hour=0, minute=0, second=0)
-        task.save()
-        tasks_created += 1
+        if created:
+            task._history_date = history_date
+            task.save()
+            tasks_created += 1
 
+        if row.hours_fixed_deputy:
+            task, created = Task.objects.get_or_create(
+                unit=unit,
+                name="Deputy Lead",
+                description="Deputy co-ordinator for the unit.",
+                is_required=True,
+                is_unique=True,
+                load_fixed=row.hours_fixed_deputy,
+            )
+            if created:
+                task._history_date = history_date
+                task.save()
+                tasks_created += 1
 
 # Stop tracking history changes.
 settings.SIMPLE_HISTORY_ENABLED = False

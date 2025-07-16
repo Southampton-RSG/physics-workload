@@ -48,7 +48,8 @@ for idx, row in load_df.iterrows():
             name=row.task_name,
             description=row.description,
             notes=row.notes,
-            load_fixed=row.load_fixed,
+            load_fixed=row.load_fixed if row.load_fixed != 912 else 0,
+            is_full_time=True if row.load_fixed == 912 else False,
         )
         task._history_date = history_date
         task.save()

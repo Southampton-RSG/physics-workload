@@ -13,8 +13,9 @@ unit: school
 	uv run manage.py loaddata load_function
 	uv run manage.py shell < ./scripts/import_units_from_csv.py
 
-task: unit
+task: unit staff
 	uv run manage.py shell < ./scripts/import_nonunit_tasks_from_csv.py
+	uv run manage.py shell < ./scripts/import_unit_tasks_from_csv.py
 
 clean:
 	-rm -rf app/migrations/*.py

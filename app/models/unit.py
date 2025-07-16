@@ -4,7 +4,6 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Model, CharField, BooleanField, TextField, IntegerField, FloatField, CheckConstraint, Q, F
 from django.db.models.deletion import PROTECT
-from django.utils.html import format_html
 
 from simple_history.models import HistoricForeignKey
 
@@ -79,6 +78,12 @@ class Unit(ModelCommon):
     def __str__(self) -> str:
         return f"{self.code} - {self.name}"
 
+    def get_short_name(self) -> str:
+        """
+        :return: Just returns the code. Needed for parity with the AcademicGroup model, for Task ownership.
+        """
+        return f"{self.code}"
+
     def get_instance_header_short(self) -> str:
         """
         :return: Wraps instance header, but only uses a short nane,
@@ -111,8 +116,9 @@ class Unit(ModelCommon):
 
     def update_load(self) -> bool:
         """
-
-        :return:
+        :
+        :param cascade: If true, update the loads of associated tasks.
+        :return: True if the load of any of the tasks needed updating.
         """
         recalculate_loads: bool = False
 
@@ -123,7 +129,6 @@ class Unit(ModelCommon):
 
             if task_load_has_changed:
                 # If it actually has an effect, then flag that fact and update the task
-                task.save()
                 recalculate_loads = True
 
                 for assignment in task.assignment_set.all():

@@ -1,7 +1,7 @@
 from logging import getLogger, Logger
 from typing import Type
 
-from django.db.models import Model, PROTECT, TextField, BooleanField, Index, FloatField, IntegerField, CheckConstraint, Q
+from django.db.models import Model, PROTECT, CASCADE, TextField, BooleanField, Index, FloatField, IntegerField, CheckConstraint, Q
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
@@ -23,7 +23,7 @@ class Assignment(ModelCommon):
     url_root = 'assignment'
 
     task = HistoricForeignKey(
-        Task, blank=False, null=False, on_delete=PROTECT,
+        Task, blank=False, null=False, on_delete=CASCADE,
         related_name='assignment_set',
     )
     staff = HistoricForeignKey(

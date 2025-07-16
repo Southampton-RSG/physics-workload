@@ -1,9 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, Any, List
 
+from django.utils import timezone
 from django.template import Template
 from iommi import Page, Header, html, Table, Column
-from plotly.graph_objs import Figure, Scatter, Layout
+from plotly.graph_objs import Figure, Scatter, Layout, Bar
 from plotly.graph_objs.layout import XAxis, YAxis
 from plotly.offline import plot
 
@@ -48,10 +49,7 @@ class AcademicGroupHistoryList(Page):
                 group="Load Balance",
                 display_name="Final",
                 cell=dict(
-                    attrs__class=lambda row, **_: {
-                        'text-success': True if row.load_balance_final <= -1 else False,
-                        'text-danger': True if row.load_balance_final >= 1 else False,
-                    },
+                    attrs__class=lambda row, **_: get_balance_classes(row.load_balance_final),
                 ),
             ),
             load_balance_historic=dict(
@@ -59,10 +57,7 @@ class AcademicGroupHistoryList(Page):
                 group="Load Balance",
                 display_name="Cumulative",
                 cell=dict(
-                    attrs__class=lambda row, **_: {
-                        'text-success': True if row.load_balance_historic <= -1 else False,
-                        'text-danger': True if row.load_balance_historic >= 1 else False,
-                    }
+                    attrs__class=lambda row, **_: get_balance_classes(row.load_balance_historic),
                 ),
             ),
         ),
@@ -82,32 +77,37 @@ class AcademicGroupHistoryList(Page):
             :param staff: The Staff instance, provided via URL decoding.
             :return: The HTML code of the graph.
             """
-            dates: List[datetime] = [datetime.now()]
+            dates: List[str] = [f"{str(timezone.now().year-1)[-2:]}/{str(timezone.now().year)[-2:]}"]
             balance_cumulative: List[float] = [academic_group.load_balance_historic+academic_group.get_load_balance()]
             balance_yearly: List[float] = [academic_group.get_load_balance()]
 
             for academic_group_historic in academic_group.history.all():
-                dates.append(academic_group_historic.history_date)
-                balance_cumulative.append(academic_group_historic.load_balance_historic)
+                dates.append(f"{str(academic_group_historic.history_date.year-1)[-2:]}/{str(academic_group_historic.history_date.year)[-2:]}")
+                balance_cumulative.append(academic_group_historic.load_balance_historic+academic_group_historic.load_balance_final)
                 balance_yearly.append(academic_group_historic.load_balance_final)
+
+            dates.reverse()
+            balance_yearly.reverse()
+            balance_cumulative.reverse()
 
             figure: Figure = Figure(
                 data=[
+                    Bar(
+                        x=dates,
+                        y=balance_yearly,
+                        name="Yearly",
+                    ),
                     Scatter(
                         x=dates,
                         y=balance_cumulative,
-                        name="Cumulative"
+                        name="Cumulative",
                     ),
-                    Scatter(
-                        x=dates,
-                        y=balance_yearly,
-                        name="Yearly"
-                    ),
+
                 ],
                 layout=Layout(
                     template='bootstrap_dark',
                     xaxis=XAxis(title='Date', fixedrange=True),
-                    yaxis=YAxis(title='Balance (hours)', fixedrange=True),
+                    yaxis=YAxis(title='Load balance (hours)', fixedrange=True),
                     margin=dict(l=0, r=0, b=0, t=0, pad=0),
                 ),
             )

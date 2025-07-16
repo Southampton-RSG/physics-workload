@@ -3,13 +3,15 @@ Handles the views for the Academic Groups
 """
 from django.db.models import Count, Sum, F
 
-from iommi import Page, Table, html, Form, Column, Header, Field
+from iommi import Page, Table, html, Form, Column, Header, Field, LAST
 
+from app.forms.academic_group import AcademicGroupDetailForm
 from app.forms.task import TaskForm
 from app.models import AcademicGroup, Unit
 from app.tables.task import TaskTable
 from app.tables.staff import StaffTable
 from app.pages.components.suffixes import SuffixCreate, SuffixEdit, SuffixDelete
+from app.style import floating_fields_style, get_balance_classes
 
 
 class AcademicGroupTaskCreate(Page):
@@ -40,32 +42,20 @@ class AcademicGroupDetail(Page):
     header = Header(
         lambda params, **_: params.academic_group.get_instance_header()
     )
-
+    details = AcademicGroupDetailForm()
     staff = StaffTable(
         attrs__class={'mb-3': True},
         columns__academic_group_code__include=False,
+        columns__academic_group__include=False,
         query__include=False,
         rows=lambda academic_group, **_: StaffTable.annotate_rows(academic_group.staff_set),
-    )
-    details = Table(
-        auto=dict(
-            model=AcademicGroup,
-            include=['load_balance_historic']
-        ),
-        columns__load_balance=Column(
-            display_name="Load Balance",
-            cell__value=lambda row, **_: row.get_load_balance(),
-            include=lambda request, **_: request.user.is_staff,
-        ),
-        rows=lambda academic_group, **_: [academic_group],
     )
 
     tasks = TaskTable(
         attrs__class={'mb-3': True},
         columns=dict(
-            academic_group__include=False,
-            unit_code__include=False,
             assignment_set__cell__template='app/academic_group/assignment_set.html',
+            owner__include=False,
         ),
         query__include=False,
         rows=lambda params, **_: TaskTable.annotate_query_set(params.academic_group.task_set),
@@ -158,7 +148,7 @@ class AcademicGroupList(Page):
         h_tag=None,
         auto=dict(
             model=AcademicGroup,
-            include=['name'],
+            include=['name', 'load_balance_final'],
         ),
         rows=AcademicGroup.objects.all(),
         columns=dict(
@@ -169,7 +159,22 @@ class AcademicGroupList(Page):
                 cell__value=lambda row, **_: row.unit_set.count(),
             ),
             name__cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
-            load_balance_historic__include=lambda request, **_: request.user.is_staff,
-            load_balance_final__include=False,
+            load_balance=Column(
+                include=lambda request, **_: request.user.is_staff,
+                after='units',
+                group="Load Balance",
+                display_name="Current",
+                cell=dict(
+                    value=lambda row, **_: row.get_load_balance(),
+                    attrs__class=lambda value, **_: get_balance_classes(value)
+                ),
+            ),
+            load_balance_historic=dict(
+                include=lambda request, **_: request.user.is_staff,
+                after=LAST,
+                group="Load Balance",
+                display_name="Historic",
+                cell__attrs__class=lambda value, **_: get_balance_classes(value)
+            ),
         )
     )

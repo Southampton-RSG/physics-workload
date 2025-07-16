@@ -246,9 +246,11 @@ class Task(ModelCommon):
         else:
             return user.staff in self.assignment_set.values_list('staff', flat=True)
 
-    def update_load(self) -> True:
+    def update_load(self, cascade=True, save=False) -> True:
         """
-        Updates the load for this task. Does not save to DB; that needs to be done in the calling function.
+        Updates the load for this task, and any associated assignments.
+
+        :param cascade: If true, update the load for this task and sub-assignments.
         :return: True if the load has changed, false if not.
         """
         logger.debug(f"{self}: Updating load...")
@@ -259,7 +261,7 @@ class Task(ModelCommon):
             # This is, of course, leads to recursion.
 
             load_calc = self.calculate_load(students=None)
-            load_calc_first = 0
+            load_calc_first = load_calc
 
         else:
             # If this is a marginally more sane task
@@ -284,8 +286,9 @@ class Task(ModelCommon):
             self.load_calc = load_calc
             self.save()
 
-            for assignment in self.assignment_set.all():
-                assignment.update_load()
+            if cascade:
+                for assignment in self.assignment_set.all():
+                    assignment.update_load()
 
             return True
 
@@ -311,6 +314,8 @@ class Task(ModelCommon):
                 load_calc = standard_load.target_load_per_fte_calc
             else:
                 load_calc = standard_load.target_load_per_fte
+
+            load_calc_first = load_calc
 
         elif self.is_lead:
             # ==== IF THIS IS A UNIT CO-ORDINATOR ====

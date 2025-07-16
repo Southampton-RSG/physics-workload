@@ -1,16 +1,17 @@
 from datetime import datetime
 from typing import Dict, Any, List
 
+from django.utils import timezone
 from django.template import Template
 from iommi import Page, Header, html, Table, Column
-from plotly.graph_objs import Figure, Scatter, Layout
+from plotly.graph_objs import Figure, Scatter, Bar, Layout
 from plotly.graph_objs.layout import XAxis, YAxis
 from plotly.offline import plot
 
 from app.forms.staff import StaffForm
 from app.models import Staff, Assignment
 from app.pages.components.suffixes import SuffixHistory
-from app.style import get_balance_classes
+from app.style import get_balance_classes_form, get_balance_classes
 
 
 class StaffHistoryDetail(Page):
@@ -41,17 +42,13 @@ class StaffHistoryDetail(Page):
             load_balance_final=dict(
                 group='row3',
                 after='load_external',
-                non_editable_input__attrs__class=lambda staff_history, **_: {
-                    'form-control-plaintext': True
-                } | get_balance_classes(staff_history.load_balance_final),
+                non_editable_input__attrs__class=lambda staff_history, **_: get_balance_classes_form(staff_history.load_balance_final),
             ),
             load_balance_historic=dict(
                 group = 'row3',
                 after='load_balance_final',
                 initial=lambda staff_history, **_: staff_history.load_balance_historic,
-                non_editable_input__attrs__class=lambda params, **_: {
-                    'form-control-plaintext': True,
-                } | get_balance_classes(params.staff.load_balance_historic),
+                non_editable_input__attrs__class=lambda staff, **_: get_balance_classes_form(staff.load_balance_historic),
             ),
         ),
         editable=False,
@@ -113,10 +110,7 @@ class StaffHistoryList(Page):
                 group="Load Balance",
                 display_name="Final",
                 cell=dict(
-                    attrs__class=lambda row, **_: {
-                        'text-success': True if row.load_balance_final <= -1 else False,
-                        'text-danger': True if row.load_balance_final >= 1 else False,
-                    },
+                    attrs__class=lambda row, **_: get_balance_classes(row.load_balance_final)
                 ),
             ),
             load_balance_historic=dict(
@@ -124,10 +118,7 @@ class StaffHistoryList(Page):
                 group="Load Balance",
                 display_name="Cumulative",
                 cell=dict(
-                    attrs__class=lambda row, **_: {
-                        'text-success': True if row.load_balance_historic <= -1 else False,
-                        'text-danger': True if row.load_balance_historic >= 1 else False,
-                    }
+                    attrs__class=lambda row, **_: get_balance_classes(row.load_balance_historic),
                 ),
             ),
         ),
@@ -147,32 +138,39 @@ class StaffHistoryList(Page):
             :param staff: The Staff instance, provided via URL decoding.
             :return: The HTML code of the graph.
             """
-            dates: List[datetime] = [datetime.now()]
-            balance_cumulative: List[float] = [staff.load_balance_historic+staff.get_load_balance()]
-            balance_yearly: List[float] = [staff.get_load_balance()]
+            dates: List[str] = [f"{str(timezone.now().year-1)[-2:]}/{str(timezone.now().year)[-2:]}"]
+            balance_yearly : List[int] = [staff.get_load_balance()]
+            balance_cumulative: List[int] = [staff.get_load_balance()+staff.load_balance_historic]
 
             for staff_historic in staff.history.all():
-                dates.append(staff_historic.history_date)
-                balance_cumulative.append(staff_historic.load_balance_historic)
+                dates.append(f"{str(staff_historic.history_date.year-1)[-2:]}/{str(staff_historic.history_date.year)[-2:]}")
                 balance_yearly.append(staff_historic.load_balance_final)
+                balance_cumulative.append(
+                    staff_historic.load_balance_final+staff_historic.load_balance_historic
+                )
+
+            dates.reverse()
+            balance_yearly.reverse()
+            balance_cumulative.reverse()
 
             figure: Figure = Figure(
                 data=[
-                    Scatter(
+                    Bar(
                         x=dates,
-                        y=balance_cumulative,
-                        name="Cumulative"
+                        y=balance_yearly,
+                        # width=3e9,  # ...in milliseconds?
+                        name="Yearly",
                     ),
                     Scatter(
                         x=dates,
-                        y=balance_yearly,
-                        name="Yearly"
+                        y=balance_cumulative,
+                        name="Cumulative",
                     ),
                 ],
                 layout=Layout(
                     template='bootstrap_dark',
                     xaxis=XAxis(title='Date', fixedrange=True),
-                    yaxis=YAxis(title='Balance (hours)', fixedrange=True),
+                    yaxis=YAxis(title='Load balance (hours)', fixedrange=True),
                     margin=dict(l=0, r=0, b=0, t=0, pad=0),
                 ),
             )

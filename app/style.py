@@ -145,3 +145,12 @@ def get_balance_classes(balance: float) -> Dict[str, bool]:
         'text-success': True if balance <= -1 else False,
         'text-danger': True if balance >= 1 else False,
     }
+
+def get_balance_classes_form(balance: float) -> Dict[str, bool]:
+    """
+    """
+    return {
+        'text-success': True if balance <= -1 else False,
+        'text-danger': True if balance >= 1 else False,
+        'form-control-plaintext': True,
+    }

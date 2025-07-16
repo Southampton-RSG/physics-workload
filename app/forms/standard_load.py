@@ -4,7 +4,7 @@ from logging import getLogger, Logger
 from django.conf import settings
 from django.contrib import messages
 from django.db.models import Sum
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from django.utils.timezone import localtime
 
 from iommi import Form, Action, Field
@@ -12,6 +12,7 @@ from iommi import Form, Action, Field
 from app.assets import mathjax_js
 from app.models import Staff, Unit, LoadFunction, AcademicGroup, Assignment, Task, StandardLoad
 from app.style import horizontal_fields_style, floating_fields_style
+from app.utility import update_all_loads
 
 
 logger: Logger = getLogger(__name__)
@@ -55,12 +56,14 @@ class StandardLoadForm(Form):
             form.apply(standard_load_new)
             standard_load_new.save()
 
+            update_all_loads()
+
             # Now, we trigger the update (if required)
-            if standard_load_new.update_calculated_loads(standard_load_old):
-                messages.success(
-                    request,
-                    "Updated loads with new values."
-                )
+            # if standard_load_new.update_calculated_loads(standard_load_old):
+            #     messages.success(
+            #         request,
+            #         "Updated loads with new values."
+            #     )
 
             return HttpResponseRedirect(standard_load_new.get_absolute_url())
 
@@ -98,7 +101,7 @@ class StandardLoadFormNewYear(Form):
         assets = mathjax_js
 
         @staticmethod
-        def actions__submit__post_handler(form, request, **_) -> HttpResponse | None:
+        def actions__submit__post_handler(form, request: HttpRequest, **_) -> HttpResponse | None:
             """
             If this is saved as a new year... then update everything!
 
@@ -150,6 +153,7 @@ class StandardLoadFormNewYear(Form):
 
             for academic_group in AcademicGroup.objects.all():
                 academic_group._history_date = current_date
+                academic_group.load_balance_final = academic_group.get_load_balance()
                 academic_group.save()
 
             settings.SIMPLE_HISTORY_ENABLED = False
@@ -171,12 +175,15 @@ class StandardLoadFormNewYear(Form):
                 assignment.is_provisional = True
                 assignment.save()
 
-            # Now, we trigger the update (if required)
-            if standard_load_new.update_calculated_loads(standard_load_old):
-                messages.success(
-                    request,
-                    "Advanced to the next academic year."
-                )
+            for academic_group in AcademicGroup.objects.all():
+                academic_group.load_balance_historic = academic_group.history.aggregate(
+                    Sum('load_balance_final')
+                )['load_balance_final__sum']
+                academic_group.load_balance_final = 0
+                academic_group.save()
+
+            # Now, we trigger the update
+            update_all_loads()
 
             return HttpResponseRedirect(
                 standard_load_new.get_absolute_url()

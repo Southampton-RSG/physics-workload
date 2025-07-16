@@ -32,12 +32,6 @@ dependencies = [
     "uwsgi>=2.0.29",
 ]
 
-[project.optional-dependencies]
-dev = [
-  "django-fastdev",
-  "click",
-]
-
 [dependency-groups]
 dev = [
     "django-fastdev>=1.13.0",

@@ -3,6 +3,7 @@ from logging import getLogger, Logger
 from iommi import Form
 
 from app.models import Unit, StandardLoad
+from app.utility import update_all_loads
 
 
 logger: Logger = getLogger(__name__)
@@ -37,11 +38,11 @@ class UnitForm(Form):
         def extra__on_delete(instance, **_):
             logger.info(f"Deleting unit member {instance}")
             instance.delete()
-            StandardLoad.objects.latest().update_target_load_per_fte()
+            update_all_loads()
 
         @staticmethod
         def extra__on_save(form, instance, **_):
             logger.info(f"Editing unit {instance}, as {form.extra.crud_type}")
             if instance.update_load():
-                logger.info(f"Staff changes require recalculation of global load target.")
-                StandardLoad.objects.latest().update_target_load_per_fte()
+                logger.info(f"Unit changes require recalculation of global load target.")
+                update_all_loads()

@@ -19,7 +19,7 @@ class SuffixCreate(Fragment):
 
 class SuffixCreateTaskLead(Fragment):
     """
-    Suffix for pages that create a file.
+    Suffix for pages that create a unit lead post.
     """
 
     class Meta:
@@ -28,6 +28,20 @@ class SuffixCreateTaskLead(Fragment):
         children__text = " / Create Lead "
         children__icon = html.i(
             attrs__class={"fa-solid": True, "fa-user-plus": True},
+        )
+
+
+class SuffixCreateFullTime(Fragment):
+    """
+    Suffix for pages that create a full-time post.
+    """
+
+    class Meta:
+        tag = "span"
+        attrs__class ={"text-success": True}
+        children__text = " / Create Full-Time "
+        children__icon = html.i(
+            attrs__class={"fa-solid": True, "fa-square-plus": True},
         )
 
 

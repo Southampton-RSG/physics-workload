@@ -1,7 +1,7 @@
 """
 Handles the views for Staff
 """
-from iommi import Page, Field, Header, register_search_fields, LAST
+from iommi import Page, Field, Header, register_search_fields, LAST, html
 
 from dash_bootstrap_templates import load_figure_template
 load_figure_template('bootstrap_dark')
@@ -9,9 +9,9 @@ load_figure_template('bootstrap_dark')
 from app.models import Staff
 from app.models.standard_load import StandardLoad
 from app.forms.staff import StaffForm
-from app.style import get_balance_classes
+from app.style import get_balance_classes, get_balance_classes_form
 from app.tables.staff import StaffTable
-from app.tables.assignment import AssignmentStaffTable
+from app.tables.assignment import AssignmentStaffTable, AssignmentStaffEditTable
 from app.pages.components.suffixes import SuffixCreate, SuffixEdit, SuffixDelete
 
 
@@ -58,9 +58,7 @@ class StaffEdit(Page):
                 group='row25',
                 after='load_external',
                 initial=lambda staff, **_: staff.get_load_balance(),
-                non_editable_input__attrs__class=lambda staff, **_: {
-                    'form-control-plaintext': True
-                } | get_balance_classes(staff.get_load_balance()),
+                non_editable_input__attrs__class=lambda field, **_: get_balance_classes_form(field.value),
                 help_text="Load assigned minus target load. Positive if overloaded."
             ),
         )
@@ -94,6 +92,11 @@ class StaffDetail(Page):
     header = Header(
         lambda staff, **_: staff.get_instance_header()
     )
+    text = html.p(
+        "This staff member has not yet logged into this platform. "
+        "Their staff account will be linked to their ActiveDirectory ID when they do.",
+        include=lambda staff, **_: False if staff.user else True,
+    )
     form = StaffForm(
         h_tag=None,
         auto=dict(
@@ -111,17 +114,13 @@ class StaffDetail(Page):
             load_balance=Field.integer(
                 group='row3',
                 initial=lambda staff, **_: staff.get_load_balance(),
-                non_editable_input__attrs__class=lambda staff, **_: {
-                    'form-control-plaintext': True
-                } | get_balance_classes(staff.get_load_balance()),
+                non_editable_input__attrs__class=lambda field, **_: get_balance_classes_form(field.value),
                 help_text="Load assigned minus target load. Positive if overloaded."
             ),
             load_balance_historic=dict(
                 group = 'row3',
                 after='load_balance',
-                non_editable_input__attrs__class=lambda staff, **_: {
-                    'form-control-plaintext': True,
-                } | get_balance_classes(staff.get_load_balance()),
+                non_editable_input__attrs__class=lambda field, **_: get_balance_classes_form(field.value),
             ),
             notes=dict(
                 include=lambda user, **_: user.is_staff,
@@ -134,6 +133,7 @@ class StaffDetail(Page):
         editable=False,
         actions__submit=None,
     )
+    assignments_editable = AssignmentStaffEditTable()
     assignments = AssignmentStaffTable()
 
 

@@ -11,7 +11,8 @@ from iommi import Page, html, EditTable, Column, EditColumn, Header, register_se
 from app.models import Task, Staff
 from app.forms.assignment import AssignmentTaskUniqueForm
 from app.forms.task import TaskDetailForm, TaskEditForm, TaskCreateForm, TaskFullTimeCreateForm
-from app.tables.assignment import AssignmentTaskTable
+from app.pages.components.suffixes import SuffixCreateFullTime, SuffixCreate, SuffixDelete, SuffixEdit
+from app.tables.assignment import AssignmentTaskTable, AssignmentTaskEditTable
 from app.tables.task import TaskTable
 
 
@@ -41,10 +42,18 @@ class TaskDetail(Page):
         return staff_allowed
 
     assignments = AssignmentTaskTable(
-        include=lambda task, **_: not task.is_unique,
+        include=lambda user, task, **_: not task.is_unique and not user.is_staff,
+    )
+    assignments_editable = AssignmentTaskEditTable(
+        include=lambda user, task, **_: not task.is_unique and user.is_staff,
+
+    )
+    assignment = AssignmentTaskUniqueForm(
+        include=lambda user, task, **_: task.assignment_set.count() and task.is_unique and not user.is_staff,
+        instance=lambda task, **_: task.assignment_set.first() if task.assignment_set.count() else None,
     )
     assignment_create = AssignmentTaskUniqueForm.create_or_edit(
-        include=lambda task, **_: task.is_unique,
+        include=lambda user, task, **_: task.is_unique and user.is_staff,
         instance=lambda task, **_: task.assignment_set.first() if task.assignment_set.count() else None,
     )
 
@@ -64,7 +73,8 @@ class TaskEdit(Page):
     Page for editing a task
     """
     header = Header(
-        lambda params, **_: params.task.get_instance_header()
+        lambda task, **_: task.get_instance_header(),
+        children__suffix=SuffixEdit(),
     )
     form = TaskEditForm.edit()
 
@@ -74,9 +84,12 @@ class TaskCreate(Page):
     Page for creating a task
     """
     header = Header(
-        lambda params, **_: Task.get_model_header_singular()
+        lambda params, **_: Task.get_model_header_singular(),
+        children__suffix=SuffixCreate(),
     )
-    form = TaskCreateForm.create()
+    form = TaskCreateForm.create(
+        extra__redirect_to='..'
+    )
 
 
 class TaskDelete(Page):
@@ -84,7 +97,8 @@ class TaskDelete(Page):
     Page for deleting a task
     """
     header = Header(
-        lambda params, **_: params.task.get_instance_header()
+        lambda task, **_: task.get_instance_header(),
+        children__suffix=SuffixDelete(),
     )
     form = TaskDetailForm.delete()
 
@@ -108,7 +122,8 @@ class TaskFullTimeCreate(Page):
     Page for creating a task that's full time
     """
     header = Header(
-        lambda params, **_: Task.get_model_header_singular()
+        lambda params, **_: Task.get_model_header_singular(),
+        children__suffix=SuffixCreateFullTime(),
     )
     form = TaskFullTimeCreateForm.create()
 

@@ -167,18 +167,18 @@ class StandardLoad(ModelCommon):
         # H_{teaching} \sum F_{contract} + \sum H_{fixed} = \sum H_{assigned} + \sum F_{contract} * H_{misc}
         # H_{teaching} = \frac{\sum H_{assigned} + \sum F_{contract} * H_{misc} - \sum H_{fixed}}{\sum F_{contract}}
 
-        target_old: float = self.target_load_per_fte_calc
+        target_old: int = self.target_load_per_fte_calc
 
-        staff_aggregation: Dict[str, float] = Staff.objects.aggregate(Sum('fte_fraction'), Sum('hours_fixed'))
-        total_fixed_hours: float = staff_aggregation.get('hours_fixed__sum', 0)
-        total_fte_fraction: float = staff_aggregation.get('fte_fraction__sum', 0)
-        assignment_aggregation: Dict[str, float] = Assignment.objects.aggregate(Sum('load_calc'))
-        total_assigned_hours: float = assignment_aggregation.get('load_calc__sum', 0)
+        staff_aggregation: Dict[str, int] = Staff.objects.aggregate(Sum('fte_fraction'), Sum('hours_fixed'))
+        total_fixed_hours: int = staff_aggregation.get('hours_fixed__sum', 0)
+        total_fte_fraction: int = staff_aggregation.get('fte_fraction__sum', 0)
+        assignment_aggregation: Dict[str, int] = Assignment.objects.aggregate(Sum('load_calc'))
+        total_assigned_hours: int = assignment_aggregation.get('load_calc__sum', 0)
 
         if total_fte_fraction and total_assigned_hours:
-            self.target_load_per_fte_calc = self.load_fte_misc + (total_assigned_hours - total_fixed_hours) / total_fte_fraction
+            self.target_load_per_fte_calc = int(self.load_fte_misc + (total_assigned_hours - total_fixed_hours) / total_fte_fraction)
         else:
-            self.target_load_per_fte_calc = self.target_load_per_fte
+            self.target_load_per_fte_calc = int(self.target_load_per_fte)
 
         logger.info(f"Recalculated load target per FTE from {target_old} to {self.target_load_per_fte_calc}.")
         self.save()

@@ -5,8 +5,7 @@ from django.db.models import Q, QuerySet, F
 
 from iommi import Table, Column, Field, Action, LAST
 
-from app.models import AcademicGroup
-from app.models.staff import Staff
+from app.models import AcademicGroup, Assignment, Staff
 from app.style import floating_fields_style, get_balance_classes
 from app.auth import has_staff_access
 
@@ -22,10 +21,12 @@ class StaffTable(Table):
     otherwise they can only see their own balance.
     """
     class Meta:
-        auto__model=Staff
-        auto__include=[
-            'account', 'name', 'gender', 'academic_group', 'load_balance_historic', 'assignment_set',
-        ]
+        auto=dict(
+            model=Staff,
+            include=[
+                'account', 'name', 'gender', 'academic_group', 'load_balance_historic', 'assignment_set',
+            ]
+        )
         columns=dict(
             account=dict(
                 cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
@@ -48,13 +49,15 @@ class StaffTable(Table):
                 render_column=False,
             ),
             assignment_set=dict(
+                include=lambda request, **_: request.user.is_staff,
+                cell__value=lambda row, **_: Assignment.objects.filter(staff=row),
                 cell__template='app/staff/assignment_set.html',
             ),
             load_balance_historic=dict(
                 group="Load Balance",
                 display_name='Historic',
                 cell=dict(
-                    value=lambda request, row, **_: int(row.load_balance_historic) if row.has_access(request.user) else '',
+                    value=lambda request, row, **_: row.load_balance_historic if row.has_access(request.user) else None,
                     attrs__class=lambda row, **_: get_balance_classes(row.load_balance_historic),
                 ),
                 include=lambda request, **_: request.user.is_staff,
@@ -63,7 +66,7 @@ class StaffTable(Table):
                 group="Load Balance",
                 display_name='Current',
                 cell=dict(
-                    value=lambda request, row, **_: int(row.load_balance) if row.has_access(request.user) else '',
+                    value=lambda request, row, **_: row.load_balance if row.has_access(request.user) else None,
                     attrs__class=lambda row, **_: get_balance_classes(row.load_balance),
                 ),
                 include=lambda request, **_: request.user.is_staff,
@@ -120,10 +123,9 @@ class StaffTable(Table):
         :param rows: The query to annotate.
         :return: The annotated query, with a 'load_balance' column.
         """
-        return rows.annotate(load_balance=F('load_target') - F('load_assigned'))
+        return rows.annotate(load_balance=F('load_assigned')-F('load_target'))
 
-    @staticmethod
-    def extra__on_save(**_):
-        logger.debug(
-            "DEBUG"
-        )
+
+def test_assignment_set(staff:Staff):
+    print(staff, staff.assignment_set.all(), staff.assignment_set.count())
+    return Assignment.objects.filter(staff=staff)

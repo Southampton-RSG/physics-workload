@@ -4,6 +4,7 @@ from iommi import Form, Field
 
 from app.models import Task, StandardLoad
 from app.style import floating_fields_style
+from app.utility import update_all_loads
 
 
 logger: Logger = getLogger(__name__)
@@ -18,16 +19,16 @@ class TaskForm(Form):
 
         @staticmethod
         def extra__on_delete(instance, **_):
-            logger.info(f"Deleting co-ordinator task {instance}")
+            logger.info(f"Deleting task {instance}")
             instance.delete()
-            StandardLoad.objects.latest().update_target_load_per_fte()
+            update_all_loads()
 
         @staticmethod
         def extra__on_save(form, instance, **_):
-            logger.info(f"Editing co-ordinator task {instance}, as {form.extra.crud_type}")
+            logger.info(f"Editing task {instance}, as {form.extra.crud_type}")
             if instance.update_load():
                 logger.info(f"Task changes require recalculation of global load target.")
-                StandardLoad.objects.latest().update_calculated_loads()
+                update_all_loads()
 
 
 class TaskDetailForm(TaskForm):
@@ -35,9 +36,8 @@ class TaskDetailForm(TaskForm):
         instance = lambda task, **_: task
         auto__exclude=[
             'name',
-            'unit', 'academic_group', 'is_lead', 'is_full_time',
+            'unit', 'academic_group',
             'load_fixed', 'load_fixed_first', 'load_multiplier',
-            'is_unique',
             'description',
             'notes',
         ]
@@ -51,6 +51,21 @@ class TaskDetailForm(TaskForm):
             is_required=dict(
                 group="Calculated Load",
                 after='load_calc_first',
+            ),
+            is_full_time=dict(
+                include=lambda task, **_: task.is_full_time,
+                group="Calculated Load",
+                after='is_required',
+            ),
+            is_lead=dict(
+                include=lambda task, **_: task.is_lead,
+                group="Calculated Load",
+                after='is_full_time',
+            ),
+            is_unique=dict(
+                include=lambda task, **_: task.is_unique,
+                group="Calculated Load",
+                after='is_lead',
             ),
             coursework_fraction=dict(
                 include=lambda task, **_: task.is_lead,
@@ -79,11 +94,13 @@ class TaskDetailForm(TaskForm):
 class TaskCreateForm(TaskForm):
     class Meta:
         h_tag=None
-        instance=lambda task, **_: task
-        auto__exclude=[
-            'unit', 'is_lead', 'coursework_fraction', 'exam_fraction',
-            'load_calc', 'load_calc_first',
-        ]
+        auto=dict(
+            model=Task,
+            exclude=[
+                'unit', 'is_lead', 'coursework_fraction', 'exam_fraction', 'is_full_time',
+                'load_calc', 'load_calc_first',
+            ]
+        )
         fields=dict(
             load_fixed__group="Load",
             load_fixed_first__group="Load",
@@ -93,6 +110,10 @@ class TaskCreateForm(TaskForm):
             is_unique__group="Switches",
             is_required__group="Switches",
         )
+        actions__submit__attrs__class={
+            "btn-primary": False,
+            "btn-success": True,
+        }
 
 
 class TaskEditForm(TaskForm):
@@ -144,6 +165,19 @@ class TaskEditForm(TaskForm):
             ),
         )
         extra__redirect_to = '..'
+
+        @staticmethod
+        def extra__on_delete(instance, **_):
+            logger.info(f"Deleting task {instance}")
+            instance.delete()
+            update_all_loads()
+
+        @staticmethod
+        def extra__on_save(form, instance, **_):
+            logger.info(f"Editing task {instance}, as {form.extra.crud_type}")
+            if instance.update_load():
+                logger.info(f"Task changes require recalculation of global load target.")
+                update_all_loads()
 
 
 class UnitTaskLeadCreateForm(TaskForm):

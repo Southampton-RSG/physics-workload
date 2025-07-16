@@ -7,6 +7,7 @@ from iommi import Form
 from app.models import LoadFunction, StandardLoad
 from app.style import floating_fields_style
 from app.assets import mathjax_js
+from app.utility import update_all_loads
 
 
 logger: Logger = getLogger(__name__)
@@ -63,5 +64,4 @@ class LoadFunctionForm(Form):
 
             if any(task.update_load() for task in instance.task_set.all()):
                 logger.info(f"Load function changes require recalculation of global load target.")
-                standard_load: StandardLoad = StandardLoad.objects.latest()
-                standard_load.update_target_load_per_fte()
+                update_all_loads()

@@ -1,9 +1,10 @@
-from django.db.models import Q, QuerySet, F, Count, Sum, Case, When
+from django.db.models import Q, QuerySet, F, Count, Sum, Case, When, CharField
 from django.template import Template
+from django.utils.html import format_html
 
 from iommi import Table, Column, Field, LAST
 
-from app.models import Task
+from app.models import Task, Assignment, AcademicGroup, Unit
 from app.style import floating_fields_style
 
 
@@ -13,44 +14,34 @@ class TaskTable(Table):
             model=Task,
             include=[
                 'name', 'load_calc', 'load_calc_first', 'assignment_set',
+                'academic_group', 'unit',
             ],
         )
         # ------- INVISIBLE COLUMNS --------
-        columns__unit_name=Column(
-            # Invisible column that's just here to pull data through from the unit for filtering
-            attr='unit__name',
-            render_column=False,
-            filter=dict(
-                include=True,
-                freetext=True,
-            )
-        )
+        columns__unit=Column(render_column=False)
+        columns__academic_group=Column(render_column=False)
         columns__assignment_required=Column(render_column=False)
         columns__assignment_provisional=Column(render_column=False)
         # -------- VISIBLE COLUMNS --------
-        columns__unit_code=Column(
-            attr='unit__code',
-            display_name="Unit",
-            cell__url=lambda row, request, **_: row.unit.get_absolute_url_authenticated(request.user) if row.unit else '',
+        columns__owner=Column(
+            cell=dict(
+                value=lambda row, **_: TaskTable.get_owner_for_task(row),
+                url=lambda value, user, **_: value.get_absolute_url_authenticated(user) if value else None,
+            ),
             auto_rowspan=True,
             filter=dict(
                 include=True,
                 freetext=True,
             ),
+            sortable=True,
         )
         columns__name=dict(
-            after='unit_code',
-            cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
+            after='owner',
+            cell__url=lambda row, user, **_: row.get_absolute_url_authenticated(user),
             filter=dict(
                 include=True,
                 freetext=True,
             ),
-        )
-        columns__academic_group=dict(
-            display_name="Group",
-            auto_rowspan=True,
-            cell__url=lambda row, request, **_: row.academic_group.get_absolute_url_authenticated(request.user) if row.academic_group else '',
-            after='unit_name'
         )
         columns__load_calc=dict(
             group='Load',
@@ -61,9 +52,13 @@ class TaskTable(Table):
             group='Load',
             display_name='First time',
             after='load_calc',
+            cell__value=lambda row, **_: row.load_calc_first if row.load_calc_first != row.load_calc else None,
         )
         columns__assignment_set=dict(
-            cell__template='app/task/assignment_set.html',
+            cell=dict(
+                template='app/task/assignment_set.html',
+                value=lambda row, **_: Assignment.objects.filter(task=row),
+            ),
             display_name='Assignment(s)',
             after='load_calc_first',
         )
@@ -95,6 +90,15 @@ class TaskTable(Table):
                 return Q()
 
     @staticmethod
+    def get_owner_for_task(task: Task) -> AcademicGroup|Unit|None:
+        if task.academic_group:
+            return task.academic_group
+        elif task.unit:
+            return task.unit
+        else:
+            return None
+
+    @staticmethod
     def annotate_query_set(query_set: QuerySet[Task]) -> QuerySet[Task]:
         """
         Annotates the passed QuerySet with any additional data needed for columns,
@@ -110,4 +114,13 @@ class TaskTable(Table):
                 default=0,
             ) - Count('assignment_set'),
             assignment_provisional=Count('assignment_set__is_provisional'),
-        )
+            owner=Case(
+                When(
+                    academic_group__isnull=False, then=F('academic_group__name'),
+                ),
+                When(
+                    unit__isnull=False, then=F('unit__code'),
+                ),
+                default=None,
+            )
+        ).order_by('owner')

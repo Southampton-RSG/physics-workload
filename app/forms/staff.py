@@ -4,6 +4,7 @@ from iommi import Form
 
 from app.models import StandardLoad, Staff
 from app.style import floating_fields_style
+from app.utility import update_all_loads
 
 
 logger: Logger = getLogger(__name__)
@@ -28,13 +29,11 @@ class StaffForm(Form):
         def extra__on_delete(instance, **_):
             logger.info(f"Deleting staff member {instance}")
             instance.delete()
-            standard_load: StandardLoad = StandardLoad.objects.latest()
-            standard_load.update_target_load_per_fte()
+            update_all_loads()
 
         @staticmethod
         def extra__on_save(form, instance, **_):
             logger.info(f"Editing staff member {instance}, as {form.extra.crud_type}")
             if instance.update_load_target():
                 logger.info(f"Staff changes require recalculation of global load target.")
-                standard_load: StandardLoad = StandardLoad.objects.latest()
-                standard_load.update_target_load_per_fte()
+                update_all_loads()

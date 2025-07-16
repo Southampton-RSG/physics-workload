@@ -43,6 +43,12 @@ class AcademicGroup(ModelCommon):
     def __str__(self):
         return f"{self.short_name}"
 
+    def get_short_name(self) -> str:
+        """
+        :return: The short name. Needed for parity with the Unit model, for Task ownership.
+        """
+        return self.short_name
+
     def get_instance_header(self, text: str|None = None) -> str:
         """
         Uses the full name for the header of one of these.
@@ -66,6 +72,21 @@ class AcademicGroup(ModelCommon):
             return user.staff.academic_group == self
 
         return False
+
+    def update_load(self) -> bool:
+        """
+        Updates the load balance for the group
+
+        :return: True if the load has changed.
+        """
+        aggregates: Dict[str, int] = self.staff_set.aggregate(
+            Sum('load_target'), Sum('load_assigned')
+        )
+        load_target: int = aggregates['load_target__sum'] if aggregates['load_target__sum'] else 0
+        load_assigned: int = aggregates['load_assigned__sum'] if aggregates['load_assigned__sum'] else 0
+
+        self.load_balance_final = load_assigned - load_target
+        self.save()
 
     def get_load_balance(self) -> int:
         """

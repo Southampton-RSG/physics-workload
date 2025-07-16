@@ -11,7 +11,7 @@ class UnitHistoryDetail(Page):
     View showing the detail of a unit at a point in time.
     """
     header = Header(
-        lambda params, **_: params.unit.get_instance_header(),
+        lambda unit, **_: unit.get_instance_header(),
         children__suffix=SuffixHistory(
             text=lambda staff_history, **_: f" / {staff_history.history_date.date()} "
         )
@@ -56,7 +56,10 @@ class UnitHistoryList(Page):
     """
     List of all historical entries for a Unit.
     """
-    header = Header(lambda params, **_: params.unit.get_instance_header(suffix="History"))
+    header = Header(
+        lambda unit, **_: unit.get_instance_header(),
+        children__suffix=SuffixHistory(),
+    )
     list = Table(
         auto__model=Unit,
         h_tag=None,
