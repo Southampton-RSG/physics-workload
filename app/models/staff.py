@@ -224,37 +224,36 @@ def update_staff_link(sender, instance, created, **kwargs):
     :param kwargs:
     :return:
     """
-    if not hasattr(instance, 'staff') and not instance.is_superuser:
-        # If this user isn't linked to a staff member
+    if '@' in instance.username:
+        # If this isn't the default Django superuser (who won't have an email-based account)
         account: str = instance.username.split('@')[0]
 
         try:
-            logger.info(f"Looking up a staff member for user {instance.username}")
+            logger.info(f"Looking up a staff member for user '{instance.username}'")
             staff: Staff|None = Staff.objects.get(account=account)
 
         except Staff.DoesNotExist:
             # There's no staff member with this account name, so let's try surname...
             try:
-                logger.info(f"No account match for {account}, looking for last name {instance.last_name}")
+                logger.info(f"No account match for {account}, looking for last name '{instance.last_name}'")
                 staff = Staff.objects.get(name=instance.last_name)
 
             except Staff.DoesNotExist:
-                logger.info(f"No staff with last name {instance.last_name}")
+                logger.info(f"No staff with last name '{instance.last_name}'")
                 staff = None
 
-        if staff:
-            # If we did find a staff member, then update that member with account number, name from AD, link them.
-            staff.user = instance
-            staff.account = account
-            staff.name = f"{instance.first_name} {instance.last_name}"
-            staff.save()
-            logger.info(f"Updated Staff: {instance.username} - {staff}")
+        # Don't create a staff record for the manual Django superuser
+        # Otherwise, either create a new Staff model from their ActiveDirectory account,
+        # or just update their Staff model with their full name from the AD account.
 
+        staff, staff_created = Staff.objects.update_or_create(
+            account=instance.username.split('@')[0],
+            user=instance,
+            defaults={
+                'name': f"{instance.first_name} {instance.last_name}",
+            }
+        )
+        if staff_created:
+            logger.info(f"Created Staff: '{instance.username}' - {staff}")
         else:
-            # If there's no staff member for this user, create one
-            staff = Staff(
-                account=account,
-                user=instance,
-                name=f"{instance.first_name} {instance.last_name}",
-            )
-            logger.info(f"Created Staff: {instance.username} - {staff}")
+            logger.info(f"Updated Staff: '{instance.username}' - {staff}")
