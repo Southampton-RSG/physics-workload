@@ -23,7 +23,7 @@ logger: Logger = getLogger(__name__)
 # logger.propagate = True
 
 # Hardcoded for ease of dealing with the manage.py shell.
-CSV_PATH: Path = Path(getcwd()) / "staff_tasks_unit.csv"
+CSV_PATH: Path = Path(getcwd()) / "spreadsheet_tasks_unit.csv"
 logger.info(f"Importing units from: {CSV_PATH}")
 
 # Track the history of creation
