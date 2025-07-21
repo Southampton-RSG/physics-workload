@@ -2,8 +2,12 @@ from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 
 from app.models import (
-    AcademicGroup, Staff, StandardLoad,
-    Unit, Task, Assignment,
+    AcademicGroup,
+    Assignment,
+    Staff,
+    StandardLoad,
+    Task,
+    Unit,
 )
 
 

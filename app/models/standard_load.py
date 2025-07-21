@@ -1,21 +1,17 @@
-from typing import Dict, Type
-from logging import getLogger
+from logging import Logger, getLogger
+from typing import Dict
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.core.validators import MinValueValidator
-from django.db.models import IntegerField, FloatField, TextField
-from django.conf import settings
-from django.db.models import ObjectDoesNotExist, Sum
-from django.db.models.signals import post_save, post_delete
-from django.dispatch import receiver
+from django.db.models import FloatField, IntegerField, Sum, TextField
 
+from app.models.assignment import Assignment
 from app.models.common import ModelCommon
 from app.models.staff import Staff
-from app.models.assignment import Assignment
 from app.models.task import Task
 
-
-logger = getLogger(__name__)
+logger: Logger = getLogger(__name__)
 
 
 class StandardLoad(ModelCommon):
@@ -206,7 +202,7 @@ class StandardLoad(ModelCommon):
             # Step over all tasks, and see if the changes to this form have changed the total load
             logger.debug(f"Updating task {task}...")
             if task.update_load():
-                logger.debug(f"Updating task assignments...")
+                logger.debug("Updating task assignments...")
 
                 for assignment in task.assignment_set.all():
                     logger.debug(f"Updating {assignment}...")

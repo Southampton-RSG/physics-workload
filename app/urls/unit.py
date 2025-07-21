@@ -1,15 +1,14 @@
 from django.conf import settings
-from iommi.path import register_path_decoding
 from iommi.experimental.main_menu import M
+from iommi.path import register_path_decoding
 
 from app.auth import has_access_decoder
 from app.models.task import Task
 from app.models.unit import Unit
-from app.pages.task import TaskDetail, TaskDelete, TaskEdit
-from app.pages.unit import UnitList, UnitCreate, UnitDetail, UnitEdit, UnitDelete
-from app.pages.unit.task import UnitTaskLeadCreate, UnitTaskCreate
-from app.pages.unit.history import UnitHistoryList, UnitHistoryDetail
-
+from app.pages.task import TaskDelete, TaskDetail, TaskEdit
+from app.pages.unit import UnitCreate, UnitDelete, UnitDetail, UnitEdit, UnitList
+from app.pages.unit.history import UnitHistoryDetail, UnitHistoryList
+from app.pages.unit.task import UnitTaskCreate, UnitTaskLeadCreate
 
 # Decodes "<unit>" in paths into `params.unit`
 register_path_decoding(

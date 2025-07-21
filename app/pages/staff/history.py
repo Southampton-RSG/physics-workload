@@ -1,17 +1,16 @@
-from datetime import datetime
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
-from django.utils import timezone
 from django.template import Template
-from iommi import Page, Header, html, Table, Column
-from plotly.graph_objs import Figure, Scatter, Bar, Layout
+from django.utils import timezone
+from iommi import Column, Header, Page, Table, html
+from plotly.graph_objs import Bar, Figure, Layout, Scatter
 from plotly.graph_objs.layout import XAxis, YAxis
 from plotly.offline import plot
 
 from app.forms.staff import StaffForm
-from app.models import Staff, Assignment
+from app.models import Assignment, Staff
 from app.pages.components.suffixes import SuffixHistory
-from app.style import get_balance_classes_form, get_balance_classes
+from app.style import get_balance_classes, get_balance_classes_form
 
 
 class StaffHistoryDetail(Page):

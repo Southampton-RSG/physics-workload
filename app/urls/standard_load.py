@@ -1,12 +1,11 @@
 """
 Handles the URLs for the Standard Load
 """
-from iommi.path import register_path_decoding
 from iommi.experimental.main_menu import M
+from iommi.path import register_path_decoding
 
 from app.models.standard_load import StandardLoad
-from app.pages.standard_load import StandardLoadDetail, StandardLoadEdit, StandardLoadNewYear, StandardLoadList
-
+from app.pages.standard_load import StandardLoadDetail, StandardLoadEdit, StandardLoadList, StandardLoadNewYear
 
 # Decode <standard_load> in paths so a StandardLoad object is in the view parameters.
 register_path_decoding(

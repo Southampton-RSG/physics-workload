@@ -1,10 +1,8 @@
 # -*- encoding: utf-8 -*-
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models import Model, CharField, BooleanField, TextField, IntegerField, FloatField, CheckConstraint, Q, F
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db.models import BooleanField, CharField, CheckConstraint, F, FloatField, IntegerField, Q, TextField
 from django.db.models.deletion import PROTECT
-
 from simple_history.models import HistoricForeignKey
 
 from app.models.academic_group import AcademicGroup
@@ -116,15 +114,13 @@ class Unit(ModelCommon):
 
     def update_load(self) -> bool:
         """
-        :
-        :param cascade: If true, update the loads of associated tasks.
         :return: True if the load of any of the tasks needed updating.
         """
         recalculate_loads: bool = False
 
         for task in self.task_set.all():
-            task_old_load_calc = task.load_calc
-            task_old_load_calc_first = task.load_calc_first
+            task_old_load_calc: int = task.load_calc
+            task_old_load_calc_first: int = task.load_calc_first
             task_load_has_changed: bool = task.update_load()
 
             if task_load_has_changed:
@@ -141,3 +137,5 @@ class Unit(ModelCommon):
             from app.models.standard_load import StandardLoad
             standard_load: StandardLoad = StandardLoad.objects.latest()
             standard_load.update_target_load_per_fte()
+
+        return recalculate_loads

@@ -2,11 +2,11 @@
 Pages for academic units
 """
 from django.utils.html import format_html
-from iommi import Page, Header, html
+from iommi import Header, Page, html
 
 from app.forms.unit import UnitForm
 from app.models import Unit
-from app.pages.components.suffixes import SuffixCreate, SuffixEdit, SuffixDelete
+from app.pages.components.suffixes import SuffixCreate, SuffixDelete, SuffixEdit
 from app.tables.task import TaskTable
 from app.tables.unit import UnitTable
 

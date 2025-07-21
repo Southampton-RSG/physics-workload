@@ -1,16 +1,10 @@
-from logging import getLogger, Logger
-from typing import List, Dict
+from logging import Logger, getLogger
 
-from django.db.models import Q, QuerySet, Subquery
-from django.test.signals import static_finders_changed
-from django.utils.html import format_html
+from iommi import EditColumn, EditTable, Table
 
-from iommi import Table, EditTable, EditColumn, Action, Form
-
-from app.models import Assignment, Staff, Task, StandardLoad
-from app.style import floating_fields_select2_inline_style, base_style
+from app.models import Assignment, Staff, Task
+from app.style import base_style, floating_fields_select2_inline_style
 from app.utility import update_all_loads
-
 
 logger: Logger = getLogger(__name__)
 
@@ -62,9 +56,9 @@ class AssignmentStaffTable(Table):
                 ),
             ),
         )
-        rows=lambda staff, **_: Assignment.objects.filter(staff=staff)
-        iommi_style=floating_fields_select2_inline_style
-        include=lambda user, **_: not user.is_staff
+        rows = lambda staff, **_: Assignment.objects.filter(staff=staff)
+        iommi_style = floating_fields_select2_inline_style
+        include = lambda user, **_: not user.is_staff
 
 
 class AssignmentStaffEditTable(EditTable):

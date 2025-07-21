@@ -1,20 +1,20 @@
 """
+Pages relating to showing and managing tasks.
 
+Handle the general 'non-unit' task creation, and all task editing and deletion.
 """
 from logging import Logger, getLogger
 from typing import List
 
 from django.db.models import QuerySet
+from iommi import Header, Page, html, register_search_fields
 
-from iommi import Page, html, EditTable, Column, EditColumn, Header, register_search_fields
-
-from app.models import Task, Staff
 from app.forms.assignment import AssignmentTaskUniqueForm
-from app.forms.task import TaskDetailForm, TaskEditForm, TaskCreateForm, TaskFullTimeCreateForm
-from app.pages.components.suffixes import SuffixCreateFullTime, SuffixCreate, SuffixDelete, SuffixEdit
-from app.tables.assignment import AssignmentTaskTable, AssignmentTaskEditTable
+from app.forms.task import TaskCreateForm, TaskDetailForm, TaskEditForm, TaskFullTimeCreateForm
+from app.models import Staff, Task
+from app.pages.components.suffixes import SuffixCreate, SuffixCreateFullTime, SuffixDelete, SuffixEdit
+from app.tables.assignment import AssignmentTaskEditTable, AssignmentTaskTable
 from app.tables.task import TaskTable
-
 
 # Set up logging for this file
 logger: Logger = getLogger(__name__)

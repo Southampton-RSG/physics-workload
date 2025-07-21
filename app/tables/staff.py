@@ -1,14 +1,11 @@
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 
-from django.conf import settings
-from django.db.models import Q, QuerySet, F
+from django.db.models import F, Q, QuerySet
+from iommi import Action, Column, Field, Table
 
-from iommi import Table, Column, Field, Action, LAST
-
+from app.auth import has_staff_access
 from app.models import AcademicGroup, Assignment, Staff
 from app.style import floating_fields_style, get_balance_classes
-from app.auth import has_staff_access
-
 
 logger: Logger = getLogger(__name__)
 

@@ -1,17 +1,16 @@
 """
 Handles the views for the Academic Groups
 """
-from django.db.models import Count, Sum, F
-
-from iommi import Page, Table, html, Form, Column, Header, Field, LAST
+from django.db.models import Count
+from iommi import LAST, Column, Field, Form, Header, Page, Table, html
 
 from app.forms.academic_group import AcademicGroupDetailForm
 from app.forms.task import TaskForm
 from app.models import AcademicGroup, Unit
-from app.tables.task import TaskTable
+from app.pages.components.suffixes import SuffixCreate, SuffixDelete, SuffixEdit
+from app.style import get_balance_classes
 from app.tables.staff import StaffTable
-from app.pages.components.suffixes import SuffixCreate, SuffixEdit, SuffixDelete
-from app.style import floating_fields_style, get_balance_classes
+from app.tables.task import TaskTable
 
 
 class AcademicGroupTaskCreate(Page):

@@ -1,11 +1,11 @@
-from iommi import LAST, Asset
+from typing import Any, Dict
+
+from iommi import Asset
 from iommi.evaluate import evaluate_strict
 from iommi.style import Style, register_style
 from iommi.style_base import select2_enhanced_forms
 from iommi.style_bootstrap5 import bootstrap5
 from iommi.style_font_awesome_6 import font_awesome_6
-from typing import Dict, Any
-
 
 # ==============================================================================
 # Base style for the website

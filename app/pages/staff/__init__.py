@@ -1,19 +1,18 @@
 """
 Handles the views for Staff
 """
-from iommi import Page, Field, Header, register_search_fields, LAST, html
-
 from dash_bootstrap_templates import load_figure_template
-load_figure_template('bootstrap_dark')
+from iommi import LAST, Field, Header, Page, html, register_search_fields
 
+from app.forms.staff import StaffForm
 from app.models import Staff
 from app.models.standard_load import StandardLoad
-from app.forms.staff import StaffForm
-from app.style import get_balance_classes, get_balance_classes_form
+from app.pages.components.suffixes import SuffixCreate, SuffixDelete, SuffixEdit
+from app.style import get_balance_classes_form
+from app.tables.assignment import AssignmentStaffEditTable, AssignmentStaffTable
 from app.tables.staff import StaffTable
-from app.tables.assignment import AssignmentStaffTable, AssignmentStaffEditTable
-from app.pages.components.suffixes import SuffixCreate, SuffixEdit, SuffixDelete
 
+load_figure_template('bootstrap_dark')
 
 class StaffDelete(Page):
     """

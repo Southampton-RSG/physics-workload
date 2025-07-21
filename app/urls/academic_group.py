@@ -1,13 +1,19 @@
 from django.conf import settings
-from iommi.path import register_path_decoding
 from iommi.experimental.main_menu import M
+from iommi.path import register_path_decoding
 
 from app.auth import has_access_decoder
 from app.models import AcademicGroup, Task
-from app.pages.academic_group import AcademicGroupTaskCreate, AcademicGroupCreate, AcademicGroupEdit, AcademicGroupDelete, AcademicGroupList, AcademicGroupDetail
+from app.pages.academic_group import (
+    AcademicGroupCreate,
+    AcademicGroupDelete,
+    AcademicGroupDetail,
+    AcademicGroupEdit,
+    AcademicGroupList,
+    AcademicGroupTaskCreate,
+)
 from app.pages.academic_group.history import AcademicGroupHistoryList
-from app.pages.task import TaskDetail, TaskDelete, TaskEdit
-
+from app.pages.task import TaskDelete, TaskDetail, TaskEdit
 
 # Decodes "<academic_group>" in paths to add parmas.academic_group
 register_path_decoding(

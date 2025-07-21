@@ -1,0 +1,11 @@
+# Changes here will be overwritten by Copier
+_commit: c53b04c
+_src_path: https://github.com/python-project-templates/base.git
+add_docs: true
+add_extension: python
+email: s.mangham@soton.ac.uk
+github: Southampton-RSG
+project_description: Tool for managing staff teaching time.
+project_name: Teaching Time Tool
+python_version_primary: '3.12'
+team: Sam Mangham

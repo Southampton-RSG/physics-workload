@@ -1,10 +1,9 @@
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 
 from iommi import Form
 
-from app.models import Unit, StandardLoad
+from app.models import Unit
 from app.utility import update_all_loads
-
 
 logger: Logger = getLogger(__name__)
 
@@ -44,5 +43,5 @@ class UnitForm(Form):
         def extra__on_save(form, instance, **_):
             logger.info(f"Editing unit {instance}, as {form.extra.crud_type}")
             if instance.update_load():
-                logger.info(f"Unit changes require recalculation of global load target.")
+                logger.info("Unit changes require recalculation of global load target.")
                 update_all_loads()

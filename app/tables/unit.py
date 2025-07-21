@@ -1,7 +1,5 @@
-from django.db.models import Q, Sum, Count
-from django.db.models import QuerySet, Manager
-from django.utils.html import format_html
-from iommi import Table, Column, Field, Action
+from django.db.models import Count, Q, QuerySet
+from iommi import Action, Column, Field, Table
 
 from app.models import Unit
 from app.style import floating_fields_style

@@ -1,11 +1,9 @@
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 
-from iommi import Form, Field
+from iommi import Field, Form
 
-from app.models import Task, StandardLoad
-from app.style import floating_fields_style
+from app.models import Task
 from app.utility import update_all_loads
-
 
 logger: Logger = getLogger(__name__)
 
@@ -27,7 +25,7 @@ class TaskForm(Form):
         def extra__on_save(form, instance, **_):
             logger.info(f"Editing task {instance}, as {form.extra.crud_type}")
             if instance.update_load():
-                logger.info(f"Task changes require recalculation of global load target.")
+                logger.info("Task changes require recalculation of global load target.")
                 update_all_loads()
 
 
@@ -176,7 +174,7 @@ class TaskEditForm(TaskForm):
         def extra__on_save(form, instance, **_):
             logger.info(f"Editing task {instance}, as {form.extra.crud_type}")
             if instance.update_load():
-                logger.info(f"Task changes require recalculation of global load target.")
+                logger.info("Task changes require recalculation of global load target.")
                 update_all_loads()
 
 

@@ -2,21 +2,19 @@
 Handles the views for the Load Functions Groups
 """
 from typing import List
+
+from dash_bootstrap_templates import load_figure_template
 from django.template import Template
-
-from iommi import Page, Table, html, Header
-
-from plotly.graph_objs import Layout, Figure, Scatter
+from iommi import Header, Page, Table, html
+from plotly.graph_objs import Figure, Layout, Scatter
 from plotly.graph_objs.layout import XAxis, YAxis
 from plotly.offline import plot
 
-from dash_bootstrap_templates import load_figure_template
-load_figure_template('bootstrap_dark')
-
-from app.models import LoadFunction
 from app.forms.load_function import LoadFunctionForm
-from app.pages.components.suffixes import SuffixCreate, SuffixEdit, SuffixDelete
+from app.models import LoadFunction
+from app.pages.components.suffixes import SuffixCreate, SuffixDelete, SuffixEdit
 
+load_figure_template('bootstrap_dark')
 
 class LoadFunctionCreate(Page):
     """

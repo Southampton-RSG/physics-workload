@@ -1,7 +1,7 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand  #, CommandError
 
-from app.models.standard_load import StandardLoad
 from app.utility import update_all_loads
+
 
 class Command(BaseCommand):
     help = "Initialises the loads of all models in the database."
@@ -13,9 +13,6 @@ class Command(BaseCommand):
         :param options:
         :return:
         """
-        # standard_load: StandardLoad = StandardLoad.objects.latest()
-        # standard_load.update_calculated_loads()
-        # standard_load.update_target_load_per_fte()
         cycles: int = update_all_loads()
         self.stdout.write(
             self.style.SUCCESS(

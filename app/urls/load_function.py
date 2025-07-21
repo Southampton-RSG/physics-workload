@@ -3,8 +3,7 @@ from iommi.experimental.main_menu import M
 from iommi.path import register_path_decoding
 
 from app.models.load_function import LoadFunction
-from app.pages.load_function import LoadFunctionCreate, LoadFunctionDetail, LoadFunctionDelete, LoadFunctionEdit, LoadFunctionList
-
+from app.pages.load_function import LoadFunctionCreate, LoadFunctionDelete, LoadFunctionDetail, LoadFunctionEdit, LoadFunctionList
 
 # Decode <load_function> in paths so a LoadFunction object is in the view parameters.
 register_path_decoding(

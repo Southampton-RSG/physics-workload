@@ -1,4 +1,4 @@
-from iommi import Form, Field
+from iommi import Field, Form
 
 from app.models import AcademicGroup
 from app.style import floating_fields_style, get_balance_classes_form

@@ -36,7 +36,7 @@ load_df: DataFrame = read_csv(CSV_PATH, header=0, index_col=False)
 tasks_created: int = 0
 history_date: datetime = datetime(
     year=2024, month=9, day=20, hour=0, minute=0, second=0,
-    tzinfo=ZoneInfo("GMT")
+    tzinfo=ZoneInfo("GMT"),
 )
 
 for idx, row in load_df.iterrows():

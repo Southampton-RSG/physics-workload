@@ -1,8 +1,6 @@
-from typing import Tuple
-
 from django.http import HttpRequest
 
-from app.models import Assignment, AcademicGroup, Staff, StandardLoad, Task
+from app.models import AcademicGroup, Assignment, Staff, StandardLoad, Task
 
 
 def update_all_loads(request: HttpRequest|None = None) -> int:

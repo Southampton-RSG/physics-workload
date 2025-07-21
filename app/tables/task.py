@@ -1,10 +1,7 @@
-from django.db.models import Q, QuerySet, F, Count, Sum, Case, When, CharField
-from django.template import Template
-from django.utils.html import format_html
+from django.db.models import Case, Count, F, Q, QuerySet, When
+from iommi import Column, Field, Table
 
-from iommi import Table, Column, Field, LAST
-
-from app.models import Task, Assignment, AcademicGroup, Unit
+from app.models import AcademicGroup, Assignment, Task, Unit
 from app.style import floating_fields_style
 
 

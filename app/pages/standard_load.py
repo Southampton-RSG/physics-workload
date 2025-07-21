@@ -2,14 +2,13 @@
 Handles the views for the Standard Load
 """
 from django.utils.html import format_html
+from iommi import Form, Header, Page, Table, html
 
-from iommi import Page, Table, html, Form,  Header
-
-from app.models.standard_load import StandardLoad
 from app.forms.standard_load import StandardLoadForm, StandardLoadFormNewYear
+from app.models.standard_load import StandardLoad
 from app.pages.components import Equations
 from app.pages.components.suffixes import SuffixCreate, SuffixEdit
-from app.style import horizontal_fields_style, floating_fields_style
+from app.style import floating_fields_style, horizontal_fields_style
 
 
 class StandardLoadEdit(Page):

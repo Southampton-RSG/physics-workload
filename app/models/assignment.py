@@ -1,16 +1,11 @@
-from logging import getLogger, Logger
-from typing import Type
+from logging import Logger, getLogger
 
-from django.db.models import Model, PROTECT, CASCADE, TextField, BooleanField, Index, FloatField, IntegerField, CheckConstraint, Q
-from django.db.models.signals import post_delete, post_save, pre_save
-from django.dispatch import receiver
-
+from django.db.models import CASCADE, PROTECT, BooleanField, CheckConstraint, Index, IntegerField, Q, TextField
 from simple_history.models import HistoricForeignKey
 
-from app.models.task import Task
-from app.models.staff import Staff
 from app.models.common import ModelCommon
-
+from app.models.staff import Staff
+from app.models.task import Task
 
 logger: Logger = getLogger(__name__)
 
@@ -93,19 +88,19 @@ class Assignment(ModelCommon):
             return False
 
 
-@receiver(post_delete, sender=Assignment)
-def apply_load(
-        sender: Type[Assignment], instance: Assignment, **kwargs
-):
-    """
-    When we delete an assignment, we want to update the assigned hours of the linked staff.
-    :param instance: The deleted assignment - this no longer exists in the DB, only in memory!
-    """
-    logger.debug(f"{instance}: Deleted assignment, updating staff")
-    instance.staff.update_load_assigned()
-    instance.staff.save()
-    instance.staff.standard_load.update_target_load_per_fte()
-    instance.staff.standard_load.save()
-    instance.task = None
-    instance.staff = None
-    instance.save()
+# @receiver(post_delete, sender=Assignment)
+# def apply_load(
+#         sender: Type[Assignment], instance: Assignment, **kwargs
+# ):
+#     """
+#     When we delete an assignment, we want to update the assigned hours of the linked staff.
+#     :param instance: The deleted assignment - this no longer exists in the DB, only in memory!
+#     """
+#     logger.debug(f"{instance}: Deleted assignment, updating staff")
+#     instance.staff.update_load_assigned()
+#     instance.staff.save()
+#     instance.staff.standard_load.update_target_load_per_fte()
+#     instance.staff.standard_load.save()
+#     instance.task = None
+#     instance.staff = None
+#     instance.save()

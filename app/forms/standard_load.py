@@ -1,19 +1,16 @@
 from datetime import datetime
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 
 from django.conf import settings
-from django.contrib import messages
 from django.db.models import Sum
-from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.utils.timezone import localtime
-
-from iommi import Form, Action, Field
+from iommi import Form
 
 from app.assets import mathjax_js
-from app.models import Staff, Unit, LoadFunction, AcademicGroup, Assignment, Task, StandardLoad
-from app.style import horizontal_fields_style, floating_fields_style
+from app.models import AcademicGroup, Assignment, LoadFunction, Staff, StandardLoad, Task, Unit
+from app.style import floating_fields_style, horizontal_fields_style
 from app.utility import update_all_loads
-
 
 logger: Logger = getLogger(__name__)
 

@@ -1,11 +1,10 @@
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 
 from iommi import Form
 
-from app.models import StandardLoad, Staff
+from app.models import Staff
 from app.style import floating_fields_style
 from app.utility import update_all_loads
-
 
 logger: Logger = getLogger(__name__)
 
@@ -35,5 +34,5 @@ class StaffForm(Form):
         def extra__on_save(form, instance, **_):
             logger.info(f"Editing staff member {instance}, as {form.extra.crud_type}")
             if instance.update_load_target():
-                logger.info(f"Staff changes require recalculation of global load target.")
+                logger.info("Staff changes require recalculation of global load target.")
                 update_all_loads()

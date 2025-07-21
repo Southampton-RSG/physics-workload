@@ -1,4 +1,4 @@
-from iommi import Fragment, html, Page, Header
+from iommi import Fragment, Header, Page, html
 
 
 class PrivacyPage(Page):

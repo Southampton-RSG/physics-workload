@@ -1,13 +1,10 @@
 from django.conf import settings
-from iommi.path import register_path_decoding
 from iommi.experimental.main_menu import M
+from iommi.path import register_path_decoding
 
 from app.auth import has_access_decoder
-from app.forms.assignment import AssignmentTaskUniqueForm
 from app.models.task import Task
-from app.pages.task import TaskList, TaskCreate, TaskDetail, TaskEdit, TaskDelete, TaskFullTimeCreate
-from app.tables.assignment import AssignmentTaskTable
-
+from app.pages.task import TaskCreate, TaskDelete, TaskDetail, TaskEdit, TaskFullTimeCreate, TaskList
 
 # Decode <task> in paths so a LoadFunction object is in the view parameters.
 register_path_decoding(

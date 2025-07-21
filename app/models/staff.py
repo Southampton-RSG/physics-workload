@@ -1,25 +1,30 @@
-from typing import Dict, Type
-from logging import getLogger
+from logging import Logger, getLogger
+
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, AnonymousUser
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import (
-    TextField, BooleanField, CharField, Manager, FloatField, IntegerField, Index, CheckConstraint, Q,
-    Sum, OneToOneField, UniqueConstraint
+    CharField,
+    CheckConstraint,
+    FloatField,
+    Index,
+    IntegerField,
+    OneToOneField,
+    Q,
+    Sum,
+    TextField,
 )
 from django.db.models.deletion import PROTECT, SET_NULL
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.html import format_html
-
 from simple_history.models import HistoricForeignKey
 
-from users.models import CustomUser
 from app.models.academic_group import AcademicGroup
 from app.models.common import ModelCommon
+from users.models import CustomUser
 
-
-logger = getLogger(__name__)
+logger: Logger = getLogger(__name__)
 
 
 class Staff(ModelCommon):

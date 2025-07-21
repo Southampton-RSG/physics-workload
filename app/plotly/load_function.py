@@ -1,12 +1,11 @@
-from typing import Dict, Any
+from typing import Any, Dict
+
 from dash import Output
 from dash.dcc import Graph
-from plotly.graph_objs import Figure, Scatter, Layout
-from plotly.graph_objs.layout import XAxis, YAxis
 from dash_bootstrap_components.themes import BOOTSTRAP
-
 from django_plotly_dash import DjangoDash
-
+from plotly.graph_objs import Figure, Layout, Scatter
+from plotly.graph_objs.layout import XAxis, YAxis
 
 app: DjangoDash = DjangoDash(
     name='LoadFunction',

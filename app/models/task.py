@@ -1,23 +1,19 @@
 # -*- encoding: utf-8 -*-
-from logging import getLogger
+from logging import Logger, getLogger
 
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models import PROTECT, CharField, FloatField, TextField, IntegerField, BooleanField, Q, CheckConstraint, UniqueConstraint
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db.models import PROTECT, BooleanField, CharField, CheckConstraint, FloatField, IntegerField, Q, TextField, UniqueConstraint
 from django.utils.html import format_html
-
-from django.urls import reverse
 from simple_history.models import HistoricForeignKey
-from model_utils.managers import InheritanceManager
 
 from app.models import AcademicGroup
+from app.models.common import ModelCommon
 from app.models.load_function import LoadFunction
 from app.models.unit import Unit
-from app.models.common import ModelCommon
-
 
 # Set up logging for this file
-logger = getLogger(__name__)
+logger: Logger = getLogger(__name__)
 
 
 class Task(ModelCommon):

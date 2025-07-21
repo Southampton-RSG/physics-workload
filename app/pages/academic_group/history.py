@@ -1,10 +1,9 @@
-from datetime import datetime, timedelta
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
-from django.utils import timezone
 from django.template import Template
-from iommi import Page, Header, html, Table, Column
-from plotly.graph_objs import Figure, Scatter, Layout, Bar
+from django.utils import timezone
+from iommi import Column, Header, Page, Table, html
+from plotly.graph_objs import Bar, Figure, Layout, Scatter
 from plotly.graph_objs.layout import XAxis, YAxis
 from plotly.offline import plot
 

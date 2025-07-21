@@ -1,7 +1,8 @@
+from typing import Any, Dict
+
 from iommi import Asset
 
-
-mathjax_js = dict(
+mathjax_js: Dict[str, Any] = dict(
     mathjax_inline = Asset.js(
         attrs__src='/static/js/mathjax-inline.js'
     ),

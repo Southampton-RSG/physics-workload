@@ -1,11 +1,10 @@
-from logging import getLogger, Logger
+from logging import Logger, getLogger
 from typing import Dict
 
 from django.db.models import CharField, IntegerField, Sum
 
 from app.models.common import ModelCommon
 from users.models import CustomUser
-
 
 logger: Logger = getLogger(__name__)
 

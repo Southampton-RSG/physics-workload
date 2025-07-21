@@ -1,5 +1,3 @@
-from typing import Dict
-
 from iommi import Fragment, html
 
 

@@ -1,14 +1,12 @@
-from logging import getLogger, Logger
-
-from simpleeval import simple_eval
+from logging import Logger, getLogger
 
 from iommi import Form
+from simpleeval import simple_eval
 
-from app.models import LoadFunction, StandardLoad
-from app.style import floating_fields_style
 from app.assets import mathjax_js
+from app.models import LoadFunction
+from app.style import floating_fields_style
 from app.utility import update_all_loads
-
 
 logger: Logger = getLogger(__name__)
 
@@ -63,5 +61,5 @@ class LoadFunctionForm(Form):
             logger.info(f"Editing load function {instance}, as {form.extra.crud_type}")
 
             if any(task.update_load() for task in instance.task_set.all()):
-                logger.info(f"Load function changes require recalculation of global load target.")
+                logger.info("Load function changes require recalculation of global load target.")
                 update_all_loads()
