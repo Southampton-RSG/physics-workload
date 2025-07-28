@@ -27,7 +27,7 @@ class Assignment(ModelCommon):
     )
     students = IntegerField(
         null=True, blank=True,
-        help_text="If not specified, defaults to student count on Task or Unit.",
+        help_text="If not specified, defaults to student count on Task or Module.",
     )
 
     notes = TextField(blank=True)

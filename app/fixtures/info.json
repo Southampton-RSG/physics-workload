@@ -1,0 +1,56 @@
+[
+  {
+    "model": "app.Info",
+    "pk": 1,
+    "fields": {
+      "name": "Module",
+      "page": "module",
+      "text": "Modules/Units that are taught are listed here."
+    }
+  },
+  {
+    "model": "app.Info",
+    "pk": 2,
+    "fields": {
+      "name": "Staff",
+      "page": "staff",
+      "text": "Academic staff with teaching responsibilities are listed here."
+    }
+  },
+  {
+    "model": "app.Info",
+    "pk": 3,
+    "fields": {
+      "name": "Standard Load",
+      "page": "standard_load",
+      "text": "The equations and factors governing the load equations are set per year."
+    }
+  },
+  {
+    "model": "app.Info",
+    "pk": 4,
+    "fields": {
+      "name": "Academic Group",
+      "page": "academic_group",
+      "text": "Academic Groups are listed here."
+    }
+  },
+  {
+    "model": "app.Info",
+    "pk": 5,
+    "fields": {
+      "name": "Task",
+      "page": "task",
+      "text": "Roles or responsibilities that can be assigned to academic staff are listed here."
+    }
+  },
+  {
+    "model": "app.Info",
+    "pk": 6,
+    "fields": {
+      "name": "About",
+      "page": "about",
+      "text": "This is a web app for assigning and balancing teaching workload for staff in the University of Southampton's Department of Physics."
+    }
+  }
+]

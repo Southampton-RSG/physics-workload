@@ -99,7 +99,7 @@ class Staff(ModelCommon):
         default=0,
         validators=[
             MinValueValidator(0),
-            MaxValueValidator(1),
+            MaxValueValidator(2),
         ],
         verbose_name="FTE fraction teaching",
         help_text="Must be 0 if staff are fixed-hours.",

@@ -98,7 +98,7 @@ class Task(ModelCommon):
     )
     students = IntegerField(
         null=True, blank=True,
-        help_text="Number of students for load function and/or co-ordinator equations. If this task belongs to a Unit, falls back to Unit students if empty.",
+        help_text="Number of students for load function and/or co-ordinator equations. If this task belongs to a Module, falls back to Unit students if empty.",
     )
     # ==========================================================================
 

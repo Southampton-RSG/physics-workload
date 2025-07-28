@@ -100,3 +100,9 @@ div.menu > nav > a.btn:hover {
     background-color: var(--bs-secondary);
 }
 
+
+.autosize
+{
+    resize: none;
+    overflow: hidden;
+}

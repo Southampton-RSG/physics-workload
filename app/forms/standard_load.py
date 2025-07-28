@@ -46,7 +46,8 @@ class StandardLoadForm(Form):
 
             # Get the new standard load, and try to get the old from the DB if it exists
             standard_load_new: StandardLoad = form.instance
-            standard_load_old: StandardLoad = StandardLoad.objects.get(pk=standard_load_new.pk)
+            # We don't use this but let's ignore the warning for now
+            standard_load_old: StandardLoad = StandardLoad.objects.get(pk=standard_load_new.pk)  # noqa: F841
 
             # We now have the 'old' in memory, and the 'new' in DB.
             # We need the 'new' in DB so that other models can see the updated values.

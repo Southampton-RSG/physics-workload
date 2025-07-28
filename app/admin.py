@@ -23,7 +23,7 @@ class AcademicGroupAdmin(ModelAdmin):
 @admin.register(Unit)
 class UnitAdmin(ModelAdmin):
     """
-    Admin class for the Unit model.
+    Admin class for the Module model.
     Uses the default settings, but here in case it needs expanding.
     """
     pass

@@ -44,7 +44,7 @@ class StandardLoad(ModelCommon):
             MinValueValidator(0.0),
         ],
         verbose_name="Load hours per lecture & problems class for first-time assignment",
-        help_text=r"$L_{lec}$ applied when co-ordinating a unit for the first time.",
+        help_text=r"$L_{lec}$ applied when co-ordinating a module for the first time.",
     )
 
     load_coursework_set = FloatField(

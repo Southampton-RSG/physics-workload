@@ -12,3 +12,10 @@ mathjax_js: Dict[str, Any] = dict(
         attrs__async=True,
     )
 )
+
+autosize_js: Dict[str, Any] = dict(
+    autoexpand_js = Asset.js(
+        attrs__src='/static/js/autosize.js',
+        attrs__defer=True,
+    )
+)

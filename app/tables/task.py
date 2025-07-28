@@ -54,7 +54,7 @@ class TaskTable(Table):
         columns__assignment_set=dict(
             cell=dict(
                 template='app/task/assignment_set.html',
-                value=lambda row, **_: Assignment.objects.filter(task=row),
+                value=lambda row, **_: Assignment.objects.filter(task=row).all(),
             ),
             display_name='Assignment(s)',
             after='load_calc_first',

@@ -24,7 +24,7 @@ logger: Logger = getLogger(__name__)
 
 # Hardcoded for ease of dealing with the manage.py shell.
 CSV_PATH: Path = Path(getcwd()) / "spreadsheet_load_master.csv"
-logger.info(f"Importing units from: {CSV_PATH}")
+logger.info(f"Importing modules from: {CSV_PATH}")
 
 # Track the history of creation
 settings.SIMPLE_HISTORY_ENABLED = True

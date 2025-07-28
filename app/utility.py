@@ -9,7 +9,9 @@ def update_all_loads(request: HttpRequest|None = None) -> int:
     :return: The number of cycles taken to update the full-time equivalent loads.
     """
     standard_load: StandardLoad = StandardLoad.objects.latest()
-    target_load_start: int = standard_load.target_load_per_fte_calc
+
+    # We don't use this but let's ignore the warning for now
+    target_load_start: int = standard_load.target_load_per_fte_calc  # noqa: F841
 
     for task in Task.objects.all():
         task.update_load()
@@ -45,6 +47,7 @@ def update_all_loads(request: HttpRequest|None = None) -> int:
     for academic_group in AcademicGroup.objects.all():
         academic_group.update_load()
 
-    target_load_finish: int = standard_load.target_load_per_fte_calc
+    # We don't use this but let's ignore the warning for now
+    target_load_finish: int = standard_load.target_load_per_fte_calc  # noqa: F841
 
     return cycles

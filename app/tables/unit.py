@@ -1,7 +1,7 @@
 from django.db.models import Count, Q, QuerySet
 from iommi import Action, Column, Field, Table
 
-from app.models import Unit
+from app.models import Task, Unit
 from app.style import floating_fields_style
 
 
@@ -34,7 +34,7 @@ class UnitTable(Table):
                 display_name='Tasks',
                 cell=dict(
                     template='app/unit/task_set.html',
-                    value=lambda request, row, **_: row.task_set if row.has_access(request.user) else None,
+                    value=lambda request, row, **_: Task.objects.filter(unit=row) if row.has_access(request.user) else None,
                 ),
                 after='students',
                 sort_key='assignment_required',

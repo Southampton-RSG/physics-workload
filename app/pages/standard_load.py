@@ -1,11 +1,13 @@
 """
 Handles the views for the Standard Load
 """
+from django.conf import settings
+from django.template import Template
 from django.utils.html import format_html
-from iommi import Form, Header, Page, Table, html
+from iommi import Action, Form, Header, Page, Table, html
 
 from app.forms.standard_load import StandardLoadForm, StandardLoadFormNewYear
-from app.models.standard_load import StandardLoad
+from app.models import Info, StandardLoad
 from app.pages.components import Equations
 from app.pages.components.suffixes import SuffixCreate, SuffixEdit
 from app.style import floating_fields_style, horizontal_fields_style
@@ -123,6 +125,21 @@ class StandardLoadList(Page):
     header = Header(
         lambda params, **_: StandardLoad.get_model_header(),
     )
+    info = html.div(
+        Template("{{ page.extra_evaluated.info.get_html | safe }}"),
+        attrs__class={"position-relative": True},
+        children__edit=Action.icon(
+            display_name=" ",  # If it's empty/none, it's 'Edit'
+            icon=settings.ICON_EDIT,
+            attrs__class={
+                'btn': True, 'btn-warning': True, 'btn-sm': True,
+                'position-absolute': True, 'bottom-0': True, 'end-0': True,
+            },
+            include=lambda user, **_: user.is_staff,
+            attrs__href=lambda **_: Info.objects.get(page='standard_load').get_edit_url(),
+        )
+    )
+
     table = Table(
         h_tag=None,
         auto__model=StandardLoad,
@@ -135,4 +152,7 @@ class StandardLoadList(Page):
             )
         ),
     )
+
+    class Meta:
+        extra_evaluated__info = lambda **_: Info.objects.get(page='standard_load')
 

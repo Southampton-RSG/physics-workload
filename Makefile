@@ -121,7 +121,7 @@ print-%:
 data: site school unit task
 
 site:
-	uv run manage.py loaddata site
+	uv run manage.py loaddata site info
 
 school: site
 	uv run manage.py loaddata standard_load academic_group

@@ -36,7 +36,7 @@ class AcademicGroupTaskCreate(Page):
 class AcademicGroupDetail(Page):
     """
     Detail view showing group members and their workloads,
-    as well as any units and their assignment status.
+    as well as any modules and their assignment status.
     """
     header = Header(
         lambda params, **_: params.academic_group.get_instance_header()

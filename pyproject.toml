@@ -9,7 +9,7 @@ description = "Tool for managing staff teaching time."
 readme = "README.md"
 license = { text = "Apache-2.0" }
 version = "0.1.0"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 keywords = []
 
 classifiers = [
@@ -49,30 +49,24 @@ dependencies = [
     "django-auth-adfs>=1.15.0",
     "python-decouple>=3.8",
     "pandas>=2.2.3",
-    "django-csvimport>=3.2",
     "uwsgi>=2.0.29",
+    "markdown>=3.8.2",
 ]
 
 [project.optional-dependencies]
 develop = [
-    "build",
-    "bump-my-version",
-    "check-manifest",
-    "hatchling",
-    "pytest",
-    "pytest-cov",
-    "ruff",
-    "twine",
-    "uv",
-    "wheel",
-]
-
-[dependency-groups]
-dev = [
+    "copier>=9.8.0",
+    "bump-my-version>=0.1.0",
+    "check-manifest>=0.5.0",
     "copier>=9.8.0",
     "django-fastdev>=1.13.0",
     "django-pycharm-breakpoint>=0.3.0",
+    "hatchling",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
     "ruff>=0.12.4",
+    "twine",
+    "wheel",
 ]
 
 [project.scripts]
@@ -156,4 +150,12 @@ title = "Teaching Time Tool"
 root = "README.md"
 pages = []
 use-autoapi = true
+
+[tool.uv.sources]
+physics-workload = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "physics-workload",
+]
 

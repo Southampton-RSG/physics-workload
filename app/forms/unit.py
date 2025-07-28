@@ -10,7 +10,7 @@ logger: Logger = getLogger(__name__)
 
 class UnitForm(Form):
     """
-    Form for editing Units
+    Form for editing Modules
     """
     class Meta:
         auto__model = Unit
@@ -35,13 +35,13 @@ class UnitForm(Form):
 
         @staticmethod
         def extra__on_delete(instance, **_):
-            logger.info(f"Deleting unit member {instance}")
+            logger.info(f"Deleting module member {instance}")
             instance.delete()
             update_all_loads()
 
         @staticmethod
         def extra__on_save(form, instance, **_):
-            logger.info(f"Editing unit {instance}, as {form.extra.crud_type}")
+            logger.info(f"Editing module {instance}, as {form.extra.crud_type}")
             if instance.update_load():
-                logger.info("Unit changes require recalculation of global load target.")
+                logger.info("Module changes require recalculation of global load target.")
                 update_all_loads()

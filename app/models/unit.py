@@ -14,7 +14,7 @@ class Unit(ModelCommon):
     Academic unit, e.g. PHYS1001
     """
     icon = 'book'
-    url_root = 'unit'
+    url_root = 'module'
 
     code = CharField(max_length=16, blank=False, unique=True, primary_key=True)
     name = CharField(max_length=128, blank=False, unique=True)
@@ -62,8 +62,8 @@ class Unit(ModelCommon):
 
     class Meta:
         ordering = ['name']
-        verbose_name = 'Unit'
-        verbose_name_plural = 'Units'
+        verbose_name = 'Module'
+        verbose_name_plural = 'Modules'
         constraints = [
             CheckConstraint(
                 check=Q(exam_mark_fraction__lte=1-F('coursework_mark_fraction')) | \
@@ -90,7 +90,7 @@ class Unit(ModelCommon):
 
     def get_marked_dissertation_count(self) -> int|None:
         """
-        :return: Returns the total number of unit dissertations marked
+        :return: Returns the total number of dissertations marked
         """
         if self.has_dissertation:
             return sum(
@@ -99,9 +99,9 @@ class Unit(ModelCommon):
 
     def has_access(self, user: AbstractUser) -> bool:
         """
-        Only users assigned to a unit can see the details
+        Only users assigned to a module can see the details
         :param user: The user
-        :return: True if the user is assigned to a task in this unit
+        :return: True if the user is assigned to a task in this module
         """
         if super().has_access(user):
             return True
@@ -119,8 +119,10 @@ class Unit(ModelCommon):
         recalculate_loads: bool = False
 
         for task in self.task_set.all():
-            task_old_load_calc: int = task.load_calc
-            task_old_load_calc_first: int = task.load_calc_first
+            # We don't use this but let's ignore the warning for now
+            task_old_load_calc: int = task.load_calc  # noqa: F841
+            task_old_load_calc_first: int = task.load_calc_first  # noqa: F841
+
             task_load_has_changed: bool = task.update_load()
 
             if task_load_has_changed:

@@ -10,7 +10,7 @@ logger: Logger = getLogger(__name__)
 
 class TaskForm(Form):
     """
-    Task for unit co-ordinators
+    Task for module co-ordinators
     """
     class Meta:
         auto__model = Task
@@ -183,7 +183,7 @@ class UnitTaskLeadCreateForm(TaskForm):
         h_tag = None
         auto__exclude = [
             'academic_group', 'load_function', 'students',
-            'load_calc', 'load_calc_first',
+            'load_calc', 'load_calc_first', 'is_full_time',
         ]
         fields = dict(
             name=dict(

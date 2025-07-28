@@ -46,7 +46,7 @@ class StaffTable(Table):
                 render_column=False,
             ),
             assignment_set=dict(
-                include=lambda request, **_: request.user.is_staff,
+                include=lambda user, **_: user.is_staff,
                 cell__value=lambda row, **_: Assignment.objects.filter(staff=row),
                 cell__template='app/staff/assignment_set.html',
             ),
@@ -76,7 +76,7 @@ class StaffTable(Table):
                 fields=dict(
                     status=Field.choice(
                         display_name='Status',
-                        choices=lambda params, **_: [
+                        choices=lambda **_: [
                             '---', 'Underloaded', 'Overloaded',
                         ],
                     ),
@@ -101,15 +101,15 @@ class StaffTable(Table):
                 ),
             ),
         )
-        # empty_message="No staff available."
+        # empty_message="No staff available.
         iommi_style=floating_fields_style
 
     @staticmethod
-    def filter_status_into_query(value_string_or_f) -> Q|None:
+    def filter_status_into_query(value_string_or_f: str) -> Q:
         if value_string_or_f == 'Underloaded':
-            return Q(load_balance__gt=0)
-        elif value_string_or_f == 'Overloaded':
             return Q(load_balance__lt=0)
+        elif value_string_or_f == 'Overloaded':
+            return Q(load_balance__gt=0)
         else:
             return Q()
 
@@ -121,8 +121,3 @@ class StaffTable(Table):
         :return: The annotated query, with a 'load_balance' column.
         """
         return rows.annotate(load_balance=F('load_assigned')-F('load_target'))
-
-
-def test_assignment_set(staff:Staff):
-    print(staff, staff.assignment_set.all(), staff.assignment_set.count())
-    return Assignment.objects.filter(staff=staff)

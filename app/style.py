@@ -23,6 +23,9 @@ base_style = Style(
         custom_base_css=Asset.css(
             attrs__href="/static/css/custom-base.css"
         ),
+        autosize_js = Asset.js(
+            attrs__href="/static/js/autosize.js",
+        ),
     ),
     Container__attrs__class={
         "mt-5": False,
@@ -140,6 +143,7 @@ register_style('horizontal_fields', horizontal_fields_style)
 
 def get_balance_classes(balance: float) -> Dict[str, bool]:
     """
+    Just a simple function to colour text on load balance.
     """
     return {
         'text-success': True if balance <= -1 else False,
@@ -148,6 +152,7 @@ def get_balance_classes(balance: float) -> Dict[str, bool]:
 
 def get_balance_classes_form(balance: float) -> Dict[str, bool]:
     """
+    Just a simple function to colour text on load balance, in a form.
     """
     return {
         'text-success': True if balance <= -1 else False,

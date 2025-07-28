@@ -24,14 +24,14 @@ register_path_decoding(
 academic_group_submenu: M = M(
     display_name=AcademicGroup._meta.verbose_name_plural,
     icon=AcademicGroup.icon,
-    include=lambda request, **_: request.user.is_authenticated,
+    include=lambda user, **_: user.is_authenticated,
     view=AcademicGroupList,
 
     items=dict(
         create=M(
             icon=settings.ICON_CREATE,
             view=AcademicGroupCreate,
-            include=lambda request, **_: request.user.is_staff,
+            include=lambda user, **_: user.is_staff,
         ),
         detail=M(
             display_name=lambda academic_group, **_: academic_group.short_name,
@@ -45,24 +45,24 @@ academic_group_submenu: M = M(
                 edit=M(
                     icon=settings.ICON_EDIT,
                     view=AcademicGroupEdit,
-                    include=lambda request, **_: request.user.is_staff,
+                    include=lambda user, **_: user.is_staff,
                 ),
                 delete=M(
                     icon=settings.ICON_DELETE,
                     view=AcademicGroupDelete,
-                    include=lambda request, **_: request.user.is_staff,
+                    include=lambda user, **_: user.is_staff,
                 ),
                 history=M(
                     icon=settings.ICON_HISTORY,
                     view=AcademicGroupHistoryList,
-                    include=lambda request, **_: request.user.is_staff,
+                    include=lambda user, **_: user.is_staff,
                 ),
 
                 create=M(
                     display_name="Create Task",
                     icon=settings.ICON_CREATE,
                     view=AcademicGroupTaskCreate,
-                    include=lambda request, **_: request.user.is_staff,
+                    include=lambda user, **_: user.is_staff,
                 ),
                 task_detail=M(
                     display_name=lambda task, **_: task.name,
@@ -77,12 +77,12 @@ academic_group_submenu: M = M(
                         edit=M(
                             icon=settings.ICON_EDIT,
                             view=TaskEdit,
-                            include=lambda request, **_: request.user.is_staff,
+                            include=lambda user, **_: user.is_staff,
                         ),
                         delete=M(
                             icon=settings.ICON_DELETE,
                             view=TaskDelete,
-                            include=lambda request, **_: request.user.is_staff,
+                            include=lambda user, **_: user.is_staff,
                         ),
                     )
                 ),
