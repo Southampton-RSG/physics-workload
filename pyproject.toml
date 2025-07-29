@@ -73,8 +73,8 @@ develop = [
 [project.scripts]
 
 [project.urls]
-Repository = "https://github.com/Southampton-RSG/teaching-time-tool"
-Homepage = "https://github.com/Southampton-RSG/teaching-time-tool"
+Repository = "https://github.com/Southampton-RSG/physics-workload"
+Homepage = "https://github.com/Southampton-RSG/physics-workload"
 
 [tool.bumpversion]
 current_version = "0.1.0"
@@ -82,7 +82,7 @@ commit = true
 tag = true
 
 [[tool.bumpversion.files]]
-filename = "teaching_time_tool/__init__.py"
+filename = "src/__init__.py"
 search = '__version__ = "{current_version}"'
 replace = '__version__ = "{new_version}"'
 
@@ -96,12 +96,13 @@ ignore = [
     ".copier-answers.yaml",
     "Makefile",
     "docs/**/*",
+    ".idea",
 ]
 
 [tool.coverage.run]
 branch = true
 omit = [
-    "teaching_time_tool/tests/integration/",
+    "src/tests/integration/",
 ]
 [tool.coverage.report]
 exclude_also = [
@@ -119,16 +120,16 @@ artifacts = []
 src = "/"
 
 [tool.hatch.build.targets.sdist]
-packages = ["teaching_time_tool"]
+packages = ["src"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["teaching_time_tool"]
+packages = ["src"]
 
 [tool.hatch.build.targets.wheel.shared-data]
 
 [tool.pytest.ini_options]
 addopts = ["-vvv", "--junitxml=junit.xml"]
-testpaths = "teaching_time_tool/tests"
+testpaths = "src/tests"
 
 [tool.ruff]
 line-length = 150
@@ -138,8 +139,8 @@ extend-select = ["I"]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
-default-section = "third-party"
-known-first-party = ["teaching_time_tool"]
+default-section = "src-party"
+known-first-party = ["src"]
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
 
 [tool.ruff.lint.per-file-ignores]
@@ -154,9 +155,3 @@ use-autoapi = true
 
 [tool.uv.sources]
 physics-workload = { workspace = true }
-
-[dependency-groups]
-dev = [
-    "physics-workload",
-]
-

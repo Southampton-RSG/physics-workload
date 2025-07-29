@@ -6,6 +6,6 @@ add_extension: python
 email: s.mangham@soton.ac.uk
 github: Southampton-RSG
 project_description: Tool for managing staff teaching time.
-project_name: Teaching Time Tool
+project_name: physics-workload
 python_version_primary: '3.12'
 team: Sam Mangham
