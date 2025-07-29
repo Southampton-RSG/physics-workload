@@ -5,8 +5,9 @@ from django.db.models import Count
 from iommi import LAST, Column, Field, Form, Header, Page, Table, html
 
 from app.forms.academic_group import AcademicGroupDetailForm
+from app.forms.info import InfoForm
 from app.forms.task import TaskForm
-from app.models import AcademicGroup, Unit
+from app.models import AcademicGroup, Info, Unit
 from app.pages.components.suffixes import SuffixCreate, SuffixDelete, SuffixEdit
 from app.style import get_balance_classes
 from app.tables.staff import StaffTable
@@ -143,6 +144,10 @@ class AcademicGroupList(Page):
     title = Header(
         lambda params, **_: AcademicGroup.get_model_header(),
     )
+    info = InfoForm(
+        instance=lambda **_: Info.objects.get(page='academic_group'),
+    )
+
     list = Table(
         h_tag=None,
         auto=dict(

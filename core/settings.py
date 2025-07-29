@@ -56,6 +56,7 @@ INSTALLED_APPS: List[str] = [
     'iommi',
     'django_plotly_dash.apps.DjangoPlotlyDashConfig',
     'django_auth_adfs',
+    'markdownify',
 
     'users',  # Enable the custom users app
     'app',  # Enable the inner app
@@ -242,6 +243,32 @@ SIMPLE_HISTORY_ENABLED: bool = False
 ################################################################################
 # Allow embedding plots as iframes
 X_FRAME_OPTIONS: str = 'SAMEORIGIN'
+
+################################################################################
+# DJANGO MARKDOWNIFY
+################################################################################
+MARKDOWNIFY: Dict[str, Any] = {
+    "default": {
+        "WHITELIST_TAGS": [
+            'a',
+            'abbr',
+            'acronym',
+            'b',
+            'blockquote',
+            'em',
+            'i',
+            'li',
+            'ol',
+            'p',
+            'strong',
+            'ul',
+            'h1',
+            'h2',
+            'h3',
+            'h4',
+        ]
+    }
+}
 
 ################################################################################
 # DJANGO CORE - LOGGING

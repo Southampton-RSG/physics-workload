@@ -52,5 +52,14 @@
       "page": "about",
       "text": "This is a web app for assigning and balancing teaching workload for staff in the University of Southampton's Department of Physics."
     }
+  },
+  {
+    "model": "app.Info",
+    "pk": 6,
+    "fields": {
+      "name": "Load Function",
+      "page": "function",
+      "text": "These functions describe how load can be assigned per student for a given teaching task."
+    }
   }
 ]

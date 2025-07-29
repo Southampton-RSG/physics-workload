@@ -4,8 +4,9 @@ Pages for academic units
 from django.utils.html import format_html
 from iommi import Header, Page, html
 
+from app.forms.info import InfoForm
 from app.forms.unit import UnitForm
-from app.models import Task, Unit
+from app.models import Info, Task, Unit
 from app.pages.components.suffixes import SuffixCreate, SuffixDelete, SuffixEdit
 from app.tables.task import TaskTable
 from app.tables.unit import UnitTable
@@ -107,6 +108,9 @@ class UnitList(Page):
     """
     header = Header(
         lambda params, **_: Unit.get_model_header()
+    )
+    info = InfoForm(
+        instance=lambda **_: Info.objects.get(page='module'),
     )
     list = UnitTable(
         rows=UnitTable.annotate_query_set(Unit.objects.all()),

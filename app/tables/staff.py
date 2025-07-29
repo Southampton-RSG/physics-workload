@@ -26,7 +26,10 @@ class StaffTable(Table):
         )
         columns=dict(
             account=dict(
-                cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
+                cell=dict(
+                    url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
+                    value=lambda row, **_: row.account if not row.account.startswith('unconnected') else None,
+                ),
             ),
             name=dict(
                 cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),

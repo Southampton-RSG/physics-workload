@@ -6,12 +6,11 @@ Handle the general 'non-unit' task creation, and all task editing and deletion.
 from logging import Logger, getLogger
 from typing import List
 
-from django.conf import settings
 from django.db.models import QuerySet
-from django.template import Template
-from iommi import Action, Header, Page, html, register_search_fields
+from iommi import Header, Page, html, register_search_fields
 
 from app.forms.assignment import AssignmentTaskUniqueForm
+from app.forms.info import InfoForm
 from app.forms.task import TaskCreateForm, TaskDetailForm, TaskEditForm, TaskFullTimeCreateForm
 from app.models import Info, Staff, Task
 from app.pages.components.suffixes import SuffixCreate, SuffixCreateFullTime, SuffixDelete, SuffixEdit
@@ -112,31 +111,15 @@ class TaskList(Page):
     header = Header(
         lambda params, **_: Task.get_model_header(),
     )
-    info = html.div(
-        Template("{{ page.extra_evaluated.info.get_html | safe }}"),
-        attrs__class={"position-relative": True},
-        children__edit=Action.icon(
-            display_name=" ",  # If it's empty/none, it's 'Edit'
-            icon=settings.ICON_EDIT,
-            attrs__class={
-                'btn': True, 'btn-warning': True, 'btn-sm': True,
-                'position-absolute': True, 'bottom-0': True, 'end-0': True,
-            },
-            include=lambda user, **_: user.is_staff,
-            attrs__href=lambda **_: Info.objects.get(page='task').get_edit_url(),
-        )
+    info = InfoForm(
+        instance=lambda **_: Info.objects.get(page='task'),
     )
-
     list = TaskTable(
         h_tag=None,
         rows=TaskTable.annotate_query_set(
             Task.objects.all()
         ),
     )
-
-    class Meta:
-        extra_evaluated__info = lambda **_: Info.objects.get(page='task')
-
 
 
 class TaskFullTimeCreate(Page):

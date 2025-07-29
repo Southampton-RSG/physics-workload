@@ -13,7 +13,7 @@ class Info(ModelCommon):
     icon = 'circle-info'
     url_root = 'info'
 
-    name: CharField = CharField(max_length=120)
+    name: CharField = CharField(max_length=120, unique=True)
     page: CharField = CharField(max_length=120, primary_key=True)
     text: TextField = TextField(
         null=True,
@@ -31,7 +31,7 @@ class Info(ModelCommon):
         """
         :return: The URL of the edit view for the info
         """
-        return f"{self.page}"
+        return f"/{self.page}"
 
     def get_edit_url(self) -> str:
         """
@@ -47,10 +47,3 @@ class Info(ModelCommon):
         :return: True if the user is assigned to this task
         """
         return super().has_access(user)
-
-    def get_html(self) -> str:
-        """
-        Gets the HTML representation of the stored markdown.
-        :return: The HTML text. Not marked safe; done in the template.
-        """
-        return markdown(self.text)

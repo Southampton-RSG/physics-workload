@@ -11,7 +11,8 @@ from plotly.graph_objs.layout import XAxis, YAxis
 from plotly.offline import plot
 
 from app.forms.load_function import LoadFunctionForm
-from app.models import LoadFunction
+from app.forms.info import InfoForm
+from app.models import LoadFunction, Info
 from app.pages.components.suffixes import SuffixCreate, SuffixDelete, SuffixEdit
 
 load_figure_template('bootstrap_dark')
@@ -120,6 +121,9 @@ class LoadFunctionList(Page):
     """
     header = Header(
         lambda params, **_: LoadFunction.get_model_header()
+    )
+    info = InfoForm(
+        instance=lambda **_: Info.objects.get(page='function'),
     )
     list = Table(
         h_tag=None,

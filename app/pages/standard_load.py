@@ -6,6 +6,7 @@ from django.template import Template
 from django.utils.html import format_html
 from iommi import Action, Form, Header, Page, Table, html
 
+from app.forms.info import InfoForm
 from app.forms.standard_load import StandardLoadForm, StandardLoadFormNewYear
 from app.models import Info, StandardLoad
 from app.pages.components import Equations
@@ -125,19 +126,8 @@ class StandardLoadList(Page):
     header = Header(
         lambda params, **_: StandardLoad.get_model_header(),
     )
-    info = html.div(
-        Template("{{ page.extra_evaluated.info.get_html | safe }}"),
-        attrs__class={"position-relative": True},
-        children__edit=Action.icon(
-            display_name=" ",  # If it's empty/none, it's 'Edit'
-            icon=settings.ICON_EDIT,
-            attrs__class={
-                'btn': True, 'btn-warning': True, 'btn-sm': True,
-                'position-absolute': True, 'bottom-0': True, 'end-0': True,
-            },
-            include=lambda user, **_: user.is_staff,
-            attrs__href=lambda **_: Info.objects.get(page='standard_load').get_edit_url(),
-        )
+    info = InfoForm(
+        instance=lambda **_: Info.objects.get(page='standard_load'),
     )
 
     table = Table(
@@ -152,7 +142,3 @@ class StandardLoadList(Page):
             )
         ),
     )
-
-    class Meta:
-        extra_evaluated__info = lambda **_: Info.objects.get(page='standard_load')
-

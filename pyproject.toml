@@ -51,6 +51,7 @@ dependencies = [
     "pandas>=2.2.3",
     "uwsgi>=2.0.29",
     "markdown>=3.8.2",
+    "django-markdownify>=0.9.5",
 ]
 
 [project.optional-dependencies]

@@ -4,8 +4,9 @@ Handles the views for Staff
 from dash_bootstrap_templates import load_figure_template
 from iommi import LAST, Field, Header, Page, html, register_search_fields
 
+from app.forms.info import InfoForm
 from app.forms.staff import StaffForm
-from app.models import Staff
+from app.models import Info, Staff
 from app.models.standard_load import StandardLoad
 from app.pages.components.suffixes import SuffixCreate, SuffixDelete, SuffixEdit
 from app.style import get_balance_classes_form
@@ -141,6 +142,9 @@ class StaffList(Page):
     List of all currently active staff.
     """
     header = Header(lambda params, **_: Staff.get_model_header())
+    info = InfoForm(
+        instance=lambda **_: Info.objects.get(page='staff'),
+    )
     list = StaffTable(
         h_tag=None,
         rows=StaffTable.annotate_rows(

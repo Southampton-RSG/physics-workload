@@ -232,33 +232,37 @@ def update_staff_link(sender, instance, created, **kwargs):
     if '@' in instance.username:
         # If this isn't the default Django superuser (who won't have an email-based account)
         account: str = instance.username.split('@')[0]
+        last_name: str = instance.last_name
 
-        try:
-            logger.info(f"Looking up a staff member for user '{instance.username}'")
-            staff: Staff|None = Staff.objects.get(account=account)
-
-        except Staff.DoesNotExist:
-            # There's no staff member with this account name, so let's try surname...
+        if account and last_name:
+            # We don't want to try connecting up until the *second* time the User is saved,
+            # when it's updated with the name.
             try:
-                logger.info(f"No account match for {account}, looking for last name '{instance.last_name}'")
-                staff = Staff.objects.get(name=instance.last_name)
+                logger.info(f"Looking up a staff member for user '{account}'")
+                staff: Staff|None = Staff.objects.get(account=account)
 
             except Staff.DoesNotExist:
-                logger.info(f"No staff with last name '{instance.last_name}'")
-                staff = None
+                # There's no staff member with this account name, so let's try surname...
+                try:
+                    logger.info(f"No account match for {account}, looking for last name '{instance.last_name}'")
+                    staff = Staff.objects.get(name=instance.last_name)
 
-        # Don't create a staff record for the manual Django superuser
-        # Otherwise, either create a new Staff model from their ActiveDirectory account,
-        # or just update their Staff model with their full name from the AD account.
+                except Staff.DoesNotExist:
+                    logger.info(f"No staff with last name '{instance.last_name}'")
+                    staff = None
 
-        staff, staff_created = Staff.objects.update_or_create(
-            account=instance.username.split('@')[0],
-            user=instance,
-            defaults={
-                'name': f"{instance.first_name} {instance.last_name}",
-            }
-        )
-        if staff_created:
-            logger.info(f"Created Staff: '{instance.username}' - {staff}")
-        else:
-            logger.info(f"Updated Staff: '{instance.username}' - {staff}")
+            # Don't create a staff record for the manual Django superuser
+            # Otherwise, either create a new Staff model from their ActiveDirectory account,
+            # or just update their Staff model with their full name from the AD account.
+
+            staff, staff_created = Staff.objects.update_or_create(
+                account=instance.username.split('@')[0],
+                user=instance,
+                defaults={
+                    'name': f"{instance.first_name} {instance.last_name}",
+                }
+            )
+            if staff_created:
+                logger.info(f"Created Staff: '{account}' - {staff}")
+            else:
+                logger.info(f"Updated Staff: '{account}' - {staff}")
