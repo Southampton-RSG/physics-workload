@@ -18,15 +18,15 @@ install:  ## install library
 .PHONY: lint lints fix format
 
 lint:  ## run python linter with ruff
-	python -m ruff check teaching_time_tool app
-	python -m ruff format --check teaching_time_tool app
+	python -m ruff check physics-workload app core users
+	python -m ruff format --check physics-workload app core users
 
 # Alias
 lints: lint
 
 fix:  ## fix python formatting with ruff
-	python -m ruff check --fix teaching_time_tool app
-	python -m ruff format teaching_time_tool app
+	python -m ruff check --fix physics-workload app core users
+	python -m ruff format physics-workload app core users
 
 # alias
 format: fix

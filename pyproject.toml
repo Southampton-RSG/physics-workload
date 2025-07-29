@@ -82,7 +82,7 @@ commit = true
 tag = true
 
 [[tool.bumpversion.files]]
-filename = "src/__init__.py"
+filename = "physics-workload/__init__.py"
 search = '__version__ = "{current_version}"'
 replace = '__version__ = "{new_version}"'
 
@@ -102,7 +102,7 @@ ignore = [
 [tool.coverage.run]
 branch = true
 omit = [
-    "src/tests/integration/",
+    "physics-workload/tests/integration/",
 ]
 [tool.coverage.report]
 exclude_also = [
@@ -120,16 +120,16 @@ artifacts = []
 src = "/"
 
 [tool.hatch.build.targets.sdist]
-packages = ["src"]
+packages = ["physics-workload"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src"]
+packages = ["physics-workload"]
 
 [tool.hatch.build.targets.wheel.shared-data]
 
 [tool.pytest.ini_options]
 addopts = ["-vvv", "--junitxml=junit.xml"]
-testpaths = "src/tests"
+testpaths = "physics-workload/tests"
 
 [tool.ruff]
 line-length = 150
@@ -139,8 +139,8 @@ extend-select = ["I"]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
-default-section = "src-party"
-known-first-party = ["src"]
+default-section = "third-party"
+known-first-party = ["physics-workload", "app", "users"]
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
 
 [tool.ruff.lint.per-file-ignores]

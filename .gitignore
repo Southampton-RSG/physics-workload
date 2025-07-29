@@ -151,3 +151,9 @@ teaching_time_tool/labextension
 
 # Rust
 target
+
+# Project
+staticfiles/
+*/migrations/*
+*.csv
+*.xlsx
