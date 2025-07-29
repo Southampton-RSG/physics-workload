@@ -10,44 +10,44 @@ logger: Logger = getLogger(__name__)
 
 
 class AssignmentTable(Table):
-    """
+    """ """
 
-    """
     class Meta:
         auto__model = Assignment
         columns = dict(
-            is_provisional__attrs__class = {'text-right': False, 'text-center': True},
-            is_first_time__attrs__class = {'text-right': False, 'text-center': True},
+            is_provisional__attrs__class={"text-right": False, "text-center": True},
+            is_first_time__attrs__class={"text-right": False, "text-center": True},
         )
+
 
 class AssignmentStaffTable(Table):
-    """
+    """ """
 
-    """
     class Meta:
-        auto=dict(
+        auto = dict(
             model=Assignment,
             exclude=[
-                'notes', 'staff',
+                "notes",
+                "staff",
             ],
         )
-        columns=dict(
+        columns = dict(
             students=dict(
-                cell__attrs__style={'width': '6em'},
+                cell__attrs__style={"width": "6em"},
             ),
             load_calc=dict(
-                after='task',
-                cell__attrs__class={'align-middle': True},
+                after="task",
+                cell__attrs__class={"align-middle": True},
             ),
             is_first_time=dict(
                 iommi_style=base_style,
-                cell__attrs__style={'width': '6em'},
-                cell__attrs__class={'align-middle': True},
+                cell__attrs__style={"width": "6em"},
+                cell__attrs__class={"align-middle": True},
             ),
             is_provisional=dict(
                 iommi_style=base_style,
-                cell__attrs__style={'width': '6em'},
-                cell__attrs__class={'align-middle': True},
+                cell__attrs__style={"width": "6em"},
+                cell__attrs__class={"align-middle": True},
             ),
             task=dict(
                 cell=dict(
@@ -62,17 +62,14 @@ class AssignmentStaffTable(Table):
 
 
 class AssignmentStaffEditTable(EditTable):
-    """
+    """ """
 
-    """
     class Meta:
-        auto=dict(
+        auto = dict(
             model=Assignment,
-            exclude=[
-                'notes'
-            ],
+            exclude=["notes"],
         )
-        columns=dict(
+        columns = dict(
             notes__include=False,
             staff=EditColumn.hardcoded(
                 render_column=False,
@@ -83,55 +80,49 @@ class AssignmentStaffEditTable(EditTable):
             ),
             students=dict(
                 field__include=lambda user, **_: user.is_staff,
-                cell__attrs__style={'width': '6em'},
+                cell__attrs__style={"width": "6em"},
             ),
             load_calc=dict(
-                after='task',
+                after="task",
                 field__include=False,
-                cell__attrs__class={'align-middle': True},
+                cell__attrs__class={"align-middle": True},
             ),
             is_first_time=dict(
                 field=dict(
                     include=True,
                     iommi_style=base_style,
                 ),
-                cell__attrs__style={'width': '6em'},
-                cell__attrs__class={'align-middle': True},
+                cell__attrs__style={"width": "6em"},
+                cell__attrs__class={"align-middle": True},
             ),
             is_provisional=dict(
                 field=dict(
                     include=True,
                     iommi_style=base_style,
                 ),
-                cell__attrs__style={'width': '6em'},
-                cell__attrs__class={'align-middle': True},
+                cell__attrs__style={"width": "6em"},
+                cell__attrs__class={"align-middle": True},
             ),
             task=dict(
                 field__include=True,
                 cell=dict(
-                    value=lambda row, **_: row.task.get_name() if hasattr(row, 'task') else None,
-                    url=lambda row, **_: row.task.get_absolute_url() if hasattr(row, 'task') else None,
+                    value=lambda row, **_: row.task.get_name() if hasattr(row, "task") else None,
+                    url=lambda row, **_: row.task.get_absolute_url() if hasattr(row, "task") else None,
                 ),
             ),
             delete=EditColumn.delete(
-                header__attrs__class={'text-center': True},
-                cell__attrs__class={'text-center': True},
-                cell__attrs__style={'width': '3em'},
+                header__attrs__class={"text-center": True},
+                cell__attrs__class={"text-center": True},
+                cell__attrs__style={"width": "3em"},
             ),
         )
-        rows=lambda staff, **_: Assignment.objects.filter(staff=staff)
-        iommi_style=floating_fields_select2_inline_style
-        edit_actions=dict(
-            save=dict(
-                attrs__class={'btn-primary': False, 'btn-success': True}
-            )
-        )
-        include=lambda user, **_: user.is_staff
+        rows = lambda staff, **_: Assignment.objects.filter(staff=staff)
+        iommi_style = floating_fields_select2_inline_style
+        edit_actions = dict(save=dict(attrs__class={"btn-primary": False, "btn-success": True}))
+        include = lambda user, **_: user.is_staff
 
         @staticmethod
-        def extra__post_save(
-               staff: Staff, **_
-        ):
+        def extra__post_save(staff: Staff, **_):
             """
             :param staff:
             :param _:
@@ -141,27 +132,26 @@ class AssignmentStaffEditTable(EditTable):
 
 
 class AssignmentTaskTable(EditTable):
-    """
+    """ """
 
-    """
     class Meta:
-        auto=dict(
+        auto = dict(
             model=Assignment,
-            exclude=['load_calc', 'notes'],
+            exclude=["load_calc", "notes"],
         )
-        columns=dict(
+        columns = dict(
             students=dict(
-                cell__attrs__style={'width': '6em'},
+                cell__attrs__style={"width": "6em"},
             ),
             is_first_time=dict(
                 iommi_style=base_style,
-                cell__attrs__style={'width': '6em'},
-                cell__attrs__class={'align-middle': True},
+                cell__attrs__style={"width": "6em"},
+                cell__attrs__class={"align-middle": True},
             ),
             is_provisional=dict(
                 iommi_style=base_style,
-                cell__attrs__style={'width': '6em'},
-                cell__attrs__class={'align-middle': True},
+                cell__attrs__style={"width": "6em"},
+                cell__attrs__class={"align-middle": True},
             ),
             staff=dict(
                 include=True,
@@ -170,20 +160,19 @@ class AssignmentTaskTable(EditTable):
                 ),
             ),
         )
-        rows=lambda task, **_: Assignment.objects.filter(task=task)
-        iommi_style=floating_fields_select2_inline_style
+        rows = lambda task, **_: Assignment.objects.filter(task=task)
+        iommi_style = floating_fields_select2_inline_style
 
 
 class AssignmentTaskEditTable(EditTable):
-    """
+    """ """
 
-    """
     class Meta:
-        auto=dict(
+        auto = dict(
             model=Assignment,
-            exclude=['load_calc', 'notes'],
+            exclude=["load_calc", "notes"],
         )
-        columns=dict(
+        columns = dict(
             task=EditColumn.hardcoded(
                 render_column=False,
                 field__include=True,
@@ -191,50 +180,44 @@ class AssignmentTaskEditTable(EditTable):
             ),
             students=dict(
                 field__include=True,
-                cell__attrs__style={'width': '6em'},
+                cell__attrs__style={"width": "6em"},
             ),
             is_first_time=dict(
                 field=dict(
                     include=True,
                     iommi_style=base_style,
                 ),
-                cell__attrs__style={'width': '6em'},
-                cell__attrs__class={'align-middle': True},
+                cell__attrs__style={"width": "6em"},
+                cell__attrs__class={"align-middle": True},
             ),
             is_provisional=dict(
                 field=dict(
                     include=True,
                     iommi_style=base_style,
                 ),
-                cell__attrs__style={'width': '6em'},
-                cell__attrs__class={'align-middle': True},
+                cell__attrs__style={"width": "6em"},
+                cell__attrs__class={"align-middle": True},
             ),
             staff=dict(
                 field__include=True,
                 cell=dict(
-                    value=lambda row, **_: row.staff if hasattr(row, 'staff') else None,
-                    url=lambda row, **_: row.staff.get_absolute_url() if hasattr(row, 'staff') else None,
+                    value=lambda row, **_: row.staff if hasattr(row, "staff") else None,
+                    url=lambda row, **_: row.staff.get_absolute_url() if hasattr(row, "staff") else None,
                 ),
             ),
             delete=EditColumn.delete(
                 include=lambda user, **_: user.is_staff,
-                header__attrs__class={'text-center': True},
-                cell__attrs__class={'text-center': True},
-                cell__attrs__style={'width': '3em'},
+                header__attrs__class={"text-center": True},
+                cell__attrs__class={"text-center": True},
+                cell__attrs__style={"width": "3em"},
             ),
         )
-        rows=lambda task, **_: Assignment.objects.filter(task=task)
-        iommi_style=floating_fields_select2_inline_style
-        edit_actions=dict(
-            save=dict(
-                attrs__class={'btn-primary': False, 'btn-success': True}
-            )
-        )
+        rows = lambda task, **_: Assignment.objects.filter(task=task)
+        iommi_style = floating_fields_select2_inline_style
+        edit_actions = dict(save=dict(attrs__class={"btn-primary": False, "btn-success": True}))
 
         @staticmethod
-        def extra__post_save(
-               task: Task, **_
-        ):
+        def extra__post_save(task: Task, **_):
             """
             :param task:
             :param _:

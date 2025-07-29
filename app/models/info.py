@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
-from django.utils.html import mark_safe
 from django.db.models import CharField, TextField
-from markdown import markdown
+from django.utils.html import mark_safe
 
 from app.models.common import ModelCommon
 
@@ -10,8 +9,9 @@ class Info(ModelCommon):
     """
     Used for user-editable info text at the top of forms or categories.
     """
-    icon = 'circle-info'
-    url_root = 'info'
+
+    icon = "circle-info"
+    url_root = "info"
 
     name: CharField = CharField(max_length=120, unique=True)
     page: CharField = CharField(max_length=120, primary_key=True)

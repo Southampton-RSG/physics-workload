@@ -37,54 +37,50 @@ class Staff(ModelCommon):
     :attribute account: The active directory account name for this staff member.
     :attribute name: The name of this staff member.
     """
-    DYNAMIC_FIELDS = [
-        'load_balance_historic',
-        'load_balance_final',
-        'load_target',
-        'load_assigned'
-    ]
 
-    icon = 'user'
-    url_root = 'staff'
+    DYNAMIC_FIELDS = ["load_balance_historic", "load_balance_final", "load_target", "load_assigned"]
+
+    icon = "user"
+    url_root = "staff"
 
     user = OneToOneField(
         CustomUser,
-        blank=True, null=True, on_delete=SET_NULL,
+        blank=True,
+        null=True,
+        on_delete=SET_NULL,
     )
     account = CharField(
-        max_length=16,
-        unique=True, blank=False, primary_key=True,
-        help_text=format_html("Active Directory account e.g. <tt>js1a25</tt>")
+        max_length=16, unique=True, blank=False, primary_key=True, help_text=format_html("Active Directory account e.g. <tt>js1a25</tt>")
     )
     name = CharField(
-        max_length=128, blank=False,
+        max_length=128,
+        blank=False,
     )
     academic_group = HistoricForeignKey(
-        AcademicGroup, on_delete=PROTECT,
-        null=True, blank=True,
-        verbose_name='Group',
+        AcademicGroup,
+        on_delete=PROTECT,
+        null=True,
+        blank=True,
+        verbose_name="Group",
     )
-    gender = CharField(
-        max_length=1, blank=False,
-        help_text="Single-letter code"
-    )
+    gender = CharField(max_length=1, blank=False, help_text="Single-letter code")
 
     load_target = IntegerField(
         default=0,
         validators=[MinValueValidator(0)],
-        verbose_name='Load target',
+        verbose_name="Load target",
         help_text="Load hours calculated for the current year.",
     )
     load_assigned = IntegerField(
         default=0,
         validators=[MinValueValidator(0)],
-        verbose_name='Load assigned',
+        verbose_name="Load assigned",
         help_text="Load hours assigned for the current year.",
     )
     load_external = IntegerField(
         default=0,
         verbose_name="External load",
-        help_text='Teaching load accrued externally to this tool this year.',
+        help_text="Teaching load accrued externally to this tool this year.",
     )
     hours_fixed = IntegerField(
         default=0,
@@ -107,37 +103,35 @@ class Staff(ModelCommon):
 
     load_balance_final = IntegerField(
         default=0,
-        verbose_name='Load balance',
+        verbose_name="Load balance",
         help_text="Final load balance for the current year. Positive if overloaded.",
     )
     load_balance_historic = IntegerField(
         default=0,
-        verbose_name='Historic load balance',
+        verbose_name="Historic load balance",
         help_text="Total of previous end-of-year load balances. Positive if overloaded.",
     )
 
     notes = TextField(blank=True)
 
     class Meta:
-        ordering = [
-            'name'
-        ]
-        verbose_name = 'Staff Member'
-        verbose_name_plural = 'Staff Members'
+        ordering = ["name"]
+        verbose_name = "Staff Member"
+        verbose_name_plural = "Staff Members"
         indexes = [
-            Index(fields=['name']),
-            Index(fields=['gender']),
-            Index(fields=['academic_group']),
+            Index(fields=["name"]),
+            Index(fields=["gender"]),
+            Index(fields=["academic_group"]),
         ]
         constraints = [
             CheckConstraint(
                 check=(Q(fte_fraction=0) | Q(hours_fixed=0)),
-                name='fixed_or_fte',
-                violation_error_message="Staff must be fixed or FTE; please leave one field zero."
+                name="fixed_or_fte",
+                violation_error_message="Staff must be fixed or FTE; please leave one field zero.",
             )
         ]
 
-    def has_access(self, user: AbstractUser|AnonymousUser) -> bool:
+    def has_access(self, user: AbstractUser | AnonymousUser) -> bool:
         """
         Does the user have access to this object?
 
@@ -157,7 +151,7 @@ class Staff(ModelCommon):
         """
         return f"{self.name} [{self.load_assigned - self.load_target}]"
 
-    def get_instance_header(self, text:str|None = None) -> str:
+    def get_instance_header(self, text: str | None = None) -> str:
         """
         Creates a header for staff, without their load balance in.
 
@@ -183,10 +177,10 @@ class Staff(ModelCommon):
         from app.models.standard_load import StandardLoad
 
         load_assigned: int = StandardLoad.objects.latest().load_fte_misc * self.fte_fraction
-        if assignment_total := self.assignment_set.aggregate(Sum('load_calc'))['load_calc__sum']:
+        if assignment_total := self.assignment_set.aggregate(Sum("load_calc"))["load_calc__sum"]:
             load_assigned += assignment_total
 
-        if self.load_assigned !=- load_assigned:
+        if self.load_assigned != -load_assigned:
             self.load_assigned = load_assigned
             self.save()
             return True
@@ -229,9 +223,9 @@ def update_staff_link(sender, instance, created, **kwargs):
     :param kwargs:
     :return:
     """
-    if '@' in instance.username:
+    if "@" in instance.username:
         # If this isn't the default Django superuser (who won't have an email-based account)
-        account: str = instance.username.split('@')[0]
+        account: str = instance.username.split("@")[0]
         last_name: str = instance.last_name
 
         if account and last_name:
@@ -239,7 +233,7 @@ def update_staff_link(sender, instance, created, **kwargs):
             # when it's updated with the name.
             try:
                 logger.info(f"Looking up a staff member for user '{account}'")
-                staff: Staff|None = Staff.objects.get(account=account)
+                staff: Staff | None = Staff.objects.get(account=account)
 
             except Staff.DoesNotExist:
                 # There's no staff member with this account name, so let's try surname...
@@ -256,11 +250,11 @@ def update_staff_link(sender, instance, created, **kwargs):
             # or just update their Staff model with their full name from the AD account.
 
             staff, staff_created = Staff.objects.update_or_create(
-                account=instance.username.split('@')[0],
+                account=instance.username.split("@")[0],
                 user=instance,
                 defaults={
-                    'name': f"{instance.first_name} {instance.last_name}",
-                }
+                    "name": f"{instance.first_name} {instance.last_name}",
+                },
             )
             if staff_created:
                 logger.info(f"Created Staff: '{account}' - {staff}")

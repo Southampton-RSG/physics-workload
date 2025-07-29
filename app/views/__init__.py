@@ -18,7 +18,7 @@ def home_view_redirect(request: HttpRequest) -> HttpResponseRedirect:
             try:
                 return HttpResponseRedirect(request.user.staff.get_absolute_url())
             except Exception:
-                return HttpResponseRedirect(reverse('about'))
+                return HttpResponseRedirect(reverse("about"))
 
     else:
-        return HttpResponseRedirect(reverse('about'))
+        return HttpResponseRedirect(reverse("about"))

@@ -7,6 +7,7 @@ class Equations(Fragment):
     """
     A block of text containing LaTeX equations
     """
+
     class Meta:
-        tag = 'p'
+        tag = "p"
         assets = mathjax_js

@@ -3,7 +3,7 @@ from django.http import HttpRequest
 from app.models import AcademicGroup, Assignment, Staff, StandardLoad, Task
 
 
-def update_all_loads(request: HttpRequest|None = None) -> int:
+def update_all_loads(request: HttpRequest | None = None) -> int:
     """
 
     :return: The number of cycles taken to update the full-time equivalent loads.

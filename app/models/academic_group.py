@@ -16,6 +16,7 @@ class AcademicGroup(ModelCommon):
     Named AcademicGroup to avoid collision with base Django Group,
     which is more about user permissions.
     """
+
     icon = "users"
     url_root = "group"
 
@@ -25,19 +26,19 @@ class AcademicGroup(ModelCommon):
 
     load_balance_final = IntegerField(
         default=0,
-        verbose_name='Load balance',
+        verbose_name="Load balance",
         help_text="Final load balance for the current year. Positive if overloaded.",
     )
     load_balance_historic = IntegerField(
         default=0,
-        verbose_name='Historic load balance',
+        verbose_name="Historic load balance",
         help_text="Total of previous end-of-year load balances. Positive if overloaded.",
     )
 
     class Meta:
-        ordering = ('name',)
-        verbose_name = 'Group'
-        verbose_name_plural = 'Groups'
+        ordering = ("name",)
+        verbose_name = "Group"
+        verbose_name_plural = "Groups"
 
     def __str__(self):
         return f"{self.short_name}"
@@ -48,7 +49,7 @@ class AcademicGroup(ModelCommon):
         """
         return self.short_name
 
-    def get_instance_header(self, text: str|None = None) -> str:
+    def get_instance_header(self, text: str | None = None) -> str:
         """
         Uses the full name for the header of one of these.
 
@@ -78,11 +79,9 @@ class AcademicGroup(ModelCommon):
 
         :return: True if the load has changed.
         """
-        aggregates: Dict[str, int] = self.staff_set.aggregate(
-            Sum('load_target'), Sum('load_assigned')
-        )
-        load_target: int = aggregates['load_target__sum'] if aggregates['load_target__sum'] else 0
-        load_assigned: int = aggregates['load_assigned__sum'] if aggregates['load_assigned__sum'] else 0
+        aggregates: Dict[str, int] = self.staff_set.aggregate(Sum("load_target"), Sum("load_assigned"))
+        load_target: int = aggregates["load_target__sum"] if aggregates["load_target__sum"] else 0
+        load_assigned: int = aggregates["load_assigned__sum"] if aggregates["load_assigned__sum"] else 0
 
         self.load_balance_final = load_assigned - load_target
         self.save()
@@ -93,7 +92,7 @@ class AcademicGroup(ModelCommon):
 
         :return: The load balance.
         """
-        aggregates: Dict[str, int] = self.staff_set.aggregate(Sum('load_assigned'), Sum('load_target'))
-        load_assigned: int = aggregates['load_assigned__sum'] if aggregates['load_assigned__sum'] else 0
-        load_target: int = aggregates['load_target__sum'] if aggregates['load_target__sum'] else 0
+        aggregates: Dict[str, int] = self.staff_set.aggregate(Sum("load_assigned"), Sum("load_target"))
+        load_assigned: int = aggregates["load_assigned__sum"] if aggregates["load_assigned__sum"] else 0
+        load_target: int = aggregates["load_target__sum"] if aggregates["load_target__sum"] else 0
         return load_assigned - load_target

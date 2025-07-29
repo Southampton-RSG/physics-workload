@@ -17,6 +17,7 @@ class AcademicGroupAdmin(ModelAdmin):
     Admin class for the AcademicGroup model.
     Uses the default settings, but here in case it needs expanding.
     """
+
     pass
 
 
@@ -26,6 +27,7 @@ class UnitAdmin(ModelAdmin):
     Admin class for the Module model.
     Uses the default settings, but here in case it needs expanding.
     """
+
     pass
 
 
@@ -35,6 +37,7 @@ class AssignmentAdmin(ModelAdmin):
     Admin class for the Assignment model.
     Uses the default settings, but here in case it needs expanding.
     """
+
     pass
 
 
@@ -44,6 +47,7 @@ class TaskAdmin(ModelAdmin):
     Admin class for the Task model.
     Uses the default settings, but here in case it needs expanding.
     """
+
     pass
 
 
@@ -53,6 +57,7 @@ class StandardLoadAdmin(ModelAdmin):
     Admin class for the StandardLoad model.
     Uses the default settings, but here in case it needs expanding.
     """
+
     pass
 
 
@@ -62,4 +67,5 @@ class StaffAdmin(ModelAdmin):
     Admin class for the Staff model.
     Uses the default settings, but here in case it needs expanding.
     """
+
     pass

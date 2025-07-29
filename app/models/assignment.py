@@ -14,19 +14,27 @@ class Assignment(ModelCommon):
     """
     Pairs a Staff member up with the task they're performing.
     """
-    icon = 'clipboard'
-    url_root = 'assignment'
+
+    icon = "clipboard"
+    url_root = "assignment"
 
     task = HistoricForeignKey(
-        Task, blank=False, null=False, on_delete=CASCADE,
-        related_name='assignment_set',
+        Task,
+        blank=False,
+        null=False,
+        on_delete=CASCADE,
+        related_name="assignment_set",
     )
     staff = HistoricForeignKey(
-        Staff, blank=False, null=False, on_delete=PROTECT,
-        related_name='assignment_set',
+        Staff,
+        blank=False,
+        null=False,
+        on_delete=PROTECT,
+        related_name="assignment_set",
     )
     students = IntegerField(
-        null=True, blank=True,
+        null=True,
+        blank=True,
         help_text="If not specified, defaults to student count on Task or Module.",
     )
 
@@ -37,24 +45,24 @@ class Assignment(ModelCommon):
 
     load_calc = IntegerField(
         default=0,
-        verbose_name='Load',
+        verbose_name="Load",
     )
 
     class Meta:
         indexes = [
-            Index(fields=['staff']),
-            Index(fields=['task']),
+            Index(fields=["staff"]),
+            Index(fields=["task"]),
         ]
-        unique_together = ('task', 'staff')
-        ordering = ('-staff', 'task')
-        verbose_name = 'Assignment'
-        verbose_name_plural = 'Assignments'
+        unique_together = ("task", "staff")
+        ordering = ("-staff", "task")
+        verbose_name = "Assignment"
+        verbose_name_plural = "Assignments"
 
         constraints = [
             CheckConstraint(
                 check=(Q(students__isnull=True) | Q(students__gte=0)),
-                name='assignment_students_null',
-                violation_error_message="Cannot have less than zero students."
+                name="assignment_students_null",
+                violation_error_message="Cannot have less than zero students.",
             ),
         ]
 

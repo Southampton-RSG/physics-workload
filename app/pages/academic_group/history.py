@@ -16,23 +16,20 @@ class AcademicGroupHistoryList(Page):
     """
     List of History entries for an academic group.
     """
+
     header = Header(
         lambda academic_group, **_: academic_group.get_instance_header(),
         children__suffix=SuffixHistory(),
     )
 
     plot = html.div(
-        attrs__class={"mt-4": True},
-        children=dict(
-            header=Header("Load Balance"),
-            graph=Template("{{page.extra_evaluated.plot | safe }}")
-        )
+        attrs__class={"mt-4": True}, children=dict(header=Header("Load Balance"), graph=Template("{{page.extra_evaluated.plot | safe }}"))
     )
 
     list = Table(
         auto__model=AcademicGroup,
         h_tag=None,
-        auto__include=['load_balance_final', 'load_balance_historic'],
+        auto__include=["load_balance_final", "load_balance_historic"],
         columns=dict(
             history_date=Column(
                 cell=dict(
@@ -65,10 +62,7 @@ class AcademicGroupHistoryList(Page):
 
     class Meta:
         @staticmethod
-        def extra_evaluated__plot(
-                params: Dict[str, Any],
-                academic_group: AcademicGroup, **_
-        ) -> str:
+        def extra_evaluated__plot(params: Dict[str, Any], academic_group: AcademicGroup, **_) -> str:
             """
             Creates a graph of the staff balance over time.
 
@@ -76,13 +70,13 @@ class AcademicGroupHistoryList(Page):
             :param staff: The Staff instance, provided via URL decoding.
             :return: The HTML code of the graph.
             """
-            dates: List[str] = [f"{str(timezone.now().year-1)[-2:]}/{str(timezone.now().year)[-2:]}"]
-            balance_cumulative: List[float] = [academic_group.load_balance_historic+academic_group.get_load_balance()]
+            dates: List[str] = [f"{str(timezone.now().year - 1)[-2:]}/{str(timezone.now().year)[-2:]}"]
+            balance_cumulative: List[float] = [academic_group.load_balance_historic + academic_group.get_load_balance()]
             balance_yearly: List[float] = [academic_group.get_load_balance()]
 
             for academic_group_historic in academic_group.history.all():
-                dates.append(f"{str(academic_group_historic.history_date.year-1)[-2:]}/{str(academic_group_historic.history_date.year)[-2:]}")
-                balance_cumulative.append(academic_group_historic.load_balance_historic+academic_group_historic.load_balance_final)
+                dates.append(f"{str(academic_group_historic.history_date.year - 1)[-2:]}/{str(academic_group_historic.history_date.year)[-2:]}")
+                balance_cumulative.append(academic_group_historic.load_balance_historic + academic_group_historic.load_balance_final)
                 balance_yearly.append(academic_group_historic.load_balance_final)
 
             dates.reverse()
@@ -101,19 +95,12 @@ class AcademicGroupHistoryList(Page):
                         y=balance_cumulative,
                         name="Cumulative",
                     ),
-
                 ],
                 layout=Layout(
-                    template='bootstrap_dark',
-                    xaxis=XAxis(title='Date', fixedrange=True),
-                    yaxis=YAxis(title='Load balance (hours)', fixedrange=True),
+                    template="bootstrap_dark",
+                    xaxis=XAxis(title="Date", fixedrange=True),
+                    yaxis=YAxis(title="Load balance (hours)", fixedrange=True),
                     margin=dict(l=0, r=0, b=0, t=0, pad=0),
                 ),
             )
-            return plot(
-                figure,
-                output_type='div',
-                config=dict(
-                    displayModeBar=False
-                )
-            )
+            return plot(figure, output_type="div", config=dict(displayModeBar=False))

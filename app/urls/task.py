@@ -17,7 +17,6 @@ task_submenu: M = M(
     icon=Task.icon,
     include=lambda request, **_: request.user.is_authenticated,
     view=TaskList,
-
     items=dict(
         create=M(
             icon=settings.ICON_CREATE,
@@ -26,18 +25,17 @@ task_submenu: M = M(
         ),
         create_full_time=M(
             display_name="Create Full-Time Task",
-            icon='square-plus',
+            icon="square-plus",
             include=lambda request, **_: request.user.is_staff,
             view=TaskFullTimeCreate,
         ),
         detail=M(
             display_name=lambda task, **_: task.name,
             open=True,
-            params={'task'},
-            path='<task>/',
+            params={"task"},
+            path="<task>/",
             url=lambda task, **_: f"/{Task.url_root}/{task.pk}/",
             view=TaskDetail,
-
             items=dict(
                 edit=M(
                     icon=settings.ICON_EDIT,
@@ -53,7 +51,7 @@ task_submenu: M = M(
                 #     icon='clock-rotate-left',
                 #     view=TaskHistory,
                 # )
-            )
-        )
-    )
+            ),
+        ),
+    ),
 )

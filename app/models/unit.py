@@ -13,45 +13,69 @@ class Unit(ModelCommon):
     """
     Academic unit, e.g. PHYS1001
     """
-    icon = 'book'
-    url_root = 'module'
+
+    icon = "book"
+    url_root = "module"
 
     code = CharField(max_length=16, blank=False, unique=True, primary_key=True)
     name = CharField(max_length=128, blank=False, unique=True)
     academic_group = HistoricForeignKey(
-        AcademicGroup, blank=True, null=True, on_delete=PROTECT,
-        verbose_name='Group',
+        AcademicGroup,
+        blank=True,
+        null=True,
+        on_delete=PROTECT,
+        verbose_name="Group",
     )
 
     students = IntegerField(
-        null=True, blank=True, default=None, validators=[MinValueValidator(0)],
+        null=True,
+        blank=True,
+        default=None,
+        validators=[MinValueValidator(0)],
     )
 
     lectures = IntegerField(
-        default=0, verbose_name="Lectures", validators=[MinValueValidator(0)],
+        default=0,
+        verbose_name="Lectures",
+        validators=[MinValueValidator(0)],
     )
     problem_classes = IntegerField(
-        default=0, verbose_name="Problem Classes", validators=[MinValueValidator(0)],
+        default=0,
+        verbose_name="Problem Classes",
+        validators=[MinValueValidator(0)],
     )
     coursework = IntegerField(
-        default=0, verbose_name="Coursework Prepared", validators=[MinValueValidator(0)],
+        default=0,
+        verbose_name="Coursework Prepared",
+        validators=[MinValueValidator(0)],
     )
     synoptic_lectures = IntegerField(
-        default=0, verbose_name="Synoptic Lectures", validators=[MinValueValidator(0)],
+        default=0,
+        verbose_name="Synoptic Lectures",
+        validators=[MinValueValidator(0)],
     )
     exams = IntegerField(
-        default=0, verbose_name="Exams", validators=[MinValueValidator(0)],
+        default=0,
+        verbose_name="Exams",
+        validators=[MinValueValidator(0)],
     )
 
     credits = IntegerField(
-        null=True, blank=True, verbose_name="CATS", validators=[MinValueValidator(0)],
+        null=True,
+        blank=True,
+        verbose_name="CATS",
+        validators=[MinValueValidator(0)],
     )
     exam_mark_fraction = FloatField(
-        null=True, blank=True, verbose_name="Exam mark fraction",
+        null=True,
+        blank=True,
+        verbose_name="Exam mark fraction",
         validators=[MinValueValidator(0), MaxValueValidator(1)],
     )
     coursework_mark_fraction = FloatField(
-        null=True, blank=True, verbose_name="Coursework mark fraction",
+        null=True,
+        blank=True,
+        verbose_name="Coursework mark fraction",
         validators=[MinValueValidator(0), MaxValueValidator(1)],
     )
     has_dissertation = BooleanField(default=False)
@@ -61,14 +85,14 @@ class Unit(ModelCommon):
     notes = TextField(blank=True)
 
     class Meta:
-        ordering = ['name']
-        verbose_name = 'Module'
-        verbose_name_plural = 'Modules'
+        ordering = ["name"]
+        verbose_name = "Module"
+        verbose_name_plural = "Modules"
         constraints = [
             CheckConstraint(
-                check=Q(exam_mark_fraction__lte=1-F('coursework_mark_fraction')) | \
-                      (Q(exam_mark_fraction__isnull=True) & Q(coursework_mark_fraction__isnull=True)),
-                name='total_mark_fraction',
+                check=Q(exam_mark_fraction__lte=1 - F("coursework_mark_fraction"))
+                | (Q(exam_mark_fraction__isnull=True) & Q(coursework_mark_fraction__isnull=True)),
+                name="total_mark_fraction",
                 violation_error_message="Total mark fraction must be less than 1, or both mark fractions must be empty.",
             ),
         ]
@@ -88,14 +112,12 @@ class Unit(ModelCommon):
         """
         return super().get_instance_header(text=self.code)
 
-    def get_marked_dissertation_count(self) -> int|None:
+    def get_marked_dissertation_count(self) -> int | None:
         """
         :return: Returns the total number of dissertations marked
         """
         if self.has_dissertation:
-            return sum(
-                self.task_set.values_list('student', flat=True)
-            )
+            return sum(self.task_set.values_list("student", flat=True))
 
     def has_access(self, user: AbstractUser) -> bool:
         """
@@ -107,7 +129,7 @@ class Unit(ModelCommon):
             return True
         elif not user.is_anonymous:
             for task in self.task_set.all():
-                if user.staff in task.assignment_set.values_list('staff', flat=True):
+                if user.staff in task.assignment_set.values_list("staff", flat=True):
                     return True
 
         return False
@@ -137,6 +159,7 @@ class Unit(ModelCommon):
         if recalculate_loads:
             # If we need to update the standard load, then do so
             from app.models.standard_load import StandardLoad
+
             standard_load: StandardLoad = StandardLoad.objects.latest()
             standard_load.update_target_load_per_fte()
 

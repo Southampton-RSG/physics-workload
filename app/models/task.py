@@ -20,6 +20,7 @@ class Task(ModelCommon):
     """
     This is the model for tasks
     """
+
     icon = "clipboard"
     url_root = "task"
 
@@ -27,13 +28,15 @@ class Task(ModelCommon):
     load_calc = IntegerField(
         default=0,
         validators=[MinValueValidator(0)],
-        blank=False, null=False,
+        blank=False,
+        null=False,
         verbose_name="Calculated Load",
     )
     load_calc_first = IntegerField(
         default=0,
         validators=[MinValueValidator(0)],
-        blank=False, null=False,
+        blank=False,
+        null=False,
         verbose_name="Calculated Load (first time)",
     )
 
@@ -52,52 +55,52 @@ class Task(ModelCommon):
     )
 
     academic_group = HistoricForeignKey(
-        AcademicGroup, on_delete=PROTECT, null=True, blank=True,
-        related_name='task_set',
+        AcademicGroup,
+        on_delete=PROTECT,
+        null=True,
+        blank=True,
+        related_name="task_set",
     )
 
     load_fixed = IntegerField(
         default=0,
-        validators=[
-            MinValueValidator(0)
-        ],
+        validators=[MinValueValidator(0)],
         verbose_name="Fixed load hours",
     )
     load_fixed_first = IntegerField(
         default=0,
-        validators=[
-            MinValueValidator(0)
-        ],
-        blank=True, null=True,
+        validators=[MinValueValidator(0)],
+        blank=True,
+        null=True,
         verbose_name="First-time load adjustment",
-        help_text="Load for first-time staff is fixed load plus first-time adjustment."
+        help_text="Load for first-time staff is fixed load plus first-time adjustment.",
     )
     load_multiplier = FloatField(
         default=1.0,
-        validators=[
-            MinValueValidator(0.1),
-            MaxValueValidator(10.00)
-        ],
+        validators=[MinValueValidator(0.1), MaxValueValidator(10.00)],
         blank=False,
         verbose_name="Final load multiplier",
-        help_text="Multiplier applied to final load calculation."
+        help_text="Multiplier applied to final load calculation.",
     )
 
     # ==========================================================================
     # Generic task
     # ==========================================================================
     FIELDS_TASK_GENERIC = (
-        'load_function', 'students',
+        "load_function",
+        "students",
     )
 
     load_function = HistoricForeignKey(
         LoadFunction,
-        blank=True, null=True,
+        blank=True,
+        null=True,
         on_delete=PROTECT,
         help_text="Function by which student load for this task scales",
     )
     students = IntegerField(
-        null=True, blank=True,
+        null=True,
+        blank=True,
         help_text="Number of students for load function and/or co-ordinator equations. If this task belongs to a Module, falls back to Unit students if empty.",
     )
     # ==========================================================================
@@ -106,12 +109,18 @@ class Task(ModelCommon):
     # TaskUnitLead components. Polymorphism and SimpleHistory don't play nice.
     # ==========================================================================
     FIELDS_TASK_UNIT_LEAD = (
-        'unit', 'is_lead', 'coursework_fraction', 'exam_fraction',
+        "unit",
+        "is_lead",
+        "coursework_fraction",
+        "exam_fraction",
     )
 
     unit = HistoricForeignKey(
-        Unit, on_delete=PROTECT, null=True, blank=True,
-        related_name='task_set',
+        Unit,
+        on_delete=PROTECT,
+        null=True,
+        blank=True,
+        related_name="task_set",
     )
     is_lead = BooleanField(
         default=False,
@@ -120,18 +129,12 @@ class Task(ModelCommon):
     )
     coursework_fraction = FloatField(
         default=0.0,
-        validators=[
-            MinValueValidator(0.0),
-            MaxValueValidator(1.0)
-        ],
+        validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
         verbose_name="Fraction of coursework marked",
     )
     exam_fraction = FloatField(
         default=0.0,
-        validators=[
-            MinValueValidator(0.0),
-            MaxValueValidator(1.0)
-        ],
+        validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
         verbose_name="Fraction of exams marked",
     )
     # ==========================================================================
@@ -140,14 +143,15 @@ class Task(ModelCommon):
     # TaskFullTime components. Polymorphism and SimpleHistory don't play nice.
     # ==========================================================================
     FIELDS_TASK_FULL_TIME = (
-        'name', 'description', 'is_required',
-        'is_unique', 'is_full_time',
+        "name",
+        "description",
+        "is_required",
+        "is_unique",
+        "is_full_time",
     )
 
     is_full_time = BooleanField(
-        default=False,
-        verbose_name="Is full-time",
-        help_text="If set, makes this task counts as being 1 FTE worth of load. Recursively defined."
+        default=False, verbose_name="Is full-time", help_text="If set, makes this task counts as being 1 FTE worth of load. Recursively defined."
     )
     # ==========================================================================
 
@@ -155,23 +159,24 @@ class Task(ModelCommon):
     notes = TextField(blank=True)
 
     class Meta:
-        ordering = ('unit', 'name',)
-        verbose_name = 'Task'
-        verbose_name_plural = 'Tasks'
+        ordering = (
+            "unit",
+            "name",
+        )
+        verbose_name = "Task"
+        verbose_name_plural = "Tasks"
         constraints = [
             UniqueConstraint(
-                fields=['unit', 'name'],
-                name='unit_task_name',
-                violation_error_message="Units cannot have multiple tasks with the same name."
+                fields=["unit", "name"], name="unit_task_name", violation_error_message="Units cannot have multiple tasks with the same name."
             ),
             UniqueConstraint(
-                fields=['academic_group', 'name'],
-                name='unit_group_name',
-                violation_error_message="Academic groups cannot have multiple tasks with the same name."
+                fields=["academic_group", "name"],
+                name="unit_group_name",
+                violation_error_message="Academic groups cannot have multiple tasks with the same name.",
             ),
             CheckConstraint(
                 check=(Q(unit__isnull=False) & Q(is_lead=True)) | Q(is_lead=False),
-                name='unit_lead_required',
+                name="unit_lead_required",
                 violation_error_message="Cannot be co-ordinator of a Unit without a linked unit.",
             ),
         ]
@@ -204,7 +209,7 @@ class Task(ModelCommon):
         else:
             return f"{self.name}"
 
-    def get_instance_header(self, text: str|None = None) -> str:
+    def get_instance_header(self, text: str | None = None) -> str:
         """
         Overrides the default instance header to include the unit, with link, if present.
         :param text: Override text.
@@ -224,10 +229,10 @@ class Task(ModelCommon):
             return super().get_absolute_url()
 
     def has_any_provisional(self) -> bool:
-        return any(self.assignment_set.values_list('is_provisional', flat=True))
+        return any(self.assignment_set.values_list("is_provisional", flat=True))
 
     def has_any_first_time(self) -> bool:
-        return any(self.assignment_set.values_list('is_first_time', flat=True))
+        return any(self.assignment_set.values_list("is_first_time", flat=True))
 
     def has_access(self, user: AbstractUser) -> bool:
         """
@@ -240,7 +245,7 @@ class Task(ModelCommon):
         elif user.is_anonymous:
             return False
         else:
-            return user.staff in self.assignment_set.values_list('staff', flat=True)
+            return user.staff in self.assignment_set.values_list("staff", flat=True)
 
     def update_load(self, cascade=True, save=False) -> True:
         """
@@ -292,11 +297,7 @@ class Task(ModelCommon):
             # The calculated load hasn't changed, so we don't need to cascade that up
             return False
 
-    def calculate_load(
-            self,
-            students: int|None,
-            is_first_time: bool = False
-    ) -> float:
+    def calculate_load(self, students: int | None, is_first_time: bool = False) -> float:
         """
 
         :return:
@@ -317,6 +318,7 @@ class Task(ModelCommon):
             # ==== IF THIS IS A UNIT CO-ORDINATOR ====
             # SPREADSHEET LOGIC
             from app.models.standard_load import StandardLoad
+
             standard_load: StandardLoad = StandardLoad.objects.latest()
 
             unit: Unit = self.unit
@@ -338,8 +340,12 @@ class Task(ModelCommon):
 
                 # ($J2+$L2*$Q2) = "Coursework (number of items prepared)" + "Coursework (fraction of unit mark)" * "Total Number of CATS"
                 # (0.1667 * [] * $K2 * $P2) = "Fraction of Coursework marked by coordinator" * "Number of Students"
-                load_coursework += (unit.coursework + unit.coursework_mark_fraction * unit.credits) * \
-                                                self.coursework_fraction * unit.students * standard_load.load_coursework_marked
+                load_coursework += (
+                    (unit.coursework + unit.coursework_mark_fraction * unit.credits)
+                    * self.coursework_fraction
+                    * unit.students
+                    * standard_load.load_coursework_marked
+                )
 
             load_exam: float = 0
             if self.exam_fraction:
@@ -371,6 +377,7 @@ class Task(ModelCommon):
             return load_calc_first * self.load_multiplier
         else:
             return load_calc * self.load_multiplier
+
 
 #
 # @receiver(post_delete, sender=Task)

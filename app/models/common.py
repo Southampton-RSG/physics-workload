@@ -12,6 +12,7 @@ class ModelCommon(Model):
 
     Classes implement `icon` (a font-awesome icon name) and `url_root` (the Django URL resolver root for that model).
     """
+
     history = HistoricalRecords(inherit=True)
 
     class Meta:
@@ -39,7 +40,7 @@ class ModelCommon(Model):
         """
         return f"/{type(self).url_root}/{self.pk}/"
 
-    def get_absolute_url_authenticated(self, user: AbstractUser|AnonymousUser|None) -> str:
+    def get_absolute_url_authenticated(self, user: AbstractUser | AnonymousUser | None) -> str:
         """
         :param user: The user to check authorisation for.
         :return: The absolute URL for the detail view of this particular instance of the model if allowed, or blank.
@@ -47,9 +48,9 @@ class ModelCommon(Model):
         if user and user.is_authenticated and (user.is_staff or self.has_access(user)):
             return self.get_absolute_url()
         else:
-            return ''
+            return ""
 
-    def get_instance_header(self, text: str|None = None) -> str:
+    def get_instance_header(self, text: str | None = None) -> str:
         """
         Creates a header for a view for an instance of this model.
         :param text: The text to use for the header, if not just the string representation of the instance.
@@ -60,12 +61,7 @@ class ModelCommon(Model):
         #     children__header=Header(text if text else f"{self}")
         # )
 
-        return render_to_string(
-            template_name='app/header/header.html',
-            context={
-                'icon': self.icon, 'text': f"{text if text else self}"
-            }
-        )
+        return render_to_string(template_name="app/header/header.html", context={"icon": self.icon, "text": f"{text if text else self}"})
 
     @classmethod
     def get_model_url(cls) -> str:
@@ -82,11 +78,8 @@ class ModelCommon(Model):
         :return: The rendered template, for use on the page.
         """
         return render_to_string(
-            template_name='app/header/header.html',
-            context={
-                'icon': cls.icon, 'url': cls.get_model_url(),
-                'text': cls._meta.verbose_name_plural.title()
-            }
+            template_name="app/header/header.html",
+            context={"icon": cls.icon, "url": cls.get_model_url(), "text": cls._meta.verbose_name_plural.title()},
         )
 
     @classmethod
@@ -96,15 +89,15 @@ class ModelCommon(Model):
         :return: The rendered template, for use on the page.
         """
         return render_to_string(
-            template_name='app/header/header.html',
+            template_name="app/header/header.html",
             context={
-                'icon': cls.icon,
-                'text': cls._meta.verbose_name.title(),
-            }
+                "icon": cls.icon,
+                "text": cls._meta.verbose_name.title(),
+            },
         )
 
     @abstractmethod
-    def has_access(self, user: AbstractUser|AnonymousUser) -> bool:
+    def has_access(self, user: AbstractUser | AnonymousUser) -> bool:
         """
         :param user: The user checking access.
         :return: True if debug auth is on or the user is staff.

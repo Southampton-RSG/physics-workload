@@ -6,13 +6,16 @@ from app.style import floating_fields_style, get_balance_classes_form
 
 class AcademicGroupDetailForm(Form):
     class Meta:
-        auto=dict(
+        auto = dict(
             model=AcademicGroup,
             exclude=[
-                'code', 'short_name', 'name', 'load_balance_final',
-            ]
+                "code",
+                "short_name",
+                "name",
+                "load_balance_final",
+            ],
         )
-        fields=dict(
+        fields = dict(
             load_balance=Field.integer(
                 display_name="Load Balance",
                 group="Row",
@@ -24,8 +27,8 @@ class AcademicGroupDetailForm(Form):
                 non_editable_input__attrs__class=lambda field, **_: get_balance_classes_form(field.value),
             ),
         )
-        editable=False
-        include=lambda request, **_: request.user.is_staff
-        instance=lambda academic_group, **_: academic_group
+        editable = False
+        include = lambda request, **_: request.user.is_staff
+        instance = lambda academic_group, **_: academic_group
 
         iommi_style = floating_fields_style

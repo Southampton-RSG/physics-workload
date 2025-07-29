@@ -25,9 +25,7 @@ main_menu = MainMenu(
 
 urlpatterns = [
     # The home page
-    path(
-        '', home_view_redirect, name='home'
-     ),
-    path('about/', AboutPage().as_view(), name='about'),
-    path('privacy/', PrivacyPage().as_view(), name='privacy'),
+    path("", home_view_redirect, name="home"),
+    path("about/", AboutPage().as_view(), name="about"),
+    path("privacy/", PrivacyPage().as_view(), name="privacy"),
 ] + main_menu.urlpatterns()

@@ -1,6 +1,7 @@
 """
 Handles the views for the Load Functions Groups
 """
+
 from typing import List
 
 from dash_bootstrap_templates import load_figure_template
@@ -10,31 +11,32 @@ from plotly.graph_objs import Figure, Layout, Scatter
 from plotly.graph_objs.layout import XAxis, YAxis
 from plotly.offline import plot
 
-from app.forms.load_function import LoadFunctionForm
 from app.forms.info import InfoForm
-from app.models import LoadFunction, Info
+from app.forms.load_function import LoadFunctionForm
+from app.models import Info, LoadFunction
 from app.pages.components.suffixes import SuffixCreate, SuffixDelete, SuffixEdit
 
-load_figure_template('bootstrap_dark')
+load_figure_template("bootstrap_dark")
+
 
 class LoadFunctionCreate(Page):
     """
     Create a new load function
     """
+
     header = Header(
         lambda params, **_: LoadFunction.get_model_header_singular(),
         children__suffix=SuffixCreate(),
     )
     form = LoadFunctionForm.create()
-    examples = html.p(
-        template="app/load_function/examples.html"
-    )
+    examples = html.p(template="app/load_function/examples.html")
 
 
 class LoadFunctionDelete(Page):
     """
     Delete the load function
     """
+
     header = Header(
         lambda params, **_: params.load_function.get_instance_header(),
         children__suffix=SuffixDelete(),
@@ -49,26 +51,24 @@ class LoadFunctionEdit(Page):
     """
     Edit a load function
     """
+
     header = Header(
         lambda params, **_: params.load_function.get_instance_header(),
         children__suffix=SuffixEdit(),
     )
     form = LoadFunctionForm.edit(
         instance=lambda params, **_: params.load_function,
-        extra__redirect_to='..',
+        extra__redirect_to="..",
     )
-    examples = html.p(
-        template="app/load_function/examples.html"
-    )
+    examples = html.p(template="app/load_function/examples.html")
 
 
 class LoadFunctionDetail(Page):
     """
     Shows details of the standard load
     """
-    header = Header(
-        lambda params, **_: params.load_function.get_instance_header()
-    )
+
+    header = Header(lambda params, **_: params.load_function.get_instance_header())
     form = LoadFunctionForm(
         instance=lambda params, **_: params.load_function,
         fields=dict(
@@ -96,7 +96,7 @@ class LoadFunctionDetail(Page):
             load_function: LoadFunction = params.load_function
             if not load_function.plot_minimum:
                 # Nothing to show!
-                return ''
+                return ""
 
             student_range: List[float] = list(range(load_function.plot_minimum, load_function.plot_maximum + 1))
             figure: Figure = Figure(
@@ -107,28 +107,27 @@ class LoadFunctionDetail(Page):
                     ),
                 ],
                 layout=Layout(
-                    template='bootstrap_dark',
-                    xaxis=XAxis(title='Students'),
-                    yaxis=YAxis(title='Load hours'),
+                    template="bootstrap_dark",
+                    xaxis=XAxis(title="Students"),
+                    yaxis=YAxis(title="Load hours"),
                 ),
             )
-            return plot(figure, output_type='div')
+            return plot(figure, output_type="div")
 
 
 class LoadFunctionList(Page):
     """
     Page listing the standard load over history
     """
-    header = Header(
-        lambda params, **_: LoadFunction.get_model_header()
-    )
+
+    header = Header(lambda params, **_: LoadFunction.get_model_header())
     info = InfoForm(
-        instance=lambda **_: Info.objects.get(page='function'),
+        instance=lambda **_: Info.objects.get(page="function"),
     )
     list = Table(
         h_tag=None,
         auto__model=LoadFunction,
-        auto__exclude=['notes'],
+        auto__exclude=["notes"],
         columns__name__cell__url=lambda row, **_: row.get_absolute_url(),
         columns__expression__cell__template=Template("<td class='font-monospace'>{{ value | truncatechars:32 }}</td>"),
         columns__plot_minimum=dict(
@@ -141,5 +140,3 @@ class LoadFunctionList(Page):
         ),
         rows=LoadFunction.objects.all(),
     )
-
-

@@ -11,19 +11,24 @@ class InfoForm(Form):
 
     Redirects to the 'page' the info is for on submission.
     """
+
     class Meta:
         auto = dict(
             model=Info,
-            include=['text'],
+            include=["text"],
         )
         fields__text__template = Template("{% load markdownify %}{{ field.value | markdownify }}")
-        attrs__class = {'position-relative': True}
+        attrs__class = {"position-relative": True}
         actions__edit = Action.icon(
             display_name=" ",  # If it's empty/none, it's 'Edit'
             icon=settings.ICON_EDIT,
             attrs__class={
-                'btn': True, 'btn-warning': True, 'btn-sm': True,
-                'position-absolute': True, 'bottom-0': True, 'end-0': True,
+                "btn": True,
+                "btn-warning": True,
+                "btn-sm": True,
+                "position-absolute": True,
+                "bottom-0": True,
+                "end-0": True,
             },
             include=lambda user, **_: user.is_staff,
             attrs__href=lambda instance, **_: instance.get_edit_url(),

@@ -9,15 +9,18 @@ logger: Logger = getLogger(__name__)
 
 
 class AssignmentTaskUniqueForm(Form):
-    """
+    """ """
 
-    """
     class Meta:
         auto = dict(
             model=Assignment,
             include=[
-                'task', 'staff', 'students', 'is_first_time', 'is_provisional',
-            ]
+                "task",
+                "staff",
+                "students",
+                "is_first_time",
+                "is_provisional",
+            ],
         )
         title = "Assignment"
         fields = dict(
@@ -34,13 +37,13 @@ class AssignmentTaskUniqueForm(Form):
             is_first_time__group="Row",
             is_provisional__group="Row",
         )
-        extra__redirect_to='.'
-        actions__submit=dict(
+        extra__redirect_to = "."
+        actions__submit = dict(
             display_name="Save",
             attrs__class={
                 "btn-primary": False,
                 "btn-success": True,
-            }
+            },
         )
 
         @staticmethod

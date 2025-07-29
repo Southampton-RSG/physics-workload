@@ -17,35 +17,34 @@ class StaffHistoryDetail(Page):
     """
     View showing the detail of a staff member at a point in time.
     """
+
     header = Header(
         lambda staff, **_: staff.get_instance_header(),
-        children__suffix=SuffixHistory(
-             text=lambda staff_history, **_: f" / {staff_history.history_date.date()} "
-        )
+        children__suffix=SuffixHistory(text=lambda staff_history, **_: f" / {staff_history.history_date.date()} "),
     )
     form = StaffForm(
         h_tag=None,
         auto=dict(
             instance=lambda staff, **_: staff,
             exclude=[
-                'user',
+                "user",
             ],
         ),
         fields=dict(
             fte_fraction__include=lambda staff_history, **_: staff_history.fte_fraction,
             hours_fixed__include=lambda staff_history, **_: staff_history.hours_fixed,
             notes__include=lambda request, **_: request.user.is_staff,
-            load_target__group='row2',
-            load_assigned__group = 'row2',
-            load_external__group='row2',
+            load_target__group="row2",
+            load_assigned__group="row2",
+            load_external__group="row2",
             load_balance_final=dict(
-                group='row3',
-                after='load_external',
+                group="row3",
+                after="load_external",
                 non_editable_input__attrs__class=lambda staff_history, **_: get_balance_classes_form(staff_history.load_balance_final),
             ),
             load_balance_historic=dict(
-                group = 'row3',
-                after='load_balance_final',
+                group="row3",
+                after="load_balance_final",
                 initial=lambda staff_history, **_: staff_history.load_balance_historic,
                 non_editable_input__attrs__class=lambda staff, **_: get_balance_classes_form(staff.load_balance_historic),
             ),
@@ -55,11 +54,9 @@ class StaffHistoryDetail(Page):
     assignments = Table(
         auto=dict(
             model=Assignment,
-            exclude=[
-                'staff'
-            ],
+            exclude=["staff"],
         ),
-        columns = dict(
+        columns=dict(
             notes__include=False,
             task=dict(
                 cell=dict(
@@ -67,7 +64,7 @@ class StaffHistoryDetail(Page):
                     url=lambda row, **_: row.task.get_absolute_url(),
                 ),
             ),
-            load_calc__after='task',
+            load_calc__after="task",
         ),
         rows=lambda staff, staff_history, **_: Assignment.history.as_of(staff_history.history_date).filter(staff=staff),
     )
@@ -77,23 +74,20 @@ class StaffHistoryList(Page):
     """
     List of History entries for a staff member.
     """
+
     header = Header(
         lambda staff, **_: staff.get_instance_header(),
         children__suffix=SuffixHistory(),
     )
 
     plot = html.div(
-        attrs__class={"mt-4": True},
-        children=dict(
-            header=Header("Load Balance"),
-            graph=Template("{{page.extra_evaluated.plot | safe }}")
-        )
+        attrs__class={"mt-4": True}, children=dict(header=Header("Load Balance"), graph=Template("{{page.extra_evaluated.plot | safe }}"))
     )
 
     list = Table(
         auto__model=Staff,
         h_tag=None,
-        auto__include=['load_balance_final', 'load_balance_historic'],
+        auto__include=["load_balance_final", "load_balance_historic"],
         columns=dict(
             history_date=Column(
                 cell=dict(
@@ -108,9 +102,7 @@ class StaffHistoryList(Page):
                 after="history_date",
                 group="Load Balance",
                 display_name="Final",
-                cell=dict(
-                    attrs__class=lambda row, **_: get_balance_classes(row.load_balance_final)
-                ),
+                cell=dict(attrs__class=lambda row, **_: get_balance_classes(row.load_balance_final)),
             ),
             load_balance_historic=dict(
                 after="load_balance_final",
@@ -126,10 +118,7 @@ class StaffHistoryList(Page):
 
     class Meta:
         @staticmethod
-        def extra_evaluated__plot(
-                params: Dict[str, Any],
-                staff: Staff, **_
-        ) -> str:
+        def extra_evaluated__plot(params: Dict[str, Any], staff: Staff, **_) -> str:
             """
             Creates a graph of the staff balance over time.
 
@@ -137,16 +126,14 @@ class StaffHistoryList(Page):
             :param staff: The Staff instance, provided via URL decoding.
             :return: The HTML code of the graph.
             """
-            dates: List[str] = [f"{str(timezone.now().year-1)[-2:]}/{str(timezone.now().year)[-2:]}"]
-            balance_yearly : List[int] = [staff.get_load_balance()]
-            balance_cumulative: List[int] = [staff.get_load_balance()+staff.load_balance_historic]
+            dates: List[str] = [f"{str(timezone.now().year - 1)[-2:]}/{str(timezone.now().year)[-2:]}"]
+            balance_yearly: List[int] = [staff.get_load_balance()]
+            balance_cumulative: List[int] = [staff.get_load_balance() + staff.load_balance_historic]
 
             for staff_historic in staff.history.all():
-                dates.append(f"{str(staff_historic.history_date.year-1)[-2:]}/{str(staff_historic.history_date.year)[-2:]}")
+                dates.append(f"{str(staff_historic.history_date.year - 1)[-2:]}/{str(staff_historic.history_date.year)[-2:]}")
                 balance_yearly.append(staff_historic.load_balance_final)
-                balance_cumulative.append(
-                    staff_historic.load_balance_final+staff_historic.load_balance_historic
-                )
+                balance_cumulative.append(staff_historic.load_balance_final + staff_historic.load_balance_historic)
 
             dates.reverse()
             balance_yearly.reverse()
@@ -167,16 +154,10 @@ class StaffHistoryList(Page):
                     ),
                 ],
                 layout=Layout(
-                    template='bootstrap_dark',
-                    xaxis=XAxis(title='Date', fixedrange=True),
-                    yaxis=YAxis(title='Load balance (hours)', fixedrange=True),
+                    template="bootstrap_dark",
+                    xaxis=XAxis(title="Date", fixedrange=True),
+                    yaxis=YAxis(title="Load balance (hours)", fixedrange=True),
                     margin=dict(l=0, r=0, b=0, t=0, pad=0),
                 ),
             )
-            return plot(
-                figure,
-                output_type='div',
-                config=dict(
-                    displayModeBar=False
-                )
-            )
+            return plot(figure, output_type="div", config=dict(displayModeBar=False))

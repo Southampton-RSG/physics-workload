@@ -25,8 +25,8 @@ lint:  ## run python linter with ruff
 lints: lint
 
 fix:  ## fix python formatting with ruff
-	python -m ruff check --fix teaching_time_tool
-	python -m ruff format teaching_time_tool
+	python -m ruff check --fix teaching_time_tool app
+	python -m ruff format teaching_time_tool app
 
 # alias
 format: fix

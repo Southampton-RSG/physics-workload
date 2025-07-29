@@ -19,12 +19,14 @@ class StandardLoadForm(Form):
     """
     Form for the Standard Load model
     """
+
     class Meta:
         """
         Includes mathjax for rendering the help text on the model
         """
+
         auto__model = StandardLoad
-        assets=mathjax_js
+        assets = mathjax_js
 
         @staticmethod
         def actions__submit__post_handler(form, request, **_) -> HttpResponse | None:
@@ -75,25 +77,17 @@ class StandardLoadFormNewYear(Form):
         """
         Includes mathjax for rendering the help text on the model
         """
-        auto=dict(
-            model = StandardLoad,
-            exclude = ['target_load_per_fte_calc']
-        )
-        fields=dict(
-            year=dict(
-                editable=False,
-                initial=lambda params, **_: params.standard_load.year + 1
-            ),
-            notes=dict(
-                iommi_style=floating_fields_style
-            )
+
+        auto = dict(model=StandardLoad, exclude=["target_load_per_fte_calc"])
+        fields = dict(
+            year=dict(editable=False, initial=lambda params, **_: params.standard_load.year + 1), notes=dict(iommi_style=floating_fields_style)
         )
         h_tag = None
         actions__submit = dict(
             display_name="Save as new year",
             attrs__class={
                 "btn-success": True,
-            }
+            },
         )
         iommi_style = horizontal_fields_style
         assets = mathjax_js
@@ -163,9 +157,7 @@ class StandardLoadFormNewYear(Form):
             standard_load_new.save()
 
             for staff in Staff.objects.all():
-                staff.load_balance_historic = staff.history.aggregate(
-                    Sum('load_balance_final')
-                )['load_balance_final__sum']
+                staff.load_balance_historic = staff.history.aggregate(Sum("load_balance_final"))["load_balance_final__sum"]
                 staff.load_balance_final = 0
                 staff.save()
 
@@ -174,15 +166,11 @@ class StandardLoadFormNewYear(Form):
                 assignment.save()
 
             for academic_group in AcademicGroup.objects.all():
-                academic_group.load_balance_historic = academic_group.history.aggregate(
-                    Sum('load_balance_final')
-                )['load_balance_final__sum']
+                academic_group.load_balance_historic = academic_group.history.aggregate(Sum("load_balance_final"))["load_balance_final__sum"]
                 academic_group.load_balance_final = 0
                 academic_group.save()
 
             # Now, we trigger the update
             update_all_loads()
 
-            return HttpResponseRedirect(
-                standard_load_new.get_absolute_url()
-            )
+            return HttpResponseRedirect(standard_load_new.get_absolute_url())

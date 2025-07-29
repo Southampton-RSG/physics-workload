@@ -13,15 +13,16 @@ class StaffForm(Form):
     """
     Form for editing Staff
     """
+
     class Meta:
-        auto__model=Staff
-        fields__account__group='row1'
-        fields__name__group='row1'
-        fields__academic_group__group='row1'
-        fields__academic_group__non_editable_input__template = 'app/choice_url.html'
-        fields__gender__group='row1'
-        fields__fte_fraction__group='row2'
-        fields__hours_fixed__group='row2'
+        auto__model = Staff
+        fields__account__group = "row1"
+        fields__name__group = "row1"
+        fields__academic_group__group = "row1"
+        fields__academic_group__non_editable_input__template = "app/choice_url.html"
+        fields__gender__group = "row1"
+        fields__fte_fraction__group = "row2"
+        fields__hours_fixed__group = "row2"
         iommi_style = floating_fields_style
 
         @staticmethod

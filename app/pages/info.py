@@ -1,30 +1,25 @@
-from django.template import Template
-from iommi import Asset, Form, Header, Page
+from iommi import Form, Header, Page
 
+from app.assets import autosize_js
 from app.models import Info
 from app.pages.components.suffixes import SuffixEdit
-from app.assets import autosize_js
-
-from django.views.generic.edit import UpdateView
 
 
 class InfoForm(Form):
-
     class Meta:
-        h_tag=None,
-        instance=lambda info, **_: info,
-        auto=dict(
+        h_tag = (None,)
+        instance = (lambda info, **_: info,)
+        auto = dict(
             model=Info,
-            exclude=['name', 'page'],
+            exclude=["name", "page"],
         )
-        fields__text__attrs__class={
+        fields__text__attrs__class = {
             "form-floating": False,
         }
-        fields__text__input__attrs__class={
+        fields__text__input__attrs__class = {
             "autosize": True,
         }
         assets = autosize_js
-
 
 
 class InfoEdit(Page):
@@ -37,7 +32,7 @@ class InfoEdit(Page):
         instance=lambda info, **_: info,
         auto=dict(
             model=Info,
-            exclude=['name', 'page'],
+            exclude=["name", "page"],
         ),
         # fields__text=dict(
         #     attrs__class={

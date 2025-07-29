@@ -8,7 +8,7 @@ from app.models.staff import Staff
 from app.pages.staff import StaffCreate, StaffDelete, StaffDetail, StaffEdit, StaffList
 from app.pages.staff.history import StaffHistoryDetail, StaffHistoryList
 
-load_figure_template('bootstrap_dark')
+load_figure_template("bootstrap_dark")
 
 register_path_decoding(
     staff=has_access_decoder(Staff, "You may only view your own Staff details."),
@@ -30,11 +30,10 @@ staff_submenu: M = M(
         detail=M(
             display_name=lambda staff, **_: staff.name,
             open=True,
-            params={'staff'},
-            path='<staff>/',
+            params={"staff"},
+            path="<staff>/",
             url=lambda staff, **_: f"/{Staff.url_root}/{staff.account}/",
             view=StaffDetail,
-
             items=dict(
                 edit=M(
                     icon=settings.ICON_EDIT,
@@ -52,13 +51,13 @@ staff_submenu: M = M(
                     items=dict(
                         detail=M(
                             display_name=lambda staff_history, **_: staff_history.history_date.date(),
-                            params={'staff_history'},
-                            path='<staff_history>/',
-                            view = StaffHistoryDetail,
+                            params={"staff_history"},
+                            path="<staff_history>/",
+                            view=StaffHistoryDetail,
                         )
-                    )
+                    ),
                 ),
             ),
         ),
-    )
+    ),
 )

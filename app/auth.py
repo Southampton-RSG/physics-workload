@@ -1,6 +1,7 @@
 """
 Adds access-checking functions that test the permissions on the model.
 """
+
 from typing import Any, Callable, Type, Unpack
 
 from django.contrib.auth.models import AbstractUser, AnonymousUser
@@ -17,6 +18,7 @@ def has_access_decoder(model: Type[ModelCommon], message: str) -> Callable[[str,
     :param message: The message to show on failed access.
     :return: A function that decodes access for that model
     """
+
     def has_access_decoder_inner(string: str, request: HttpRequest, **_: Unpack[Any]) -> ModelCommon:
         """
         Given a URL string key and a user, returns the model associated with that string if the user has permission.
@@ -34,7 +36,7 @@ def has_access_decoder(model: Type[ModelCommon], message: str) -> Callable[[str,
     return has_access_decoder_inner
 
 
-def has_staff_access(user: AbstractUser|AnonymousUser) -> bool:
+def has_staff_access(user: AbstractUser | AnonymousUser) -> bool:
     """
     Checks if the user is signed in and staff, or if security is off for debugging.
 

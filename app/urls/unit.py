@@ -23,7 +23,6 @@ unit_submenu: M = M(
     icon=Unit.icon,
     include=lambda request, **_: request.user.is_authenticated,
     view=UnitList,
-
     items=dict(
         create=M(
             icon=settings.ICON_CREATE,
@@ -33,11 +32,10 @@ unit_submenu: M = M(
         detail=M(
             display_name=lambda unit, **_: unit.code,
             open=True,
-            params={'unit'},
-            path='<unit>/',
+            params={"unit"},
+            path="<unit>/",
             url=lambda unit, **_: f"/{Unit.url_root}/{unit.pk}/",
             view=UnitDetail,
-
             items=dict(
                 edit=M(
                     icon=settings.ICON_EDIT,
@@ -55,11 +53,11 @@ unit_submenu: M = M(
                     items=dict(
                         detail=M(
                             display_name=lambda unit_history, **_: unit_history.history_date.date(),
-                            params={'unit_history'},
-                            path='<unit_history>/',
+                            params={"unit_history"},
+                            path="<unit_history>/",
                             view=UnitHistoryDetail,
                         )
-                    )
+                    ),
                 ),
                 create=M(
                     display_name="Create Task",
@@ -77,11 +75,10 @@ unit_submenu: M = M(
                     display_name=lambda task, **_: task.name,
                     icon=Task.icon,
                     open=True,
-                    params={'unit', 'task'},
-                    path='<task>/',
+                    params={"unit", "task"},
+                    path="<task>/",
                     url=lambda task, **_: f"/{Unit.url_root}/{task.unit.pk}/{task.pk}/",
                     view=TaskDetail,
-
                     items=dict(
                         edit=M(
                             icon=settings.ICON_EDIT,
@@ -93,9 +90,9 @@ unit_submenu: M = M(
                             view=TaskDelete,
                             include=lambda request, **_: request.user.is_staff,
                         ),
-                    )
+                    ),
                 ),
             ),
-        )
-    )
+        ),
+    ),
 )

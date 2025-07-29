@@ -3,6 +3,7 @@ Pages relating to showing and managing tasks.
 
 Handle the general 'non-unit' task creation, and all task editing and deletion.
 """
+
 from logging import Logger, getLogger
 from typing import List
 
@@ -25,13 +26,14 @@ class TaskDetail(Page):
     """
     Page for showing task details
     """
+
     header = Header(
         lambda task, **_: task.get_instance_header(),
     )
 
     @staticmethod
     def filter_staff(task):
-        staff_allocated: List[Staff] = task.assignment_set.values_list('staff', flat=True)
+        staff_allocated: List[Staff] = task.assignment_set.values_list("staff", flat=True)
         staff_allowed: QuerySet[Staff] = Staff.objects.exclude(pk__in=staff_allocated)
 
         if task.unit and task.unit.academic_group:
@@ -47,7 +49,6 @@ class TaskDetail(Page):
     )
     assignments_editable = AssignmentTaskEditTable(
         include=lambda user, task, **_: not task.is_unique and user.is_staff,
-
     )
     assignment = AssignmentTaskUniqueForm(
         include=lambda user, task, **_: task.assignment_set.count() and task.is_unique and not user.is_staff,
@@ -68,11 +69,11 @@ class TaskDetail(Page):
     )
 
 
-
 class TaskEdit(Page):
     """
     Page for editing a task
     """
+
     header = Header(
         lambda task, **_: task.get_instance_header(),
         children__suffix=SuffixEdit(),
@@ -84,19 +85,19 @@ class TaskCreate(Page):
     """
     Page for creating a task
     """
+
     header = Header(
         lambda params, **_: Task.get_model_header_singular(),
         children__suffix=SuffixCreate(),
     )
-    form = TaskCreateForm.create(
-        extra__redirect_to='..'
-    )
+    form = TaskCreateForm.create(extra__redirect_to="..")
 
 
 class TaskDelete(Page):
     """
     Page for deleting a task
     """
+
     header = Header(
         lambda task, **_: task.get_instance_header(),
         children__suffix=SuffixDelete(),
@@ -108,17 +109,16 @@ class TaskList(Page):
     """
     Page for listing tasks
     """
+
     header = Header(
         lambda params, **_: Task.get_model_header(),
     )
     info = InfoForm(
-        instance=lambda **_: Info.objects.get(page='task'),
+        instance=lambda **_: Info.objects.get(page="task"),
     )
     list = TaskTable(
         h_tag=None,
-        rows=TaskTable.annotate_query_set(
-            Task.objects.all()
-        ),
+        rows=TaskTable.annotate_query_set(Task.objects.all()),
     )
 
 
@@ -126,6 +126,7 @@ class TaskFullTimeCreate(Page):
     """
     Page for creating a task that's full time
     """
+
     header = Header(
         lambda params, **_: Task.get_model_header_singular(),
         children__suffix=SuffixCreateFullTime(),
@@ -134,6 +135,4 @@ class TaskFullTimeCreate(Page):
 
 
 # Register tasks to be searched using the "name" field.
-register_search_fields(
-    model=Task, search_fields=['name'], allow_non_unique=True
-)
+register_search_fields(model=Task, search_fields=["name"], allow_non_unique=True)

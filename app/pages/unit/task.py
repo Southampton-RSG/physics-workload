@@ -8,6 +8,7 @@ class UnitTaskLeadCreate(Page):
     """
     Create a new unit lead
     """
+
     header = Header(
         lambda unit, **_: unit.get_instance_header_short(),
         children__suffix=SuffixCreateTaskLead(),
@@ -19,6 +20,7 @@ class UnitTaskCreate(Page):
     """
     Create a task associated with a unit
     """
+
     header = Header(
         lambda unit, **_: unit.get_instance_header_short(),
         children__suffix=SuffixCreate(),

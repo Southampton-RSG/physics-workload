@@ -10,11 +10,10 @@ class UnitHistoryDetail(Page):
     """
     View showing the detail of a unit at a point in time.
     """
+
     header = Header(
         lambda unit, **_: unit.get_instance_header(),
-        children__suffix=SuffixHistory(
-            text=lambda staff_history, **_: f" / {staff_history.history_date.date()} "
-        )
+        children__suffix=SuffixHistory(text=lambda staff_history, **_: f" / {staff_history.history_date.date()} "),
     )
     tasks = TaskTable(
         h_tag=Header,
@@ -22,17 +21,13 @@ class UnitHistoryDetail(Page):
             unit_code__include=False,
             assignment_set=Column(
                 cell=dict(
-                    template='app/unit/assignment_set.html',
-                    value=lambda row, unit, unit_history, **_: Assignment.history.as_of(
-                        unit_history.history_date
-                    ).filter(task=row).all(),
+                    template="app/unit/assignment_set.html",
+                    value=lambda row, unit, unit_history, **_: Assignment.history.as_of(unit_history.history_date).filter(task=row).all(),
                 )
             ),
         ),
         query__include=False,
-        rows=lambda unit, unit_history, **_: TaskTable.annotate_query_set(
-            Task.history.as_of(unit_history.history_date).filter(unit=unit)
-        ),
+        rows=lambda unit, unit_history, **_: TaskTable.annotate_query_set(Task.history.as_of(unit_history.history_date).filter(unit=unit)),
     )
     form = UnitForm(
         title="Details",
@@ -56,6 +51,7 @@ class UnitHistoryList(Page):
     """
     List of all historical entries for a Unit.
     """
+
     header = Header(
         lambda unit, **_: unit.get_instance_header(),
         children__suffix=SuffixHistory(),
@@ -63,7 +59,7 @@ class UnitHistoryList(Page):
     list = Table(
         auto__model=Unit,
         h_tag=None,
-        auto__include=['students'],
+        auto__include=["students"],
         columns=dict(
             history_date=Column(
                 cell=dict(
@@ -71,7 +67,7 @@ class UnitHistoryList(Page):
                     value=lambda params, row, **_: row.history_date.date(),
                 ),
             ),
-            history_id = Column(
+            history_id=Column(
                 render_column=False,
             ),
         ),

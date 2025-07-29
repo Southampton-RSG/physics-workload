@@ -1,6 +1,7 @@
 """
 Pages for academic units
 """
+
 from django.utils.html import format_html
 from iommi import Header, Page, html
 
@@ -16,13 +17,12 @@ class UnitDetail(Page):
     """
     View a unit and its associated tasks
     """
-    header = Header(
-        lambda unit, **_: unit.get_instance_header()
-    )
+
+    header = Header(lambda unit, **_: unit.get_instance_header())
     tasks = TaskTable(
         columns=dict(
             owner__include=False,
-            assignment_set__cell__template='app/unit/assignment_set.html',
+            assignment_set__cell__template="app/unit/assignment_set.html",
         ),
         h_tag=Header,
         query__include=False,
@@ -50,6 +50,7 @@ class UnitDelete(Page):
     """
     View a unit and its associated tasks
     """
+
     header = Header(
         lambda unit, **_: unit.get_instance_header(),
         children__suffix=SuffixDelete(),
@@ -76,6 +77,7 @@ class UnitEdit(Page):
     """
     Edit a unit's details
     """
+
     header = Header(
         lambda unit, **_: unit.get_instance_header(),
         children__suffix=SuffixEdit(),
@@ -90,6 +92,7 @@ class UnitCreate(Page):
     """
     Page showing a unit to be created
     """
+
     header = Header(
         lambda params, **_: Unit.get_model_header_singular(),
         children__suffix=SuffixCreate(),
@@ -106,11 +109,10 @@ class UnitList(Page):
     """
     List of all currently active modules.
     """
-    header = Header(
-        lambda params, **_: Unit.get_model_header()
-    )
+
+    header = Header(lambda params, **_: Unit.get_model_header())
     info = InfoForm(
-        instance=lambda **_: Info.objects.get(page='module'),
+        instance=lambda **_: Info.objects.get(page="module"),
     )
     list = UnitTable(
         rows=UnitTable.annotate_query_set(Unit.objects.all()),

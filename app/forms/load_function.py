@@ -15,21 +15,22 @@ class LoadFunctionForm(Form):
     """
     Form for editing Load Function
     """
+
     class Meta:
         h_tag = None
         assets = mathjax_js
-        auto=dict(
+        auto = dict(
             model=LoadFunction,
         )
-        fields=dict(
+        fields = dict(
             plot_minimum=dict(
                 group="Plot",
             ),
             plot_maximum=dict(
                 group="Plot",
-            )
+            ),
         )
-        iommi_style=floating_fields_style
+        iommi_style = floating_fields_style
 
         @staticmethod
         def fields__expression__is_valid(parsed_data, **_) -> (bool, str):
@@ -41,7 +42,7 @@ class LoadFunctionForm(Form):
             :return: True/False, and then the reason why it failed if false.
             """
             try:
-                simple_eval(parsed_data, names={'s': 1})
+                simple_eval(parsed_data, names={"s": 1})
             except Exception as e:
                 return False, f"{e}"
 
@@ -50,11 +51,9 @@ class LoadFunctionForm(Form):
         @staticmethod
         def extra__post_validation(form, instance, **_):
             logger.debug(f"Validating Load Function during {form.extra.crud_type}")
-            if form.extra.crud_type == 'delete':
+            if form.extra.crud_type == "delete":
                 if instance.task_set.count():
-                    form.add_error(
-                        "You cannot delete a Load Function that is used by Tasks."
-                    )
+                    form.add_error("You cannot delete a Load Function that is used by Tasks.")
 
         @staticmethod
         def extra__on_save(form, instance, **_):

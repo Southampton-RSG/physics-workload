@@ -18,8 +18,9 @@ class StandardLoad(ModelCommon):
     """
     Standard loads for an academic year
     """
-    icon = 'weight-hanging'
-    url_root = 'standard_load'
+
+    icon = "weight-hanging"
+    url_root = "standard_load"
 
     year = IntegerField(
         unique=True,
@@ -27,11 +28,12 @@ class StandardLoad(ModelCommon):
         validators=[
             MinValueValidator(settings.YEAR_MINIMUM_VALUE),
         ],
-        help_text="Initial year, e.g. 2000 for 2000-2001 academic year."
+        help_text="Initial year, e.g. 2000 for 2000-2001 academic year.",
     )
 
     load_lecture = FloatField(
-        blank=False, null=False,
+        blank=False,
+        null=False,
         validators=[
             MinValueValidator(0.0),
         ],
@@ -39,7 +41,8 @@ class StandardLoad(ModelCommon):
         help_text=r"$L_{lec}$",
     )
     load_lecture_first = FloatField(
-        blank=False, null=False,
+        blank=False,
+        null=False,
         validators=[
             MinValueValidator(0.0),
         ],
@@ -48,7 +51,8 @@ class StandardLoad(ModelCommon):
     )
 
     load_coursework_set = FloatField(
-        blank=False, null=False,
+        blank=False,
+        null=False,
         validators=[
             MinValueValidator(0.0),
         ],
@@ -56,7 +60,8 @@ class StandardLoad(ModelCommon):
         help_text=r"$L_{cw, \mathrm{prep}}$",
     )
     load_coursework_credit = FloatField(
-        blank=False, null=False,
+        blank=False,
+        null=False,
         validators=[
             MinValueValidator(0.0),
         ],
@@ -64,7 +69,8 @@ class StandardLoad(ModelCommon):
         help_text=r"$L_{cw, \mathrm{cats}}$",
     )
     load_coursework_marked = FloatField(
-        blank=False, null=False,
+        blank=False,
+        null=False,
         validators=[
             MinValueValidator(0.0),
         ],
@@ -73,7 +79,8 @@ class StandardLoad(ModelCommon):
     )
 
     load_exam_credit = FloatField(
-        blank=False, null=False,
+        blank=False,
+        null=False,
         validators=[
             MinValueValidator(0.0),
         ],
@@ -81,7 +88,8 @@ class StandardLoad(ModelCommon):
         help_text=r"$L_{e, \mathrm{cats}}$",
     )
     load_exam_marked = FloatField(
-        blank=False, null=False,
+        blank=False,
+        null=False,
         validators=[
             MinValueValidator(0.0),
         ],
@@ -89,15 +97,17 @@ class StandardLoad(ModelCommon):
         help_text=r"$L_{e, \mathrm{mark}}$",
     )
     load_fte_misc = FloatField(
-        blank=False, null=False,
+        blank=False,
+        null=False,
         validators=[
             MinValueValidator(0.0),
         ],
         verbose_name="Staff misc. load per FTE fraction",
-        help_text=r"$L_m$, basic allowance apart from explicit task loads"
+        help_text=r"$L_m$, basic allowance apart from explicit task loads",
     )
     target_load_per_fte = IntegerField(
-        blank=False, null=False,
+        blank=False,
+        null=False,
         validators=[
             MinValueValidator(0),
         ],
@@ -106,36 +116,37 @@ class StandardLoad(ModelCommon):
     )
 
     target_load_per_fte_calc = IntegerField(
-        blank=True, null=True,
+        blank=True,
+        null=True,
         verbose_name="Calculated teaching load per FTE",
     )
 
     notes = TextField(blank=True)
 
     class Meta:
-        get_latest_by = 'year'
-        ordering = ['-year']
-        verbose_name='Standard Load'
-        verbose_name_plural='Standard Loads'
+        get_latest_by = "year"
+        ordering = ["-year"]
+        verbose_name = "Standard Load"
+        verbose_name_plural = "Standard Loads"
 
     def __str__(self) -> str:
-        return f"{self.year-2000}/{self.year-1999}"
+        return f"{self.year - 2000}/{self.year - 1999}"
 
     def get_absolute_url(self) -> str:
         """
         The standard load is always
         :return:
         """
-        return f'/load/{self.year}/'
+        return f"/load/{self.year}/"
 
-    def get_instance_header(self, text: str|None = None, suffix: str|None = None) -> str:
+    def get_instance_header(self, text: str | None = None, suffix: str | None = None) -> str:
         """
         Prepend the instance name with 'Standard Load' for clarity
         :return: Header in the format "Standard Load ??/??"
         """
         return super().get_instance_header(text=f"Standard Load {self}")
 
-    def has_access(self, user: AbstractUser|AnonymousUser) -> bool:
+    def has_access(self, user: AbstractUser | AnonymousUser) -> bool:
         """
         You can always see the load details
         :param user: The user to test access for.
@@ -165,11 +176,11 @@ class StandardLoad(ModelCommon):
 
         target_old: int = self.target_load_per_fte_calc
 
-        staff_aggregation: Dict[str, int] = Staff.objects.aggregate(Sum('fte_fraction'), Sum('hours_fixed'))
-        total_fixed_hours: int = staff_aggregation.get('hours_fixed__sum', 0)
-        total_fte_fraction: int = staff_aggregation.get('fte_fraction__sum', 0)
-        assignment_aggregation: Dict[str, int] = Assignment.objects.aggregate(Sum('load_calc'))
-        total_assigned_hours: int = assignment_aggregation.get('load_calc__sum', 0)
+        staff_aggregation: Dict[str, int] = Staff.objects.aggregate(Sum("fte_fraction"), Sum("hours_fixed"))
+        total_fixed_hours: int = staff_aggregation.get("hours_fixed__sum", 0)
+        total_fte_fraction: int = staff_aggregation.get("fte_fraction__sum", 0)
+        assignment_aggregation: Dict[str, int] = Assignment.objects.aggregate(Sum("load_calc"))
+        total_assigned_hours: int = assignment_aggregation.get("load_calc__sum", 0)
 
         if total_fte_fraction and total_assigned_hours:
             self.target_load_per_fte_calc = int(self.load_fte_misc + (total_assigned_hours - total_fixed_hours) / total_fte_fraction)
@@ -179,10 +190,9 @@ class StandardLoad(ModelCommon):
         logger.info(f"Recalculated load target per FTE from {target_old} to {self.target_load_per_fte_calc}.")
         self.save()
 
-
     def update_calculated_loads(
-            self,
-            previous_standard_load: 'StandardLoad' = None,
+        self,
+        previous_standard_load: "StandardLoad" = None,
     ) -> bool:
         """
 
@@ -193,7 +203,7 @@ class StandardLoad(ModelCommon):
 
         if previous_standard_load:
             # Has an update actually changed the misc load? That would require a reevaluation of teaching workload.
-            recalculate_target_load: bool = (self.load_fte_misc == previous_standard_load.load_fte_misc)
+            recalculate_target_load: bool = self.load_fte_misc == previous_standard_load.load_fte_misc
         else:
             # A staff member has been created/task has been deleted/whatever
             recalculate_target_load: bool = True

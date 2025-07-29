@@ -7,11 +7,8 @@ from app.style import floating_fields_style
 
 class UnitTable(Table):
     class Meta:
-        auto=dict(
-            model=Unit,
-            include=['code', 'name', 'task_set', 'students']
-        )
-        columns=dict(
+        auto = dict(model=Unit, include=["code", "name", "task_set", "students"])
+        columns = dict(
             # -------- HIDDEN COLUMNS --------
             assignment_required=Column(render_column=False),
             assignment_provisional=Column(render_column=False),
@@ -31,18 +28,18 @@ class UnitTable(Table):
                 ),
             ),
             task_set=dict(
-                display_name='Tasks',
+                display_name="Tasks",
                 cell=dict(
-                    template='app/unit/task_set.html',
+                    template="app/unit/task_set.html",
                     value=lambda request, row, **_: Task.objects.filter(unit=row) if row.has_access(request.user) else None,
                 ),
-                after='students',
-                sort_key='assignment_required',
+                after="students",
+                sort_key="assignment_required",
                 sortable=True,
             ),
         )
         # -------- FILTER --------
-        query=dict(
+        query = dict(
             advanced__include=False,
             filters=dict(
                 status=dict(
@@ -54,17 +51,17 @@ class UnitTable(Table):
                     include=lambda request, **_: request.user.is_staff,
                     display_name="Status",
                     choices=[
-                        '---',
-                        'Has Provisional',
-                        'Has Unassigned',
+                        "---",
+                        "Has Provisional",
+                        "Has Unassigned",
                     ],
                 ),
-                actions__reset=Action.button(display_name='Clear Filter', attrs__type='reset'),
+                actions__reset=Action.button(display_name="Clear Filter", attrs__type="reset"),
             ),
         )
-        page_size=20
-        h_tag=None
-        iommi_style=floating_fields_style
+        page_size = 20
+        h_tag = None
+        iommi_style = floating_fields_style
 
     @staticmethod
     def filter_status_into_query(value_string_or_f) -> Q:
@@ -78,8 +75,6 @@ class UnitTable(Table):
     @staticmethod
     def annotate_query_set(query_set: QuerySet[Unit]) -> QuerySet[Unit]:
         return query_set.annotate(
-            assignment_required=Count(
-                'task_set__is_required', filter=Q(task_set__is_required=True)
-            ) - Count('task_set__assignment_set'),
-            assignment_provisional=Count('task_set__assignment_set__is_provisional'),
+            assignment_required=Count("task_set__is_required", filter=Q(task_set__is_required=True)) - Count("task_set__assignment_set"),
+            assignment_provisional=Count("task_set__assignment_set__is_provisional"),
         )

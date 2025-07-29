@@ -20,10 +20,8 @@ base_style = Style(
             attrs__href="//fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,400&amp;display=swap",
             attrs__media="all",
         ),
-        custom_base_css=Asset.css(
-            attrs__href="/static/css/custom-base.css"
-        ),
-        autosize_js = Asset.js(
+        custom_base_css=Asset.css(attrs__href="/static/css/custom-base.css"),
+        autosize_js=Asset.js(
             attrs__href="/static/js/autosize.js",
         ),
     ),
@@ -32,27 +30,27 @@ base_style = Style(
         "mt-4": True,
     },
 )
-register_style('teaching_time_tool', base_style)
+register_style("teaching_time_tool", base_style)
 
 
 boolean_buttons: Dict[str, Any] = dict(
     attrs__class={
-        'form-check': False,
-        'mb-3': True,
-        'h-100': True,
+        "form-check": False,
+        "mb-3": True,
+        "h-100": True,
     },
     input__attrs__class={
-        'form-check-input': False,
-        'btn-check': True,
+        "form-check-input": False,
+        "btn-check": True,
     },
     label__attrs__class={
-        'btn': True,
-        'w-100': True,
-        'form-label': False,
-        'form_label': False,
-        'btn-lg': True,
-        'btn-outline-primary': True,
-    }
+        "btn": True,
+        "w-100": True,
+        "form-label": False,
+        "form_label": False,
+        "btn-lg": True,
+        "btn-outline-primary": True,
+    },
 )
 
 # ==============================================================================-
@@ -60,23 +58,15 @@ boolean_buttons: Dict[str, Any] = dict(
 # and move the label: https://getbootstrap.com/docs/5.3/forms/floating-labels/
 # ==============================================================================
 floating_fields: Dict[str, Any] = {
-    'label__after': 'input',
-    'attrs': {
-        'class': {
-            'form-floating': True,
-            'mb-3': True
-        },
+    "label__after": "input",
+    "attrs": {
+        "class": {"form-floating": True, "mb-3": True},
     },
-    'non_editable_input': {
-        'attrs': {
-            'class': {
-                'form-control': False,
-                'form-control-plaintext': True,
-                'form-select': False,
-                'mb-3': False
-            },
+    "non_editable_input": {
+        "attrs": {
+            "class": {"form-control": False, "form-control-plaintext": True, "form-select": False, "mb-3": False},
         }
-    }
+    },
 }
 # Applied on a per-field or per-form basis
 floating_fields_style: Style = Style(
@@ -91,13 +81,11 @@ floating_fields_style: Style = Style(
     Field__shortcuts__choice=floating_fields,
     Field__shortcuts__choice_queryset=floating_fields,
     Field__shortcuts__select=floating_fields,
-    Field__input__attrs__placeholder=lambda field, **_: evaluate_strict(
-        field.display_name, **field.iommi_evaluate_parameters()
-    ),
+    Field__input__attrs__placeholder=lambda field, **_: evaluate_strict(field.display_name, **field.iommi_evaluate_parameters()),
     Field__shortcuts__boolean=boolean_buttons,
     Query__form__fields__freetext_search=floating_fields,
 )
-register_style('floating_fields', floating_fields_style)
+register_style("floating_fields", floating_fields_style)
 
 floating_fields_select2_inline_style: Style = Style(
     base_style,
@@ -110,13 +98,11 @@ floating_fields_select2_inline_style: Style = Style(
     Field__shortcuts__integer=floating_fields,
     Field__shortcuts__choice=floating_fields,
     Field__shortcuts__choice_queryset=floating_fields,
-    Field__input__attrs__placeholder=lambda field, **_: evaluate_strict(
-        field.display_name, **field.iommi_evaluate_parameters()
-    ),
+    Field__input__attrs__placeholder=lambda field, **_: evaluate_strict(field.display_name, **field.iommi_evaluate_parameters()),
     Field__shortcuts__boolean=boolean_buttons,
     Query__form__fields__freetext_search=floating_fields,
 )
-register_style('floating_fields_select2_inline', floating_fields_select2_inline_style)
+register_style("floating_fields_select2_inline", floating_fields_select2_inline_style)
 
 # ==============================================================================
 # Used in forms to get horizontal fields; apply form-wide or per-field
@@ -138,7 +124,7 @@ horizontal_fields_style: Style = Style(
     Field__shortcuts__choice_queryset=horizontal_fields,
     Field__shortcuts__boolean=boolean_buttons,
 )
-register_style('horizontal_fields', horizontal_fields_style)
+register_style("horizontal_fields", horizontal_fields_style)
 
 
 def get_balance_classes(balance: float) -> Dict[str, bool]:
@@ -146,16 +132,17 @@ def get_balance_classes(balance: float) -> Dict[str, bool]:
     Just a simple function to colour text on load balance.
     """
     return {
-        'text-success': True if balance <= -1 else False,
-        'text-danger': True if balance >= 1 else False,
+        "text-success": True if balance <= -1 else False,
+        "text-danger": True if balance >= 1 else False,
     }
+
 
 def get_balance_classes_form(balance: float) -> Dict[str, bool]:
     """
     Just a simple function to colour text on load balance, in a form.
     """
     return {
-        'text-success': True if balance <= -1 else False,
-        'text-danger': True if balance >= 1 else False,
-        'form-control-plaintext': True,
+        "text-success": True if balance <= -1 else False,
+        "text-danger": True if balance >= 1 else False,
+        "form-control-plaintext": True,
     }

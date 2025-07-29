@@ -14,25 +14,29 @@ class LoadFunction(ModelCommon):
     Evaluatable Python expression that determines the load for a number of students,
     e.g. for number of tutees or when marking a dissertation.
     """
-    icon = 'calculator'
-    url_root = 'function'
 
-    name = CharField(
-        max_length=128, unique=True
-    )
+    icon = "calculator"
+    url_root = "function"
+
+    name = CharField(max_length=128, unique=True)
     expression = TextField(
-        blank=False, verbose_name="Weighting Expression",
+        blank=False,
+        verbose_name="Weighting Expression",
         help_text=format_html(
             "Where $s$ is the number of students. Evaluated using the <a class='font-monospace' href='https://github.com/danthedeckie/simpleeval'>simpleeval</a> Python module."
-        )
+        ),
     )
 
     plot_minimum = IntegerField(
-        null=True, blank=True, help_text="If provided, range to plot function over.",
+        null=True,
+        blank=True,
+        help_text="If provided, range to plot function over.",
         validators=[MinValueValidator(1)],
     )
     plot_maximum = IntegerField(
-        null=True, blank=True, help_text="If provided, range to plot function over.",
+        null=True,
+        blank=True,
+        help_text="If provided, range to plot function over.",
         validators=[MinValueValidator(2)],
     )
 
@@ -42,21 +46,19 @@ class LoadFunction(ModelCommon):
         return f"{self.name}"
 
     class Meta:
-        ordering = ('name',)
-        verbose_name = 'Load Function'
-        verbose_name_plural = 'Load Functions'
+        ordering = ("name",)
+        verbose_name = "Load Function"
+        verbose_name_plural = "Load Functions"
         constraints = [
             CheckConstraint(
-                check=(
-                    Q(plot_minimum__lt=F('plot_maximum')) & Q(plot_maximum__isnull=False)) | \
-                    (Q(plot_minimum__isnull=True) & Q(plot_maximum__isnull=True)
-                 ),
-                name='plot_range_valid',
-                violation_error_message="Minimum range must be below maximum range if either are provided."
+                check=(Q(plot_minimum__lt=F("plot_maximum")) & Q(plot_maximum__isnull=False))
+                | (Q(plot_minimum__isnull=True) & Q(plot_maximum__isnull=True)),
+                name="plot_range_valid",
+                violation_error_message="Minimum range must be below maximum range if either are provided.",
             )
         ]
 
-    def evaluate(self, students: int, unit: object|None = None) -> float|None:
+    def evaluate(self, students: int, unit: object | None = None) -> float | None:
         """
         Runs the equation for a given number of students.
 
@@ -67,20 +69,17 @@ class LoadFunction(ModelCommon):
         names: Dict[str, int] = {}
 
         if students:
-            names['s'] = students
+            names["s"] = students
 
         if unit:
-            names['l'] = unit.lectures
-            names['e'] = unit.exams
+            names["l"] = unit.lectures
+            names["e"] = unit.exams
 
         if len(names.keys()):
-            return simple_eval(
-                self.expression,
-                names=names
-            )
+            return simple_eval(self.expression, names=names)
         else:
             return 0
 
-    def has_access(self, user: AbstractUser|AnonymousUser) -> bool:
+    def has_access(self, user: AbstractUser | AnonymousUser) -> bool:
         """You can always see the load functions"""
         return True

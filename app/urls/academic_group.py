@@ -26,7 +26,6 @@ academic_group_submenu: M = M(
     icon=AcademicGroup.icon,
     include=lambda user, **_: user.is_authenticated,
     view=AcademicGroupList,
-
     items=dict(
         create=M(
             icon=settings.ICON_CREATE,
@@ -36,11 +35,10 @@ academic_group_submenu: M = M(
         detail=M(
             display_name=lambda academic_group, **_: academic_group.short_name,
             open=True,
-            params={'academic_group'},
-            path='<academic_group>/',
+            params={"academic_group"},
+            path="<academic_group>/",
             url=lambda academic_group, **_: f"/{AcademicGroup.url_root}/{academic_group.code}/",
             view=AcademicGroupDetail,
-
             items=dict(
                 edit=M(
                     icon=settings.ICON_EDIT,
@@ -57,7 +55,6 @@ academic_group_submenu: M = M(
                     view=AcademicGroupHistoryList,
                     include=lambda user, **_: user.is_staff,
                 ),
-
                 create=M(
                     display_name="Create Task",
                     icon=settings.ICON_CREATE,
@@ -68,11 +65,10 @@ academic_group_submenu: M = M(
                     display_name=lambda task, **_: task.name,
                     icon=Task.icon,
                     open=True,
-                    params={'academic_group', 'task'},
-                    path='<task>/',
+                    params={"academic_group", "task"},
+                    path="<task>/",
                     url=lambda task, **_: f"/{AcademicGroup.url_root}/{task.academic_group.pk}/{task.pk}/",
                     view=TaskDetail,
-
                     items=dict(
                         edit=M(
                             icon=settings.ICON_EDIT,
@@ -84,10 +80,9 @@ academic_group_submenu: M = M(
                             view=TaskDelete,
                             include=lambda user, **_: user.is_staff,
                         ),
-                    )
+                    ),
                 ),
-
             ),
-        )
-    )
+        ),
+    ),
 )
