@@ -12,7 +12,7 @@ RUN mkdir /var/www && mkdir /var/www/physics-workload
 WORKDIR /var/www/physics-workload
 
 # Copy across the project details and build the project environment
-COPY pyproject.toml uv.lock ./
+COPY pyproject.toml uv.lock README.md ./
 RUN uv run sync
 
 # Copy across the rest of the files
