@@ -50,10 +50,10 @@ check: checks
 .PHONY: test coverage tests
 
 test:  ## run python tests
-	python -m pytest -v teaching_time_tool/tests
+	python -m pytest -v physics_workload/tests
 
 coverage:  ## run tests and collect test coverage
-	python -m pytest -v teaching_time_tool/tests --cov=teaching_time_tool --cov-report term-missing --cov-report xml
+	python -m pytest -v physics_workload/tests --cov=physics_workload --cov-report term-missing --cov-report xml
 
 # Alias
 tests: test

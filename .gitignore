@@ -143,8 +143,8 @@ js/*.tgz
 # Jupyter
 .ipynb_checkpoints
 .autoversion
-teaching_time_tool/nbextension
-teaching_time_tool/labextension
+physics_workload/nbextension
+physics_workload/labextension
 
 # Mac
 .DS_Store

@@ -1,4 +1,4 @@
-from teaching_time_tool import *  # noqa
+from physics_workload import *  # noqa
 
 
 def test_all():
