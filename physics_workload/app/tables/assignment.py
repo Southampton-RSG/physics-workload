@@ -61,9 +61,8 @@ class AssignmentStaffTable(Table):
 
 
 class AssignmentStaffEditTable(EditTable):
-    """
+    """ """
 
-    """
     class Meta:
         auto = dict(
             model=Assignment,

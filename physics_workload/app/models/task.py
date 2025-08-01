@@ -45,7 +45,7 @@ class Task(ModelCommon):
 
     # === CHANGEABLE FIELDS ===
     name = CharField(max_length=128, blank=False)  # A hidden, uneditable, qualified name
-    title = CharField(max_length=128, blank=False)   # The editable version of the name
+    title = CharField(max_length=128, blank=False)  # The editable version of the name
 
     is_required = BooleanField(
         default=False,
@@ -146,9 +146,7 @@ class Task(ModelCommon):
     # ==========================================================================
     # TaskFullTime components. Polymorphism and SimpleHistory don't play nice.
     # ==========================================================================
-    FIELDS_TASK_FULL_TIME = (
-        "is_full_time",
-    )
+    FIELDS_TASK_FULL_TIME = ("is_full_time",)
 
     is_full_time = BooleanField(
         default=False, verbose_name="Is full-time", help_text="If set, makes this task counts as being 1 FTE worth of load. Recursively defined."
@@ -380,7 +378,6 @@ class Task(ModelCommon):
             return load_calc * self.load_multiplier
 
 
-
 @receiver(pre_save, sender=Task)
 def update_task_name(sender: Type[Task], instance: Task, **kwargs):
     """
@@ -390,6 +387,7 @@ def update_task_name(sender: Type[Task], instance: Task, **kwargs):
     :return:
     """
     instance.name = instance.get_name()
+
 
 #
 # @receiver(post_delete, sender=Task)

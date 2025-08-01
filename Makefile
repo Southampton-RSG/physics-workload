@@ -18,15 +18,15 @@ install:  ## install library
 .PHONY: lint lints fix format
 
 lint:  ## run python linter with ruff
-	python -m ruff check physics-workload app core users
-	python -m ruff format --check physics-workload app core users
+	python -m ruff check physics_workload
+	python -m ruff format --check physics_workload
 
 # Alias
 lints: lint
 
 fix:  ## fix python formatting with ruff
-	python -m ruff check --fix physics-workload app core users
-	python -m ruff format physics-workload app core users
+	python -m ruff check --fix physics_workload
+	python -m ruff format physics_workload
 
 # alias
 format: fix
