@@ -1,0 +1,15 @@
+physics_workload
+================
+
+.. py:module:: physics_workload
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/physics_workload/tests/index
+
+
