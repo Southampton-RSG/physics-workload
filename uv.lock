@@ -777,15 +777,15 @@ wheels = [
 
 [[package]]
 name = "iommi"
-version = "7.14.4"
+version = "7.14.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "pyparsing" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/93/71/02553c278e5e662ead4476c97544c13687b3ede5b35bc76c650a1058cb72/iommi-7.14.4.tar.gz", hash = "sha256:a18754cb80d3274a8dd626398ebe1385cdf93c95f67db09793d93e01db1a8a6d", size = 200028, upload-time = "2025-06-27T14:21:23.712Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1e/5b/868fbd0ac3bb822b8e258c405ec72bcc3bf964d42bd55b35b6c14c8a28a7/iommi-7.14.3.tar.gz", hash = "sha256:a73c431decf7b9654bbfde994ca723215a2cb1e122b83c62fdcb17877cfe487e", size = 199416, upload-time = "2025-06-10T12:52:01.318Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/65/f8/4e954c2137c22d83b974d7a921170f7f41ba1baf33b8aa78cba780894c03/iommi-7.14.4-py2.py3-none-any.whl", hash = "sha256:9ea9ff0dcb83f1f34e19b26cbeeabdab35759c0ee03de0baa6e96f1dc753fd15", size = 338925, upload-time = "2025-06-27T14:21:22.148Z" },
+    { url = "https://files.pythonhosted.org/packages/40/f4/bad3dd1928b6d3e456b4421ac4126ccca5214310ea12e3c8a4dbeae8512d/iommi-7.14.3-py2.py3-none-any.whl", hash = "sha256:d5499e25738f8da8c699ffa32c7698032ffae35c3e50b6e1dd29b73f65282b14", size = 338017, upload-time = "2025-06-10T12:51:59.886Z" },
 ]
 
 [[package]]
@@ -1207,7 +1207,7 @@ requires-dist = [
     { name = "django-simple-history", specifier = ">=3.8.0" },
     { name = "gunicorn", specifier = ">=23.0.0" },
     { name = "hatchling", marker = "extra == 'develop'" },
-    { name = "iommi", specifier = "==7.14.4" },
+    { name = "iommi", specifier = "==7.14.3" },
     { name = "markdown", specifier = ">=3.8.2" },
     { name = "pandas", specifier = ">=2.2.3" },
     { name = "parso", specifier = ">=0.8.4" },

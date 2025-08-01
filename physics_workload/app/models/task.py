@@ -185,22 +185,22 @@ class Task(ModelCommon):
         """
         return self.name
 
-    def get_name(self):
+    def get_name(self) -> str:
         """
         :return: The name of the task, with unit code if possible
         """
         if self.unit:
-            return f"{self.unit.code} - {self.name}"
+            return f"{self.unit.code} - {self.title}"
         elif self.academic_group:
-            return f"{self.academic_group.short_name} - {self.name}"
+            return f"{self.academic_group.short_name} - {self.title}"
         else:
-            return f"{self.name}"
+            return f"{self.title}"
 
-    def get_name_with_load(self):
+    def get_name_with_load(self) -> str:
         """
         :return: The name of the task, with unit code if possible, and load hours
         """
-        text = self.get_name()
+        text: str = self.get_name()
 
         if self.load_calc != self.load_calc_first:
             text += f" [{self.load_calc:.0f} / {self.load_calc_first:.0f}]"
@@ -386,7 +386,7 @@ def update_task_name(sender: Type[Task], instance: Task, **kwargs):
     :param kwargs:
     :return:
     """
-    instance.name = instance.get_name()
+    instance.name = instance.get_name_with_load()
 
 
 #
