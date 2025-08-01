@@ -1,11 +1,27 @@
+from datetime import datetime
+
 from django.http import HttpRequest
 
 from app.models import AcademicGroup, Assignment, Staff, StandardLoad, Task
 
 
+def year_to_academic_year(date: datetime) -> str:
+    """
+    Output function for producing tidy dates.
+
+    :param date: A datetime for the last year of an academic year (e.g. 2024/06/15)
+    :return: The academic year that datetime belongs to (e.g. 23/24)
+    """
+    return f"{str(date.year - 1)[-2:]}/{str(date.year)[-2:]}"
+
+
 def update_all_loads(request: HttpRequest | None = None) -> int:
     """
+    Updates the load of all assignments, staff, e.t.c.
 
+    A very expensive function but required given the weirdly self-referential definition.
+
+    :param request: The web request, required to provide an output message.
     :return: The number of cycles taken to update the full-time equivalent loads.
     """
     standard_load: StandardLoad = StandardLoad.objects.latest()

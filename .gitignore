@@ -154,6 +154,5 @@ target
 
 # Project
 staticfiles/
-*/migrations/*
 *.csv
 *.xlsx

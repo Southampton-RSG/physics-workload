@@ -43,7 +43,7 @@ make superuser
 
 Then, log into the website to link your user account to the site.
 The command `make superuser` will then make the `swm1r18` account site staff;
-edit the script `make_swm1r18_superuser.py` to change the account.e
+edit the script `make_swm1r18_superuser.py` to change the account.
 
 ## Updating
 

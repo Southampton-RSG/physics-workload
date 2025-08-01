@@ -10,6 +10,7 @@ from plotly.offline import plot
 from app.models import AcademicGroup
 from app.pages.components.suffixes import SuffixHistory
 from app.style import get_balance_classes
+from app.utility import year_to_academic_year
 
 
 class AcademicGroupHistoryList(Page):
@@ -70,12 +71,12 @@ class AcademicGroupHistoryList(Page):
             :param staff: The Staff instance, provided via URL decoding.
             :return: The HTML code of the graph.
             """
-            dates: List[str] = [f"{str(timezone.now().year - 1)[-2:]}/{str(timezone.now().year)[-2:]}"]
+            dates: List[str] = [year_to_academic_year(timezone.now())]
             balance_cumulative: List[float] = [academic_group.load_balance_historic + academic_group.get_load_balance()]
             balance_yearly: List[float] = [academic_group.get_load_balance()]
 
             for academic_group_historic in academic_group.history.all():
-                dates.append(f"{str(academic_group_historic.history_date.year - 1)[-2:]}/{str(academic_group_historic.history_date.year)[-2:]}")
+                dates.append(year_to_academic_year(academic_group_historic.history_date.year))
                 balance_cumulative.append(academic_group_historic.load_balance_historic + academic_group_historic.load_balance_final)
                 balance_yearly.append(academic_group_historic.load_balance_final)
 

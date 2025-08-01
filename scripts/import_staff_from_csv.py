@@ -76,7 +76,7 @@ for idx, row in staff_df.iterrows():
     # add it to the model then save timestamped to the 'end of year' date.
     staff._history_date = date_2022
     staff.load_balance_final = row['Cumulative to AY21/22']
-    staff.load_balance_historic = row['Cumulative to AY21/22']
+    staff.load_balance_historic = 0
     staff.save()
 
     staff._history_date = date_2023

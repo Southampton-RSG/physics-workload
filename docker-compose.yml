@@ -22,7 +22,7 @@ services:
         source: "/etc/tls/private/"
         target: "/etc/tls/private/"
       - type: bind
-        source: "${PROJECT_PATH}/logs/"
+        source: "./logs/"
         target: "/var/www/physics-workload/logs/"
 
     restart: unless-stopped
@@ -41,13 +41,13 @@ services:
       - "./.env"
     volumes:
       - type: bind
-        source: "${PROJECT_PATH}/data/"
+        source: "./data/"
         target: "/var/www/physics-workload/data/"
       - type: bind
         source: "./staticfiles/"
         target: "/var/www/physics-workload/staticfiles/"
       - type: bind
-        source: "${PROJECT_PATH}/logs/"
+        source: "./logs/"
         target: "/var/www/physics-workload/logs/"
     command:
       - "bash"
