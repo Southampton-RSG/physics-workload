@@ -1,0 +1,33 @@
+physics_workload.app.plotly.load_function
+=========================================
+
+.. py:module:: physics_workload.app.plotly.load_function
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.plotly.load_function.app
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   physics_workload.app.plotly.load_function.initialise_figure
+
+
+Module Contents
+---------------
+
+.. py:data:: app
+   :type:  django_plotly_dash.DjangoDash
+
+.. py:function:: initialise_figure(session_state: Dict[str, Any], **kwargs) -> plotly.graph_objs.Figure
+
+   Callback to render the overview as the user switches the target ratio
+
+

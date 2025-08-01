@@ -1,0 +1,136 @@
+physics_workload.app.pages.academic_group
+=========================================
+
+.. py:module:: physics_workload.app.pages.academic_group
+
+.. autoapi-nested-parse::
+
+   Handles the views for the Academic Groups
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/physics_workload/app/pages/academic_group/history/index
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.pages.academic_group.AcademicGroupTaskCreate
+   physics_workload.app.pages.academic_group.AcademicGroupDetail
+   physics_workload.app.pages.academic_group.AcademicGroupEdit
+   physics_workload.app.pages.academic_group.AcademicGroupCreate
+   physics_workload.app.pages.academic_group.AcademicGroupDelete
+   physics_workload.app.pages.academic_group.AcademicGroupList
+
+
+Package Contents
+----------------
+
+.. py:class:: AcademicGroupTaskCreate(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Create a task associated with an academic group.
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: AcademicGroupDetail(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Detail view showing group members and their workloads,
+   as well as any modules and their assignment status.
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: details
+
+
+   .. py:attribute:: staff
+
+
+   .. py:attribute:: tasks
+
+
+   .. py:attribute:: units
+
+
+.. py:class:: AcademicGroupEdit(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Page showing an academic group to be edited
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: AcademicGroupCreate(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Page showing an academic group to be created
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: AcademicGroupDelete(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Page showing an academic group to be created
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: warning
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: AcademicGroupList(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Page listing the academic groups
+
+
+   .. py:attribute:: title
+
+
+   .. py:attribute:: info
+
+
+   .. py:attribute:: list
+
+

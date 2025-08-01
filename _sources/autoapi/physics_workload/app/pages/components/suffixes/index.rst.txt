@@ -1,0 +1,218 @@
+physics_workload.app.pages.components.suffixes
+==============================================
+
+.. py:module:: physics_workload.app.pages.components.suffixes
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.pages.components.suffixes.SuffixCreate
+   physics_workload.app.pages.components.suffixes.SuffixCreateTaskLead
+   physics_workload.app.pages.components.suffixes.SuffixCreateFullTime
+   physics_workload.app.pages.components.suffixes.SuffixEdit
+   physics_workload.app.pages.components.suffixes.SuffixDelete
+   physics_workload.app.pages.components.suffixes.SuffixHistory
+
+
+Module Contents
+---------------
+
+.. py:class:: SuffixCreate(text=None, **kwargs)
+
+   Bases: :py:obj:`iommi.Fragment`
+
+
+   Suffix for pages that create a file.
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: tag
+         :value: 'span'
+
+
+
+      .. py:attribute:: attrs__class
+
+
+      .. py:attribute:: children__text
+         :value: ' / Create '
+
+
+
+      .. py:attribute:: children__icon
+
+
+
+.. py:class:: SuffixCreateTaskLead(text=None, **kwargs)
+
+   Bases: :py:obj:`iommi.Fragment`
+
+
+   Suffix for pages that create a unit lead post.
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: tag
+         :value: 'span'
+
+
+
+      .. py:attribute:: attrs__class
+
+
+      .. py:attribute:: children__text
+         :value: ' / Create Lead '
+
+
+
+      .. py:attribute:: children__icon
+
+
+
+.. py:class:: SuffixCreateFullTime(text=None, **kwargs)
+
+   Bases: :py:obj:`iommi.Fragment`
+
+
+   Suffix for pages that create a full-time post.
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: tag
+         :value: 'span'
+
+
+
+      .. py:attribute:: attrs__class
+
+
+      .. py:attribute:: children__text
+         :value: ' / Create Full-Time '
+
+
+
+      .. py:attribute:: children__icon
+
+
+
+.. py:class:: SuffixEdit(text=None, **kwargs)
+
+   Bases: :py:obj:`iommi.Fragment`
+
+
+   Suffix for pages that create a file.
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: tag
+         :value: 'span'
+
+
+
+      .. py:attribute:: attrs__class
+
+
+      .. py:attribute:: children__text
+         :value: ' / Edit '
+
+
+
+      .. py:attribute:: children__icon
+
+
+
+.. py:class:: SuffixDelete(text=None, **kwargs)
+
+   Bases: :py:obj:`iommi.Fragment`
+
+
+   Suffix for pages that create a file.
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: tag
+         :value: 'span'
+
+
+
+      .. py:attribute:: attrs__class
+
+
+      .. py:attribute:: children__text
+         :value: ' / Delete '
+
+
+
+      .. py:attribute:: children__icon
+
+
+
+.. py:class:: SuffixHistory(text=None, **kwargs)
+
+   Bases: :py:obj:`iommi.Fragment`
+
+
+   .. _Fragment:
+
+   `Fragment` is a class used to build small HTML fragments that plug into iommi's structure.
+
+   .. code-block:: python
+
+       # @test
+       from iommi.fragment import Fragment
+       # @end
+
+       h1 = Fragment(children__text='Tony', tag='h1')
+
+       # There is also a shorthand version that is identical to the above:
+       h1 = Fragment('Tony', tag='h1')
+
+   It's easiest to use via the html builder:
+
+   .. code-block:: python
+
+       h1 = html.h1('Tony')
+
+   Fragments are useful because attrs, template and tag are evaluated, so if
+   you have a `Page` with a fragment in it you can configure it later:
+
+   .. code-block:: python
+
+       class MyPage(Page):
+           header = html.h1(
+               'Hi!',
+               attrs__class__staff=
+                   lambda request, **_: request.user.is_staff,
+           )
+
+   Rendering a `MyPage` will result in a `<h1>`, but if you do
+   `MyPage(parts__header__tag='h2')` it will be rendered with a `<h2>`.
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: tag
+         :value: 'span'
+
+
+
+      .. py:attribute:: attrs__class
+
+
+      .. py:attribute:: children__text
+         :value: ' / History '
+
+
+
+      .. py:attribute:: children__icon
+
+
+

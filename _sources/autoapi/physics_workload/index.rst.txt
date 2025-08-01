@@ -10,6 +10,10 @@ Submodules
 .. toctree::
    :maxdepth: 1
 
+   /autoapi/physics_workload/app/index
+   /autoapi/physics_workload/core/index
+   /autoapi/physics_workload/manage/index
    /autoapi/physics_workload/tests/index
+   /autoapi/physics_workload/users/index
 
 

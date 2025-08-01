@@ -1,0 +1,18 @@
+physics_workload.app.tables
+===========================
+
+.. py:module:: physics_workload.app.tables
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/physics_workload/app/tables/assignment/index
+   /autoapi/physics_workload/app/tables/staff/index
+   /autoapi/physics_workload/app/tables/task/index
+   /autoapi/physics_workload/app/tables/unit/index
+
+

@@ -1,0 +1,19 @@
+physics_workload.core.asgi
+==========================
+
+.. py:module:: physics_workload.core.asgi
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.core.asgi.application
+
+
+Module Contents
+---------------
+
+.. py:data:: application
+

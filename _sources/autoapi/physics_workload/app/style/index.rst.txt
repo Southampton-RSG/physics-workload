@@ -1,0 +1,62 @@
+physics_workload.app.style
+==========================
+
+.. py:module:: physics_workload.app.style
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.style.base_style
+   physics_workload.app.style.boolean_buttons
+   physics_workload.app.style.floating_fields
+   physics_workload.app.style.floating_fields_style
+   physics_workload.app.style.floating_fields_select2_inline_style
+   physics_workload.app.style.horizontal_fields
+   physics_workload.app.style.horizontal_fields_style
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   physics_workload.app.style.get_balance_classes
+   physics_workload.app.style.get_balance_classes_form
+
+
+Module Contents
+---------------
+
+.. py:data:: base_style
+
+.. py:data:: boolean_buttons
+   :type:  Dict[str, Any]
+
+.. py:data:: floating_fields
+   :type:  Dict[str, Any]
+
+.. py:data:: floating_fields_style
+   :type:  iommi.style.Style
+
+.. py:data:: floating_fields_select2_inline_style
+   :type:  iommi.style.Style
+
+.. py:data:: horizontal_fields
+   :type:  Dict[str, Any]
+
+.. py:data:: horizontal_fields_style
+   :type:  iommi.style.Style
+
+.. py:function:: get_balance_classes(balance: float) -> Dict[str, bool]
+
+   Just a simple function to colour text on load balance.
+
+
+.. py:function:: get_balance_classes_form(balance: float) -> Dict[str, bool]
+
+   Just a simple function to colour text on load balance, in a form.
+
+

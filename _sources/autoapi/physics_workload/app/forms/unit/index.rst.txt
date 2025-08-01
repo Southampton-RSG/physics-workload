@@ -1,0 +1,137 @@
+physics_workload.app.forms.unit
+===============================
+
+.. py:module:: physics_workload.app.forms.unit
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.forms.unit.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.forms.unit.UnitForm
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
+
+.. py:class:: UnitForm(**kwargs)
+
+   Bases: :py:obj:`iommi.Form`
+
+
+   Form for editing Modules
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: auto__model
+
+
+      .. py:attribute:: auto__exclude
+         :value: ['task_set']
+
+
+
+      .. py:attribute:: fields__code__group
+         :value: 'Basics'
+
+
+
+      .. py:attribute:: fields__name__group
+         :value: 'Basics'
+
+
+
+      .. py:attribute:: fields__academic_group__group
+         :value: 'Basics'
+
+
+
+      .. py:attribute:: fields__academic_group__non_editable_input__template
+         :value: 'app/choice_url.html'
+
+
+
+      .. py:attribute:: fields__students__group
+         :value: 'Basics'
+
+
+
+      .. py:attribute:: fields__lectures__group
+         :value: 'Sessions'
+
+
+
+      .. py:attribute:: fields__problem_classes__group
+         :value: 'Sessions'
+
+
+
+      .. py:attribute:: fields__coursework__group
+         :value: 'Sessions'
+
+
+
+      .. py:attribute:: fields__synoptic_lectures__group
+         :value: 'Sessions'
+
+
+
+      .. py:attribute:: fields__exams__group
+         :value: 'Sessions'
+
+
+
+      .. py:attribute:: fields__credits__group
+         :value: 'Credit'
+
+
+
+      .. py:attribute:: fields__exam_mark_fraction__group
+         :value: 'Credit'
+
+
+
+      .. py:attribute:: fields__coursework_mark_fraction__group
+         :value: 'Credit'
+
+
+
+      .. py:attribute:: fields__has_dissertation__group
+         :value: 'Credit'
+
+
+
+      .. py:attribute:: fields__has_placement__group
+         :value: 'Credit'
+
+
+
+      .. py:attribute:: iommi_style
+         :value: 'floating_fields'
+
+
+
+      .. py:method:: extra__on_delete(instance, **_)
+         :staticmethod:
+
+
+
+      .. py:method:: extra__on_save(form, instance, **_)
+         :staticmethod:
+
+
+
+

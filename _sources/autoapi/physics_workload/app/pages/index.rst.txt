@@ -1,0 +1,23 @@
+physics_workload.app.pages
+==========================
+
+.. py:module:: physics_workload.app.pages
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/physics_workload/app/pages/academic_group/index
+   /autoapi/physics_workload/app/pages/basic/index
+   /autoapi/physics_workload/app/pages/components/index
+   /autoapi/physics_workload/app/pages/info/index
+   /autoapi/physics_workload/app/pages/load_function/index
+   /autoapi/physics_workload/app/pages/staff/index
+   /autoapi/physics_workload/app/pages/standard_load/index
+   /autoapi/physics_workload/app/pages/task/index
+   /autoapi/physics_workload/app/pages/unit/index
+
+

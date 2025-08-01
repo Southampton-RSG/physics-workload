@@ -1,0 +1,150 @@
+physics_workload.app.pages.task
+===============================
+
+.. py:module:: physics_workload.app.pages.task
+
+.. autoapi-nested-parse::
+
+   Pages relating to showing and managing tasks.
+
+   Handle the general 'non-unit' task creation, and all task editing and deletion.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.pages.task.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.pages.task.TaskDetail
+   physics_workload.app.pages.task.TaskEdit
+   physics_workload.app.pages.task.TaskCreate
+   physics_workload.app.pages.task.TaskDelete
+   physics_workload.app.pages.task.TaskList
+   physics_workload.app.pages.task.TaskFullTimeCreate
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
+
+.. py:class:: TaskDetail(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Page for showing task details
+
+
+   .. py:attribute:: header
+
+
+   .. py:method:: filter_staff(task)
+      :staticmethod:
+
+
+
+   .. py:attribute:: assignments
+
+
+   .. py:attribute:: assignments_editable
+
+
+   .. py:attribute:: assignment
+
+
+   .. py:attribute:: assignment_create
+
+
+   .. py:attribute:: br
+
+
+   .. py:attribute:: form
+
+
+   .. py:attribute:: text
+
+
+.. py:class:: TaskEdit(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Page for editing a task
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: TaskCreate(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Page for creating a task
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: TaskDelete(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Page for deleting a task
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: TaskList(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Page for listing tasks
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: info
+
+
+   .. py:attribute:: list
+
+
+.. py:class:: TaskFullTimeCreate(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Page for creating a task that's full time
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+

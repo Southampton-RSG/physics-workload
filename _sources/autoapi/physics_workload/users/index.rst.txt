@@ -1,0 +1,20 @@
+physics_workload.users
+======================
+
+.. py:module:: physics_workload.users
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/physics_workload/users/admin/index
+   /autoapi/physics_workload/users/apps/index
+   /autoapi/physics_workload/users/forms/index
+   /autoapi/physics_workload/users/models/index
+   /autoapi/physics_workload/users/tests/index
+   /autoapi/physics_workload/users/views/index
+
+

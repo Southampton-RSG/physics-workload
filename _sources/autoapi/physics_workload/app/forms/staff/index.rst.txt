@@ -1,0 +1,90 @@
+physics_workload.app.forms.staff
+================================
+
+.. py:module:: physics_workload.app.forms.staff
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.forms.staff.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.forms.staff.StaffForm
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
+
+.. py:class:: StaffForm(**kwargs)
+
+   Bases: :py:obj:`iommi.Form`
+
+
+   Form for editing Staff
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: auto__model
+
+
+      .. py:attribute:: fields__account__group
+         :value: 'row1'
+
+
+
+      .. py:attribute:: fields__name__group
+         :value: 'row1'
+
+
+
+      .. py:attribute:: fields__academic_group__group
+         :value: 'row1'
+
+
+
+      .. py:attribute:: fields__academic_group__non_editable_input__template
+         :value: 'app/choice_url.html'
+
+
+
+      .. py:attribute:: fields__gender__group
+         :value: 'row1'
+
+
+
+      .. py:attribute:: fields__fte_fraction__group
+         :value: 'row2'
+
+
+
+      .. py:attribute:: fields__hours_fixed__group
+         :value: 'row2'
+
+
+
+      .. py:attribute:: iommi_style
+
+
+      .. py:method:: extra__on_delete(instance, **_)
+         :staticmethod:
+
+
+
+      .. py:method:: extra__on_save(form, instance, **_)
+         :staticmethod:
+
+
+
+

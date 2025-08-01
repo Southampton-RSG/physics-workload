@@ -1,0 +1,24 @@
+physics_workload.app.assets
+===========================
+
+.. py:module:: physics_workload.app.assets
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.assets.mathjax_js
+   physics_workload.app.assets.autosize_js
+
+
+Module Contents
+---------------
+
+.. py:data:: mathjax_js
+   :type:  Dict[str, Any]
+
+.. py:data:: autosize_js
+   :type:  Dict[str, Any]
+

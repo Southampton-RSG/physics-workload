@@ -1,0 +1,19 @@
+physics_workload.core.wsgi
+==========================
+
+.. py:module:: physics_workload.core.wsgi
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.core.wsgi.application
+
+
+Module Contents
+---------------
+
+.. py:data:: application
+

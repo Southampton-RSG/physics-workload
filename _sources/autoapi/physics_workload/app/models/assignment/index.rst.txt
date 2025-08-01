@@ -1,0 +1,115 @@
+physics_workload.app.models.assignment
+======================================
+
+.. py:module:: physics_workload.app.models.assignment
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.models.assignment.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.models.assignment.Assignment
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
+
+.. py:class:: Assignment
+
+   Bases: :py:obj:`app.models.common.ModelCommon`
+
+
+   Pairs a Staff member up with the task they're performing.
+
+
+   .. py:attribute:: icon
+      :value: 'clipboard'
+
+
+
+   .. py:attribute:: url_root
+      :value: 'assignment'
+
+
+
+   .. py:attribute:: task
+
+
+   .. py:attribute:: staff
+
+
+   .. py:attribute:: students
+
+
+   .. py:attribute:: notes
+
+
+   .. py:attribute:: is_first_time
+
+
+   .. py:attribute:: is_provisional
+
+
+   .. py:attribute:: load_calc
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: indexes
+
+
+      .. py:attribute:: unique_together
+         :value: ('task', 'staff')
+
+
+
+      .. py:attribute:: ordering
+         :value: ('-staff', 'task')
+
+
+
+      .. py:attribute:: verbose_name
+         :value: 'Assignment'
+
+
+
+      .. py:attribute:: verbose_name_plural
+         :value: 'Assignments'
+
+
+
+      .. py:attribute:: constraints
+
+
+
+   .. py:method:: __str__() -> str
+
+
+   .. py:method:: get_full_name()
+
+
+   .. py:method:: get_absolute_url() -> str
+
+      :return The absolute URL of the task this assignment belongs to:
+
+
+
+   .. py:method:: update_load() -> bool
+
+      Updates the load for this assignment.
+      :return: True if the load has changed.
+
+
+

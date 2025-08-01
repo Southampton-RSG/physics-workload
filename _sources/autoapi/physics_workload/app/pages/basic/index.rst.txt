@@ -1,0 +1,45 @@
+physics_workload.app.pages.basic
+================================
+
+.. py:module:: physics_workload.app.pages.basic
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.pages.basic.PrivacyPage
+   physics_workload.app.pages.basic.AboutPage
+
+
+Module Contents
+---------------
+
+.. py:class:: PrivacyPage(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Contains the privacy statement
+
+
+   .. py:attribute:: text
+
+
+.. py:class:: AboutPage(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   A page is used to compose iommi parts into a bigger whole.
+
+   See the `howto <https://docs.iommi.rocks//cookbook_parts_pages.html#parts-pages>`_ for example usages.
+
+
+   .. py:attribute:: title
+
+
+   .. py:attribute:: info
+
+

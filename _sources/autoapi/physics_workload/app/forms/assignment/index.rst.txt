@@ -1,0 +1,65 @@
+physics_workload.app.forms.assignment
+=====================================
+
+.. py:module:: physics_workload.app.forms.assignment
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.forms.assignment.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.forms.assignment.AssignmentTaskUniqueForm
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
+
+.. py:class:: AssignmentTaskUniqueForm(**kwargs)
+
+   Bases: :py:obj:`iommi.Form`
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: auto
+
+
+      .. py:attribute:: title
+         :value: 'Assignment'
+
+
+
+      .. py:attribute:: fields
+
+
+      .. py:attribute:: extra__redirect_to
+         :value: '.'
+
+
+
+      .. py:attribute:: actions__submit
+
+
+      .. py:method:: extra__on_delete(instance, **_)
+         :staticmethod:
+
+
+
+      .. py:method:: extra__on_save(form, instance, **_)
+         :staticmethod:
+
+
+
+

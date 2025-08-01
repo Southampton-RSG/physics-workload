@@ -1,0 +1,122 @@
+physics_workload.app.pages.load_function
+========================================
+
+.. py:module:: physics_workload.app.pages.load_function
+
+.. autoapi-nested-parse::
+
+   Handles the views for the Load Functions Groups
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.pages.load_function.LoadFunctionCreate
+   physics_workload.app.pages.load_function.LoadFunctionDelete
+   physics_workload.app.pages.load_function.LoadFunctionEdit
+   physics_workload.app.pages.load_function.LoadFunctionDetail
+   physics_workload.app.pages.load_function.LoadFunctionList
+
+
+Module Contents
+---------------
+
+.. py:class:: LoadFunctionCreate(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Create a new load function
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+   .. py:attribute:: examples
+
+
+.. py:class:: LoadFunctionDelete(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Delete the load function
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: LoadFunctionEdit(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Edit a load function
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+   .. py:attribute:: examples
+
+
+.. py:class:: LoadFunctionDetail(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Shows details of the standard load
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+   .. py:attribute:: plotly
+
+
+   .. py:class:: Meta
+
+      .. py:method:: extra_evaluated__plotly(params, **_) -> str
+         :staticmethod:
+
+
+         Creates a graph of the student load function.
+
+         :param params: The page parameters, including the load function it's for.
+         :return: A div containing the rendered plot (or an empty string if no plot is needed).
+
+
+
+
+.. py:class:: LoadFunctionList(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Page listing the standard load over history
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: info
+
+
+   .. py:attribute:: list
+
+

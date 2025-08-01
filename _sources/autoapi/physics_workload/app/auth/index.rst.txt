@@ -1,0 +1,39 @@
+physics_workload.app.auth
+=========================
+
+.. py:module:: physics_workload.app.auth
+
+.. autoapi-nested-parse::
+
+   Adds access-checking functions that test the permissions on the model.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   physics_workload.app.auth.has_access_decoder
+   physics_workload.app.auth.has_staff_access
+
+
+Module Contents
+---------------
+
+.. py:function:: has_access_decoder(model: Type[app.models.common.ModelCommon], message: str) -> Callable[[str, django.http.HttpRequest, Unpack[Any]], app.models.common.ModelCommon]
+
+   Factory for making access decoders for a given model
+   :param model: The model to create the decoder for.
+   :param message: The message to show on failed access.
+   :return: A function that decodes access for that model
+
+
+.. py:function:: has_staff_access(user: django.contrib.auth.models.AbstractUser | django.contrib.auth.models.AnonymousUser) -> bool
+
+   Checks if the user is signed in and staff, or if security is off for debugging.
+
+   :param user:
+   :return:
+
+

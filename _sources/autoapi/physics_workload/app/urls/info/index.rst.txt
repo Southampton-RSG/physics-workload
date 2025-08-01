@@ -1,0 +1,26 @@
+physics_workload.app.urls.info
+==============================
+
+.. py:module:: physics_workload.app.urls.info
+
+.. autoapi-nested-parse::
+
+   Paths to edit the info text that appears on some pages,
+   plus the way you get to the 'main' about page as a logged-in user.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.urls.info.info_submenu
+
+
+Module Contents
+---------------
+
+.. py:data:: info_submenu
+   :type:  iommi.experimental.main_menu.M
+

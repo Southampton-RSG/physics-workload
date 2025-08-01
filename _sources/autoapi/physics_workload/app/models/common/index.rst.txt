@@ -1,0 +1,117 @@
+physics_workload.app.models.common
+==================================
+
+.. py:module:: physics_workload.app.models.common
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.models.common.ModelCommon
+
+
+Module Contents
+---------------
+
+.. py:class:: ModelCommon(*args, **kwargs)
+
+   Bases: :py:obj:`django.db.models.Model`
+
+
+   Contains the framework for a DB model to have an icon and title associated with it
+
+   Classes implement `icon` (a font-awesome icon name) and `url_root` (the Django URL resolver root for that model).
+
+
+   .. py:attribute:: history
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: abstract
+         :value: True
+
+
+
+
+   .. py:property:: icon
+      :type: str
+
+      :abstractmethod:
+
+
+      The icon shown on the list views e.t.c.
+
+      :type: return
+
+
+   .. py:property:: url_root
+      :type: str
+
+      :abstractmethod:
+
+
+      The root of the URLs for this model, to which `_detail`, `_edit` e.t.c. will be added
+
+      :type: return
+
+
+   .. py:method:: get_absolute_url() -> str
+
+      :return: The URL for the detail view of this particular instance of the model
+
+
+
+   .. py:method:: get_absolute_url_authenticated(user: django.contrib.auth.models.AbstractUser | django.contrib.auth.models.AnonymousUser | None) -> str
+
+      :param user: The user to check authorisation for.
+      :return: The absolute URL for the detail view of this particular instance of the model if allowed, or blank.
+
+
+
+   .. py:method:: get_instance_header(text: str | None = None) -> str
+
+      Creates a header for a view for an instance of this model.
+      :param text: The text to use for the header, if not just the string representation of the instance.
+      :return: The rendered template, for use on the page.
+
+
+
+   .. py:method:: get_model_url() -> str
+      :classmethod:
+
+
+      Equivalent to `get_absolute_url()` for model list.
+      :return: The URL for the view listing all of this model
+
+
+
+   .. py:method:: get_model_header() -> str
+      :classmethod:
+
+
+      Creates a header for the view listing all of this model.
+      :return: The rendered template, for use on the page.
+
+
+
+   .. py:method:: get_model_header_singular() -> str
+      :classmethod:
+
+
+      Creates a header for a create view for this model.
+      :return: The rendered template, for use on the page.
+
+
+
+   .. py:method:: has_access(user: django.contrib.auth.models.AbstractUser | django.contrib.auth.models.AnonymousUser) -> bool
+      :abstractmethod:
+
+
+      :param user: The user checking access.
+      :return: True if debug auth is on or the user is staff.
+
+
+

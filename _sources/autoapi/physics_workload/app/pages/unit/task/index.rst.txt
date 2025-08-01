@@ -1,0 +1,46 @@
+physics_workload.app.pages.unit.task
+====================================
+
+.. py:module:: physics_workload.app.pages.unit.task
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.pages.unit.task.UnitTaskLeadCreate
+   physics_workload.app.pages.unit.task.UnitTaskCreate
+
+
+Module Contents
+---------------
+
+.. py:class:: UnitTaskLeadCreate(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Create a new unit lead
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: UnitTaskCreate(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Create a task associated with a unit
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+

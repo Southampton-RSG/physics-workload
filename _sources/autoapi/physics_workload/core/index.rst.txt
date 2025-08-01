@@ -1,0 +1,18 @@
+physics_workload.core
+=====================
+
+.. py:module:: physics_workload.core
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/physics_workload/core/asgi/index
+   /autoapi/physics_workload/core/settings/index
+   /autoapi/physics_workload/core/urls/index
+   /autoapi/physics_workload/core/wsgi/index
+
+

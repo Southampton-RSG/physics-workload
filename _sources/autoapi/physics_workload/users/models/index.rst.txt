@@ -1,0 +1,39 @@
+physics_workload.users.models
+=============================
+
+.. py:module:: physics_workload.users.models
+
+.. autoapi-nested-parse::
+
+   Custom users wrapper, in case they need expansion later.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.users.models.CustomUser
+
+
+Module Contents
+---------------
+
+.. py:class:: CustomUser(*args, **kwargs)
+
+   Bases: :py:obj:`django.contrib.auth.models.AbstractUser`
+
+
+   An abstract base class implementing a fully featured User model with
+   admin-compliant permissions.
+
+   Username and password are required. Other fields are optional.
+
+
+   .. py:method:: __str__()
+
+
+   .. py:method:: __repr__()
+
+

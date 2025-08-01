@@ -1,0 +1,143 @@
+physics_workload.app.models.standard_load
+=========================================
+
+.. py:module:: physics_workload.app.models.standard_load
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.models.standard_load.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.models.standard_load.StandardLoad
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
+
+.. py:class:: StandardLoad
+
+   Bases: :py:obj:`app.models.common.ModelCommon`
+
+
+   Standard loads for an academic year
+
+
+   .. py:attribute:: icon
+      :value: 'weight-hanging'
+
+
+
+   .. py:attribute:: url_root
+      :value: 'standard_load'
+
+
+
+   .. py:attribute:: year
+
+
+   .. py:attribute:: load_lecture
+
+
+   .. py:attribute:: load_lecture_first
+
+
+   .. py:attribute:: load_coursework_set
+
+
+   .. py:attribute:: load_coursework_credit
+
+
+   .. py:attribute:: load_coursework_marked
+
+
+   .. py:attribute:: load_exam_credit
+
+
+   .. py:attribute:: load_exam_marked
+
+
+   .. py:attribute:: load_fte_misc
+
+
+   .. py:attribute:: target_load_per_fte
+
+
+   .. py:attribute:: target_load_per_fte_calc
+
+
+   .. py:attribute:: notes
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: get_latest_by
+         :value: 'year'
+
+
+
+      .. py:attribute:: ordering
+         :value: ['-year']
+
+
+
+      .. py:attribute:: verbose_name
+         :value: 'Standard Load'
+
+
+
+      .. py:attribute:: verbose_name_plural
+         :value: 'Standard Loads'
+
+
+
+
+   .. py:method:: __str__() -> str
+
+
+   .. py:method:: get_absolute_url() -> str
+
+      The standard load is always
+      :return:
+
+
+
+   .. py:method:: get_instance_header(text: str | None = None, suffix: str | None = None) -> str
+
+      Prepend the instance name with 'Standard Load' for clarity
+      :return: Header in the format "Standard Load ??/??"
+
+
+
+   .. py:method:: has_access(user: django.contrib.auth.models.AbstractUser | django.contrib.auth.models.AnonymousUser) -> bool
+
+      You can always see the load details
+      :param user: The user to test access for.
+      :return: True, always
+
+
+
+   .. py:method:: update_target_load_per_fte()
+
+      :return:
+
+
+
+   .. py:method:: update_calculated_loads(previous_standard_load: StandardLoad = None) -> bool
+
+      :param previous_standard_load: The previous version of the standard loads.
+      :return: True if other models were updated, False otherwise.
+
+
+

@@ -1,0 +1,19 @@
+physics_workload.core.urls
+==========================
+
+.. py:module:: physics_workload.core.urls
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.core.urls.urlpatterns
+
+
+Module Contents
+---------------
+
+.. py:data:: urlpatterns
+

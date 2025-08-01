@@ -1,0 +1,76 @@
+physics_workload.app.admin
+==========================
+
+.. py:module:: physics_workload.app.admin
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.admin.AcademicGroupAdmin
+   physics_workload.app.admin.UnitAdmin
+   physics_workload.app.admin.AssignmentAdmin
+   physics_workload.app.admin.TaskAdmin
+   physics_workload.app.admin.StandardLoadAdmin
+   physics_workload.app.admin.StaffAdmin
+
+
+Module Contents
+---------------
+
+.. py:class:: AcademicGroupAdmin(model, admin_site)
+
+   Bases: :py:obj:`django.contrib.admin.ModelAdmin`
+
+
+   Admin class for the AcademicGroup model.
+   Uses the default settings, but here in case it needs expanding.
+
+
+.. py:class:: UnitAdmin(model, admin_site)
+
+   Bases: :py:obj:`django.contrib.admin.ModelAdmin`
+
+
+   Admin class for the Module model.
+   Uses the default settings, but here in case it needs expanding.
+
+
+.. py:class:: AssignmentAdmin(model, admin_site)
+
+   Bases: :py:obj:`django.contrib.admin.ModelAdmin`
+
+
+   Admin class for the Assignment model.
+   Uses the default settings, but here in case it needs expanding.
+
+
+.. py:class:: TaskAdmin(model, admin_site)
+
+   Bases: :py:obj:`django.contrib.admin.ModelAdmin`
+
+
+   Admin class for the Task model.
+   Uses the default settings, but here in case it needs expanding.
+
+
+.. py:class:: StandardLoadAdmin(model, admin_site)
+
+   Bases: :py:obj:`django.contrib.admin.ModelAdmin`
+
+
+   Admin class for the StandardLoad model.
+   Uses the default settings, but here in case it needs expanding.
+
+
+.. py:class:: StaffAdmin(model, admin_site)
+
+   Bases: :py:obj:`django.contrib.admin.ModelAdmin`
+
+
+   Admin class for the Staff model.
+   Uses the default settings, but here in case it needs expanding.
+
+

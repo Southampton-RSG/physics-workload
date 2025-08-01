@@ -1,0 +1,73 @@
+physics_workload.app.models.info
+================================
+
+.. py:module:: physics_workload.app.models.info
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.models.info.Info
+
+
+Module Contents
+---------------
+
+.. py:class:: Info
+
+   Bases: :py:obj:`app.models.common.ModelCommon`
+
+
+   Used for user-editable info text at the top of forms or categories.
+
+
+   .. py:attribute:: icon
+      :value: 'circle-info'
+
+
+
+   .. py:attribute:: url_root
+      :value: 'info'
+
+
+
+   .. py:attribute:: name
+      :type:  django.db.models.CharField
+
+
+   .. py:attribute:: page
+      :type:  django.db.models.CharField
+
+
+   .. py:attribute:: text
+      :type:  django.db.models.TextField
+
+
+   .. py:method:: __str__()
+
+      :return: The URL route for the page.
+
+
+
+   .. py:method:: get_absolute_url() -> str
+
+      :return: The URL of the edit view for the info
+
+
+
+   .. py:method:: get_edit_url() -> str
+
+      :return:
+
+
+
+   .. py:method:: has_access(user: django.contrib.auth.models.AbstractUser) -> bool
+
+      Only users assigned to a task can see the details
+      :param user: The user
+      :return: True if the user is assigned to this task
+
+
+

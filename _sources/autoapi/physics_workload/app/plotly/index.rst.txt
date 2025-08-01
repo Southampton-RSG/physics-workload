@@ -1,0 +1,15 @@
+physics_workload.app.plotly
+===========================
+
+.. py:module:: physics_workload.app.plotly
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/physics_workload/app/plotly/load_function/index
+
+

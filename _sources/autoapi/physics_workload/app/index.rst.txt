@@ -1,0 +1,30 @@
+physics_workload.app
+====================
+
+.. py:module:: physics_workload.app
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/physics_workload/app/admin/index
+   /autoapi/physics_workload/app/assets/index
+   /autoapi/physics_workload/app/auth/index
+   /autoapi/physics_workload/app/config/index
+   /autoapi/physics_workload/app/forms/index
+   /autoapi/physics_workload/app/management/index
+   /autoapi/physics_workload/app/middlewares/index
+   /autoapi/physics_workload/app/models/index
+   /autoapi/physics_workload/app/pages/index
+   /autoapi/physics_workload/app/plotly/index
+   /autoapi/physics_workload/app/style/index
+   /autoapi/physics_workload/app/tables/index
+   /autoapi/physics_workload/app/tests/index
+   /autoapi/physics_workload/app/urls/index
+   /autoapi/physics_workload/app/utility/index
+   /autoapi/physics_workload/app/views/index
+
+

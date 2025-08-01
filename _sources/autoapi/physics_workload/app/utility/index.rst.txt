@@ -1,0 +1,36 @@
+physics_workload.app.utility
+============================
+
+.. py:module:: physics_workload.app.utility
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   physics_workload.app.utility.year_to_academic_year
+   physics_workload.app.utility.update_all_loads
+
+
+Module Contents
+---------------
+
+.. py:function:: year_to_academic_year(date: datetime.datetime) -> str
+
+   Output function for producing tidy dates.
+
+   :param date: A datetime for the last year of an academic year (e.g. 2024/06/15)
+   :return: The academic year that datetime belongs to (e.g. 23/24)
+
+
+.. py:function:: update_all_loads(request: django.http.HttpRequest | None = None) -> int
+
+   Updates the load of all assignments, staff, e.t.c.
+
+   A very expensive function but required given the weirdly self-referential definition.
+
+   :param request: The web request, required to provide an output message.
+   :return: The number of cycles taken to update the full-time equivalent loads.
+
+

@@ -1,0 +1,49 @@
+physics_workload.app.pages.unit.history
+=======================================
+
+.. py:module:: physics_workload.app.pages.unit.history
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.pages.unit.history.UnitHistoryDetail
+   physics_workload.app.pages.unit.history.UnitHistoryList
+
+
+Module Contents
+---------------
+
+.. py:class:: UnitHistoryDetail(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   View showing the detail of a unit at a point in time.
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: tasks
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: UnitHistoryList(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   List of all historical entries for a Unit.
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: list
+
+

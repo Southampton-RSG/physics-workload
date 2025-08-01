@@ -1,0 +1,121 @@
+physics_workload.app.tables.task
+================================
+
+.. py:module:: physics_workload.app.tables.task
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.tables.task.TaskTable
+
+
+Module Contents
+---------------
+
+.. py:class:: TaskTable(**kwargs)
+
+   Bases: :py:obj:`iommi.Table`
+
+
+   Describe a table. Example:
+
+   .. code-block:: python
+
+       class AlbumTable(Table):
+           name = Column()
+           artist = Column()
+
+           class Meta:
+               sortable = False
+
+       # @test
+       artist = Artist.objects.create(name='Black Sabbath')
+       Album.objects.create(name='Heaven & Hell', artist=artist, year=1980),
+       Album.objects.create(name='Mob Rules', artist=artist, year=1981),
+
+       show_output(AlbumTable(rows=Album.objects.all()))
+       # @end
+
+   :param rows: a list or QuerySet of objects
+   :param columns: (use this only when not using the declarative style) a list of Column objects
+   :param attrs: dict of strings to string/callable of HTML attributes to apply to the table
+   :param row__attrs: dict of strings to string/callable of HTML attributes to apply to the row. Callables are passed the row as argument.
+   :param row__template: name of template (or `Template` object) to use for rendering the row
+   :param bulk_filter: filters to apply to the `QuerySet` before performing the bulk operation
+   :param bulk_exclude: exclude filters to apply to the `QuerySet` before performing the bulk operation
+   :param sortable: set this to `False` to turn off sorting for all columns
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: auto
+
+
+      .. py:attribute:: columns__unit
+
+
+      .. py:attribute:: columns__academic_group
+
+
+      .. py:attribute:: columns__assignment_required
+
+
+      .. py:attribute:: columns__assignment_provisional
+
+
+      .. py:attribute:: columns__owner
+
+
+      .. py:attribute:: columns__title
+
+
+      .. py:attribute:: columns__load_calc
+
+
+      .. py:attribute:: columns__load_calc_first
+
+
+      .. py:attribute:: columns__assignment_set
+
+
+      .. py:attribute:: query
+
+
+      .. py:attribute:: page_size
+         :value: 50
+
+
+
+      .. py:attribute:: iommi_style
+
+
+      .. py:attribute:: empty_message
+         :value: 'No tasks available.'
+
+
+
+      .. py:method:: query__filters__status__value_to_q(value_string_or_f, **_) -> django.db.models.Q
+         :staticmethod:
+
+
+
+
+   .. py:method:: get_owner_for_task(task: app.models.Task) -> app.models.AcademicGroup | app.models.Unit | None
+      :staticmethod:
+
+
+
+   .. py:method:: annotate_query_set(query_set: django.db.models.QuerySet[app.models.Task]) -> django.db.models.QuerySet[app.models.Task]
+      :staticmethod:
+
+
+      Annotates the passed QuerySet with any additional data needed for columns,
+      convenience method to keep consistent between uses.
+      :param query_set: QuerySet to annotate.
+      :return: Annotated QuerySet, with the number of assignments yet needed added as `assignment_open`
+
+
+

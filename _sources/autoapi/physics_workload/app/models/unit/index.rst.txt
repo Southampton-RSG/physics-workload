@@ -1,0 +1,139 @@
+physics_workload.app.models.unit
+================================
+
+.. py:module:: physics_workload.app.models.unit
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.models.unit.Unit
+
+
+Module Contents
+---------------
+
+.. py:class:: Unit
+
+   Bases: :py:obj:`app.models.common.ModelCommon`
+
+
+   Academic unit, e.g. PHYS1001
+
+
+   .. py:attribute:: icon
+      :value: 'book'
+
+
+
+   .. py:attribute:: url_root
+      :value: 'module'
+
+
+
+   .. py:attribute:: code
+
+
+   .. py:attribute:: name
+
+
+   .. py:attribute:: academic_group
+
+
+   .. py:attribute:: students
+
+
+   .. py:attribute:: lectures
+
+
+   .. py:attribute:: problem_classes
+
+
+   .. py:attribute:: coursework
+
+
+   .. py:attribute:: synoptic_lectures
+
+
+   .. py:attribute:: exams
+
+
+   .. py:attribute:: credits
+
+
+   .. py:attribute:: exam_mark_fraction
+
+
+   .. py:attribute:: coursework_mark_fraction
+
+
+   .. py:attribute:: has_dissertation
+
+
+   .. py:attribute:: has_placement
+
+
+   .. py:attribute:: description
+
+
+   .. py:attribute:: notes
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: ordering
+         :value: ['name']
+
+
+
+      .. py:attribute:: verbose_name
+         :value: 'Module'
+
+
+
+      .. py:attribute:: verbose_name_plural
+         :value: 'Modules'
+
+
+
+      .. py:attribute:: constraints
+
+
+
+   .. py:method:: __str__() -> str
+
+
+   .. py:method:: get_short_name() -> str
+
+      :return: Just returns the code. Needed for parity with the AcademicGroup model, for Task ownership.
+
+
+
+   .. py:method:: get_instance_header_short() -> str
+
+      :return: Wraps instance header, but only uses a short nane,
+
+
+
+   .. py:method:: get_marked_dissertation_count() -> int | None
+
+      :return: Returns the total number of dissertations marked
+
+
+
+   .. py:method:: has_access(user: django.contrib.auth.models.AbstractUser) -> bool
+
+      Only users assigned to a module can see the details
+      :param user: The user
+      :return: True if the user is assigned to a task in this module
+
+
+
+   .. py:method:: update_load() -> bool
+
+      :return: True if the load of any of the tasks needed updating.
+
+
+

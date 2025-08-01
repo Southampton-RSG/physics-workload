@@ -1,0 +1,229 @@
+physics_workload.app.forms.task
+===============================
+
+.. py:module:: physics_workload.app.forms.task
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.forms.task.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.forms.task.TaskForm
+   physics_workload.app.forms.task.TaskDetailForm
+   physics_workload.app.forms.task.TaskCreateForm
+   physics_workload.app.forms.task.TaskEditForm
+   physics_workload.app.forms.task.UnitTaskLeadCreateForm
+   physics_workload.app.forms.task.UnitTaskCreateForm
+   physics_workload.app.forms.task.TaskFullTimeCreateForm
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
+
+.. py:class:: TaskForm(**kwargs)
+
+   Bases: :py:obj:`iommi.Form`
+
+
+   Task for module co-ordinators
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: auto__model
+
+
+      .. py:method:: extra__on_delete(instance, **_)
+         :staticmethod:
+
+
+
+      .. py:method:: extra__on_save(form, instance, **_)
+         :staticmethod:
+
+
+
+
+.. py:class:: TaskDetailForm(**kwargs)
+
+   Bases: :py:obj:`TaskForm`
+
+
+   Task for module co-ordinators
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: instance
+
+
+      .. py:attribute:: auto__exclude
+         :value: ['title', 'unit', 'academic_group', 'load_fixed', 'load_fixed_first', 'load_multiplier',...
+
+
+
+      .. py:attribute:: title
+         :value: 'Details'
+
+
+
+      .. py:attribute:: fields
+
+
+      .. py:attribute:: editable
+         :value: False
+
+
+
+
+.. py:class:: TaskCreateForm(**kwargs)
+
+   Bases: :py:obj:`TaskForm`
+
+
+   Task for module co-ordinators
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: h_tag
+         :value: None
+
+
+
+      .. py:attribute:: auto
+
+
+      .. py:attribute:: fields
+
+
+      .. py:attribute:: actions__submit__attrs__class
+
+
+
+.. py:class:: TaskEditForm(**kwargs)
+
+   Bases: :py:obj:`TaskForm`
+
+
+   Task for module co-ordinators
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: h_tag
+         :value: None
+
+
+
+      .. py:attribute:: instance
+
+
+      .. py:attribute:: auto__exclude
+         :value: ['name', 'unit', 'academic_group', 'load_calc', 'load_calc_first']
+
+
+
+      .. py:attribute:: fields
+
+
+      .. py:attribute:: extra__redirect_to
+         :value: '..'
+
+
+
+      .. py:method:: extra__on_delete(instance, **_)
+         :staticmethod:
+
+
+
+      .. py:method:: extra__on_save(form, instance, **_)
+         :staticmethod:
+
+
+
+
+.. py:class:: UnitTaskLeadCreateForm(**kwargs)
+
+   Bases: :py:obj:`TaskForm`
+
+
+   Task for module co-ordinators
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: h_tag
+         :value: None
+
+
+
+      .. py:attribute:: auto__exclude
+         :value: ['name', 'academic_group', 'load_function', 'students', 'load_calc', 'load_calc_first', 'is_full_time']
+
+
+
+      .. py:attribute:: fields
+
+
+
+.. py:class:: UnitTaskCreateForm(**kwargs)
+
+   Bases: :py:obj:`TaskForm`
+
+
+   Task for module co-ordinators
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: h_tag
+         :value: None
+
+
+
+      .. py:attribute:: auto__exclude
+         :value: ['name', 'academic_group', 'is_lead', 'coursework_fraction', 'exam_fraction', 'load_calc',...
+
+
+
+      .. py:attribute:: fields
+
+
+
+.. py:class:: TaskFullTimeCreateForm(**kwargs)
+
+   Bases: :py:obj:`TaskForm`
+
+
+   Task for module co-ordinators
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: h_tag
+         :value: None
+
+
+
+      .. py:attribute:: auto__include
+         :value: ['title', 'is_unique', 'is_required', 'is_full_time', 'description']
+
+
+
+      .. py:attribute:: fields
+
+
+

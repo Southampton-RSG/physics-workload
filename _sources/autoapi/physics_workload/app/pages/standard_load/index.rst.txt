@@ -1,0 +1,87 @@
+physics_workload.app.pages.standard_load
+========================================
+
+.. py:module:: physics_workload.app.pages.standard_load
+
+.. autoapi-nested-parse::
+
+   Handles the views for the Standard Load
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.pages.standard_load.StandardLoadEdit
+   physics_workload.app.pages.standard_load.StandardLoadNewYear
+   physics_workload.app.pages.standard_load.StandardLoadDetail
+   physics_workload.app.pages.standard_load.StandardLoadList
+
+
+Module Contents
+---------------
+
+.. py:class:: StandardLoadEdit(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Edit the standard load
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: StandardLoadNewYear(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Edit the standard load, to produce a new year
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: StandardLoadDetail(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Shows details of the standard load
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: assignment
+
+
+   .. py:attribute:: target
+
+
+   .. py:attribute:: notes
+
+
+.. py:class:: StandardLoadList(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: info
+
+
+   .. py:attribute:: table
+
+

@@ -1,0 +1,78 @@
+physics_workload.app.tables.staff
+=================================
+
+.. py:module:: physics_workload.app.tables.staff
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.tables.staff.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.tables.staff.StaffTable
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
+
+.. py:class:: StaffTable(**kwargs)
+
+   Bases: :py:obj:`iommi.Table`
+
+
+   Table displaying details of staff.
+
+   Includes status filter and staff balances only if the user is allowed,
+   otherwise they can only see their own balance.
+
+   :param rows: a list or QuerySet of objects
+   :param columns: (use this only when not using the declarative style) a list of Column objects
+   :param attrs: dict of strings to string/callable of HTML attributes to apply to the table
+   :param row__attrs: dict of strings to string/callable of HTML attributes to apply to the row. Callables are passed the row as argument.
+   :param row__template: name of template (or `Template` object) to use for rendering the row
+   :param bulk_filter: filters to apply to the `QuerySet` before performing the bulk operation
+   :param bulk_exclude: exclude filters to apply to the `QuerySet` before performing the bulk operation
+   :param sortable: set this to `False` to turn off sorting for all columns
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: auto
+
+
+      .. py:attribute:: columns
+
+
+      .. py:attribute:: query
+
+
+      .. py:attribute:: iommi_style
+
+
+
+   .. py:method:: filter_status_into_query(value_string_or_f: str) -> django.db.models.Q
+      :staticmethod:
+
+
+
+   .. py:method:: annotate_rows(rows: django.db.models.QuerySet) -> django.db.models.QuerySet
+      :staticmethod:
+
+
+      Adds the load balance to the table rows, derived from the load columns.
+      :param rows: The query to annotate.
+      :return: The annotated query, with a 'load_balance' column.
+
+
+

@@ -1,0 +1,115 @@
+physics_workload.app.pages.unit
+===============================
+
+.. py:module:: physics_workload.app.pages.unit
+
+.. autoapi-nested-parse::
+
+   Pages for academic units
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/physics_workload/app/pages/unit/history/index
+   /autoapi/physics_workload/app/pages/unit/task/index
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.pages.unit.UnitDetail
+   physics_workload.app.pages.unit.UnitDelete
+   physics_workload.app.pages.unit.UnitEdit
+   physics_workload.app.pages.unit.UnitCreate
+   physics_workload.app.pages.unit.UnitList
+
+
+Package Contents
+----------------
+
+.. py:class:: UnitDetail(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   View a unit and its associated tasks
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: tasks
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: UnitDelete(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   View a unit and its associated tasks
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: UnitEdit(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Edit a unit's details
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: UnitCreate(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Page showing a unit to be created
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: text
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: UnitList(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   List of all currently active modules.
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: info
+
+
+   .. py:attribute:: list
+
+

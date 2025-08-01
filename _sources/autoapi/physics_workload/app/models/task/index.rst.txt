@@ -1,0 +1,216 @@
+physics_workload.app.models.task
+================================
+
+.. py:module:: physics_workload.app.models.task
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.models.task.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.models.task.Task
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   physics_workload.app.models.task.update_task_name
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
+
+.. py:class:: Task
+
+   Bases: :py:obj:`app.models.common.ModelCommon`
+
+
+   This is the model for tasks
+
+
+   .. py:attribute:: icon
+      :value: 'clipboard'
+
+
+
+   .. py:attribute:: url_root
+      :value: 'task'
+
+
+
+   .. py:attribute:: load_calc
+
+
+   .. py:attribute:: load_calc_first
+
+
+   .. py:attribute:: name
+
+
+   .. py:attribute:: title
+
+
+   .. py:attribute:: is_required
+
+
+   .. py:attribute:: is_unique
+
+
+   .. py:attribute:: academic_group
+
+
+   .. py:attribute:: load_fixed
+
+
+   .. py:attribute:: load_fixed_first
+
+
+   .. py:attribute:: load_multiplier
+
+
+   .. py:attribute:: FIELDS_TASK_GENERIC
+      :value: ('load_function', 'students')
+
+
+
+   .. py:attribute:: load_function
+
+
+   .. py:attribute:: students
+
+
+   .. py:attribute:: FIELDS_TASK_UNIT_LEAD
+      :value: ('unit', 'is_lead', 'coursework_fraction', 'exam_fraction')
+
+
+
+   .. py:attribute:: unit
+
+
+   .. py:attribute:: is_lead
+
+
+   .. py:attribute:: coursework_fraction
+
+
+   .. py:attribute:: exam_fraction
+
+
+   .. py:attribute:: FIELDS_TASK_FULL_TIME
+      :value: ('is_full_time',)
+
+
+
+   .. py:attribute:: is_full_time
+
+
+   .. py:attribute:: description
+
+
+   .. py:attribute:: notes
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: ordering
+         :value: ('unit', 'name')
+
+
+
+      .. py:attribute:: verbose_name
+         :value: 'Task'
+
+
+
+      .. py:attribute:: verbose_name_plural
+         :value: 'Tasks'
+
+
+
+      .. py:attribute:: constraints
+
+
+
+   .. py:method:: __str__()
+
+      :return: The name. We cache it to avoid multiple table queries per display.
+
+
+
+   .. py:method:: get_name()
+
+      :return: The name of the task, with unit code if possible
+
+
+
+   .. py:method:: get_name_with_load()
+
+      :return: The name of the task, with unit code if possible, and load hours
+
+
+
+   .. py:method:: get_instance_header(text: str | None = None) -> str
+
+      Overrides the default instance header to include the unit, with link, if present.
+      :param text: Override text.
+      :return: The rendered HTML template for this model.
+
+
+
+   .. py:method:: get_absolute_url() -> str
+
+      Preprend the unit if this is a unit task
+
+
+
+   .. py:method:: has_any_provisional() -> bool
+
+
+   .. py:method:: has_any_first_time() -> bool
+
+
+   .. py:method:: has_access(user: django.contrib.auth.models.AbstractUser) -> bool
+
+      Only users assigned to a task can see the details
+      :param user: The user
+      :return: True if the user is assigned to this task
+
+
+
+   .. py:method:: update_load(cascade=True, save=False) -> True
+
+      Updates the load for this task, and any associated assignments.
+
+      :param cascade: If true, update the load for this task and sub-assignments.
+      :return: True if the load has changed, false if not.
+
+
+
+   .. py:method:: calculate_load(students: int | None, is_first_time: bool = False) -> float
+
+      :return:
+
+
+
+.. py:function:: update_task_name(sender: Type[Task], instance: Task, **kwargs)
+
+   :param sender:
+   :param instance: The updated instance, an in-memory version.
+   :param kwargs:
+   :return:
+
+

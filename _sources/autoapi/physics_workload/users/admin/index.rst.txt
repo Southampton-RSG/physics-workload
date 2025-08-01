@@ -1,0 +1,39 @@
+physics_workload.users.admin
+============================
+
+.. py:module:: physics_workload.users.admin
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.users.admin.CustomUserAdmin
+
+
+Module Contents
+---------------
+
+.. py:class:: CustomUserAdmin(model, admin_site)
+
+   Bases: :py:obj:`django.contrib.auth.admin.UserAdmin`
+
+
+   Encapsulate all admin options and functionality for a given model.
+
+
+   .. py:attribute:: add_form
+
+
+   .. py:attribute:: form
+
+
+   .. py:attribute:: model
+
+
+   .. py:attribute:: list_display
+      :value: ['email', 'username']
+
+
+

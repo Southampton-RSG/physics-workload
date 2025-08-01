@@ -1,0 +1,45 @@
+physics_workload.app.pages.components
+=====================================
+
+.. py:module:: physics_workload.app.pages.components
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/physics_workload/app/pages/components/suffixes/index
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.pages.components.Equations
+
+
+Package Contents
+----------------
+
+.. py:class:: Equations(text=None, **kwargs)
+
+   Bases: :py:obj:`iommi.Fragment`
+
+
+   A block of text containing LaTeX equations
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: tag
+         :value: 'p'
+
+
+
+      .. py:attribute:: assets
+
+
+

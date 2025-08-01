@@ -1,0 +1,108 @@
+physics_workload.app.forms.standard_load
+========================================
+
+.. py:module:: physics_workload.app.forms.standard_load
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.forms.standard_load.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.forms.standard_load.StandardLoadForm
+   physics_workload.app.forms.standard_load.StandardLoadFormNewYear
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
+
+.. py:class:: StandardLoadForm(**kwargs)
+
+   Bases: :py:obj:`iommi.Form`
+
+
+   Form for the Standard Load model
+
+
+   .. py:class:: Meta
+
+      Includes mathjax for rendering the help text on the model
+
+
+      .. py:attribute:: auto__model
+
+
+      .. py:attribute:: assets
+
+
+      .. py:method:: actions__submit__post_handler(form, request, **_) -> django.http.HttpResponse | None
+         :staticmethod:
+
+
+         Make sure that we update the assignments if any of the task details change,
+         and update the teaching hours calculation if that's then implied.
+
+         :param form: The form returned.
+         :param request: The current request.
+         :return:
+
+
+
+
+.. py:class:: StandardLoadFormNewYear(**kwargs)
+
+   Bases: :py:obj:`iommi.Form`
+
+
+   Form for the Standard Load model
+
+
+   .. py:class:: Meta
+
+      Includes mathjax for rendering the help text on the model
+
+
+      .. py:attribute:: auto
+
+
+      .. py:attribute:: fields
+
+
+      .. py:attribute:: h_tag
+         :value: None
+
+
+
+      .. py:attribute:: actions__submit
+
+
+      .. py:attribute:: iommi_style
+
+
+      .. py:attribute:: assets
+
+
+      .. py:method:: actions__submit__post_handler(form, request: django.http.HttpRequest, **_) -> django.http.HttpResponse | None
+         :staticmethod:
+
+
+         If this is saved as a new year... then update everything!
+
+         :param form: The form returned.
+         :param request: The current request.
+         :return:
+
+
+
+

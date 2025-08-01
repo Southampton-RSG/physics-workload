@@ -1,0 +1,78 @@
+physics_workload.app.forms.load_function
+========================================
+
+.. py:module:: physics_workload.app.forms.load_function
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.forms.load_function.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.forms.load_function.LoadFunctionForm
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
+
+.. py:class:: LoadFunctionForm(**kwargs)
+
+   Bases: :py:obj:`iommi.Form`
+
+
+   Form for editing Load Function
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: h_tag
+         :value: None
+
+
+
+      .. py:attribute:: assets
+
+
+      .. py:attribute:: auto
+
+
+      .. py:attribute:: fields
+
+
+      .. py:attribute:: iommi_style
+
+
+      .. py:method:: fields__expression__is_valid(parsed_data, **_) -> (bool, str)
+         :staticmethod:
+
+
+         Tests to make sure the expression is valid!
+
+         :param parsed_data: The inbound text.
+         :raises ValidationError: If the expression is invalid.
+         :return: True/False, and then the reason why it failed if false.
+
+
+
+      .. py:method:: extra__post_validation(form, instance, **_)
+         :staticmethod:
+
+
+
+      .. py:method:: extra__on_save(form, instance, **_)
+         :staticmethod:
+
+
+
+

@@ -1,0 +1,45 @@
+physics_workload.app.forms.info
+===============================
+
+.. py:module:: physics_workload.app.forms.info
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.forms.info.InfoForm
+
+
+Module Contents
+---------------
+
+.. py:class:: InfoForm(**kwargs)
+
+   Bases: :py:obj:`iommi.Form`
+
+
+   Form used for showing the 'Info' element at the top of various pages.
+
+   Redirects to the 'page' the info is for on submission.
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: auto
+
+
+      .. py:attribute:: fields__text__template
+
+
+      .. py:attribute:: attrs__class
+
+
+      .. py:attribute:: actions__edit
+
+
+      .. py:attribute:: extra__redirect_to
+
+
+

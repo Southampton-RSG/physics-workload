@@ -1,0 +1,125 @@
+physics_workload.app.models.academic_group
+==========================================
+
+.. py:module:: physics_workload.app.models.academic_group
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.models.academic_group.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.models.academic_group.AcademicGroup
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
+
+.. py:class:: AcademicGroup
+
+   Bases: :py:obj:`app.models.common.ModelCommon`
+
+
+   Academic group, e.g. Astro, Theory, QLM...
+
+   Named AcademicGroup to avoid collision with base Django Group,
+   which is more about user permissions.
+
+
+   .. py:attribute:: icon
+      :value: 'users'
+
+
+
+   .. py:attribute:: url_root
+      :value: 'group'
+
+
+
+   .. py:attribute:: code
+
+
+   .. py:attribute:: short_name
+
+
+   .. py:attribute:: name
+
+
+   .. py:attribute:: load_balance_final
+
+
+   .. py:attribute:: load_balance_historic
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: ordering
+         :value: ('name',)
+
+
+
+      .. py:attribute:: verbose_name
+         :value: 'Group'
+
+
+
+      .. py:attribute:: verbose_name_plural
+         :value: 'Groups'
+
+
+
+
+   .. py:method:: __str__()
+
+
+   .. py:method:: get_short_name() -> str
+
+      :return: The short name. Needed for parity with the Unit model, for Task ownership.
+
+
+
+   .. py:method:: get_instance_header(text: str | None = None) -> str
+
+      Uses the full name for the header of one of these.
+
+      :param text: Text of the header, unused.
+      :return: A rendered header string with the name of the instance.
+
+
+
+   .. py:method:: has_access(user: users.models.CustomUser) -> bool
+
+      Only users assigned who are members of an academic group can view it.
+
+      :param user: The user.
+      :return: True if the user is allowed to view the group.
+
+
+
+   .. py:method:: update_load() -> bool
+
+      Updates the load balance for the group
+
+      :return: True if the load has changed.
+
+
+
+   .. py:method:: get_load_balance() -> int
+
+      Gets the load balance of all the group members.
+
+      :return: The load balance.
+
+
+

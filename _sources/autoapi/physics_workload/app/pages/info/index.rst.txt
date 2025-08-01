@@ -1,0 +1,123 @@
+physics_workload.app.pages.info
+===============================
+
+.. py:module:: physics_workload.app.pages.info
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.pages.info.InfoForm
+   physics_workload.app.pages.info.InfoEdit
+
+
+Module Contents
+---------------
+
+.. py:class:: InfoForm(**kwargs)
+
+   Bases: :py:obj:`iommi.Form`
+
+
+   Describe a Form. Example:
+
+   .. code-block:: python
+
+       class MyForm(Form):
+           a = Field()
+           b = Field.email()
+
+       form = MyForm().bind(request=request)
+
+   You can also create an instance of a form with this syntax if it's more convenient:
+
+   .. code-block:: python
+
+       form = Form(
+           fields=dict(
+               a=Field(),
+               b=Field.email(),
+           ),
+       ).bind(request=request)
+
+   In the common case the fields namespace will contain only instances of `Field`, but
+   iommi actually supports arbitrary `Part` objects. For example:
+
+   .. code-block:: python
+
+       form = Form(
+           fields=dict(
+               # Display a and b inside a box
+               box=html.div(
+                   attrs__class__box=True,
+                   children__a=Field(),
+                   children__b=Field.email(),
+               ),
+               # And c regularly
+               c=Field(),
+           )
+       )
+
+   So that writing the application logic (e.g. validation and post handlers) is independent
+   of minor changes to the layout, after bind the `fields` namespace of the form will contain
+   only instances of `Field` keyed by their `_name` independently of how deep they are in the
+   hierarchy. Given the above, an appropriate post_handler would be:
+
+   .. code-block:: python
+
+       def post_handler(form, **_):
+           if not form.is_valid():
+               return
+
+           print(form.fields.a.value, form.fields.b.value, form.fields.c.value)
+           # And not:
+           # print(form.fields.box.a.value, form.fields.box.b.value, form.fields.c.value)
+
+       # @test
+       assert post_handler(form=Struct(is_valid=lambda: False)) is None
+
+       post_handler(form.bind(request=req('post')))
+       # @end
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: h_tag
+         :value: (None,)
+
+
+
+      .. py:attribute:: instance
+
+
+      .. py:attribute:: auto
+
+
+      .. py:attribute:: fields__text__attrs__class
+
+
+      .. py:attribute:: fields__text__input__attrs__class
+
+
+      .. py:attribute:: assets
+
+
+
+.. py:class:: InfoEdit(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   A page is used to compose iommi parts into a bigger whole.
+
+   See the `howto <https://docs.iommi.rocks//cookbook_parts_pages.html#parts-pages>`_ for example usages.
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+

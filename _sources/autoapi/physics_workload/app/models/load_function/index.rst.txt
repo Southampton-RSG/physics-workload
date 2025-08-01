@@ -1,0 +1,91 @@
+physics_workload.app.models.load_function
+=========================================
+
+.. py:module:: physics_workload.app.models.load_function
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.models.load_function.LoadFunction
+
+
+Module Contents
+---------------
+
+.. py:class:: LoadFunction
+
+   Bases: :py:obj:`app.models.common.ModelCommon`
+
+
+   Evaluatable Python expression that determines the load for a number of students,
+   e.g. for number of tutees or when marking a dissertation.
+
+
+   .. py:attribute:: icon
+      :value: 'calculator'
+
+
+
+   .. py:attribute:: url_root
+      :value: 'function'
+
+
+
+   .. py:attribute:: name
+
+
+   .. py:attribute:: expression
+
+
+   .. py:attribute:: plot_minimum
+
+
+   .. py:attribute:: plot_maximum
+
+
+   .. py:attribute:: notes
+
+
+   .. py:method:: __str__() -> str
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: ordering
+         :value: ('name',)
+
+
+
+      .. py:attribute:: verbose_name
+         :value: 'Load Function'
+
+
+
+      .. py:attribute:: verbose_name_plural
+         :value: 'Load Functions'
+
+
+
+      .. py:attribute:: constraints
+
+
+
+   .. py:method:: evaluate(students: int, unit: object | None = None) -> float | None
+
+      Runs the equation for a given number of students.
+
+      :param students: The number of students.
+      :param unit: The unit.
+      :return: The output of the equation.
+
+
+
+   .. py:method:: has_access(user: django.contrib.auth.models.AbstractUser | django.contrib.auth.models.AnonymousUser) -> bool
+
+      You can always see the load functions
+
+
+

@@ -1,0 +1,25 @@
+physics_workload.app.middlewares
+================================
+
+.. py:module:: physics_workload.app.middlewares
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.middlewares.AjaxMiddleware
+
+
+Module Contents
+---------------
+
+.. py:class:: AjaxMiddleware(get_response)
+
+   .. py:attribute:: get_response
+
+
+   .. py:method:: __call__(request)
+
+

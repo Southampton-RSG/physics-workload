@@ -1,0 +1,117 @@
+physics_workload.app.pages.staff
+================================
+
+.. py:module:: physics_workload.app.pages.staff
+
+.. autoapi-nested-parse::
+
+   Handles the views for Staff
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/physics_workload/app/pages/staff/history/index
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.pages.staff.StaffDelete
+   physics_workload.app.pages.staff.StaffEdit
+   physics_workload.app.pages.staff.StaffCreate
+   physics_workload.app.pages.staff.StaffDetail
+   physics_workload.app.pages.staff.StaffList
+
+
+Package Contents
+----------------
+
+.. py:class:: StaffDelete(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Page for deleting a Staff member.
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: StaffEdit(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Page for editing the details of a Staff member
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: StaffCreate(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Create a new staff member
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+.. py:class:: StaffDetail(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   Page showing the detail of a staff member, and setting their Assignments.
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: text
+
+
+   .. py:attribute:: form
+
+
+   .. py:attribute:: assignments_editable
+
+
+   .. py:attribute:: assignments
+
+
+.. py:class:: StaffList(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   List of all currently active staff.
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: info
+
+
+   .. py:attribute:: list
+
+

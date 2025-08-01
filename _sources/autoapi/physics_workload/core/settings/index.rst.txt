@@ -1,0 +1,305 @@
+physics_workload.core.settings
+==============================
+
+.. py:module:: physics_workload.core.settings
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.core.settings.config
+   physics_workload.core.settings.PROJECT_DIR
+   physics_workload.core.settings.BASE_DIR
+   physics_workload.core.settings.DATA_DIR
+   physics_workload.core.settings.SECRET_KEY
+   physics_workload.core.settings.SECRET_KEY
+   physics_workload.core.settings.DEBUG
+   physics_workload.core.settings.ALLOWED_HOSTS
+   physics_workload.core.settings.CSRF_TRUSTED_ORIGINS
+   physics_workload.core.settings.INSTALLED_APPS
+   physics_workload.core.settings.MIDDLEWARE
+   physics_workload.core.settings.ROOT_URLCONF
+   physics_workload.core.settings.TEMPLATE_DIR
+   physics_workload.core.settings.TEMPLATES
+   physics_workload.core.settings.WSGI_APPLICATION
+   physics_workload.core.settings.DATABASES
+   physics_workload.core.settings.AUTH_USER_MODEL
+   physics_workload.core.settings.AUTH_PASSWORD_VALIDATORS
+   physics_workload.core.settings.AUTHENTICATION_BACKENDS
+   physics_workload.core.settings.LOGIN_URL
+   physics_workload.core.settings.LOGIN_REDIRECT_URL
+   physics_workload.core.settings.LOGOUT_REDIRECT_URL
+   physics_workload.core.settings.adfs_client_id
+   physics_workload.core.settings.adfs_client_secret
+   physics_workload.core.settings.adfs_tenant_id
+   physics_workload.core.settings.AUTH_ADFS
+   physics_workload.core.settings.SECURE_PROXY_SSL_HEADER
+   physics_workload.core.settings.LANGUAGE_CODE
+   physics_workload.core.settings.TIME_ZONE
+   physics_workload.core.settings.USE_I18N
+   physics_workload.core.settings.USE_L10N
+   physics_workload.core.settings.USE_TZ
+   physics_workload.core.settings.STATIC_ROOT
+   physics_workload.core.settings.STATIC_URL
+   physics_workload.core.settings.STATICFILES_DIRS
+   physics_workload.core.settings.DEFAULT_AUTO_FIELD
+   physics_workload.core.settings.EMAIL_BACKEND
+   physics_workload.core.settings.MESSAGE_TAGS
+   physics_workload.core.settings.SITE_ID
+   physics_workload.core.settings.IOMMI_DEFAULT_STYLE
+   physics_workload.core.settings.IOMMI_DEBUG
+   physics_workload.core.settings.IOMMI_MAIN_MENU
+   physics_workload.core.settings.SIMPLE_HISTORY_ENABLED
+   physics_workload.core.settings.X_FRAME_OPTIONS
+   physics_workload.core.settings.MARKDOWNIFY
+   physics_workload.core.settings.LOG_DIRECTORY
+   physics_workload.core.settings.LOGGING
+   physics_workload.core.settings.YEAR_MINIMUM_VALUE
+   physics_workload.core.settings.HOURS_MAXIMUM_VALUE
+   physics_workload.core.settings.ICON_HISTORY
+   physics_workload.core.settings.ICON_EDIT
+   physics_workload.core.settings.ICON_DELETE
+   physics_workload.core.settings.ICON_CREATE
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   physics_workload.core.settings.skip_static_records
+
+
+Module Contents
+---------------
+
+.. py:data:: config
+   :type:  decouple.AutoConfig
+
+.. py:data:: PROJECT_DIR
+   :type:  pathlib.Path
+
+.. py:data:: BASE_DIR
+   :type:  pathlib.Path
+
+.. py:data:: DATA_DIR
+   :type:  pathlib.Path
+
+.. py:data:: SECRET_KEY
+   :type:  str
+
+.. py:data:: SECRET_KEY
+   :value: ''
+
+
+.. py:data:: DEBUG
+   :type:  bool
+
+.. py:data:: ALLOWED_HOSTS
+   :type:  List[str]
+   :value: ['localhost', '127.0.0.1', '172.18.0.2', '0.0.0.0', 'teaching.physics.soton.ac.uk',...
+
+
+.. py:data:: CSRF_TRUSTED_ORIGINS
+   :type:  List[str]
+   :value: ['http://localhost:8000', 'http://127.0.0.1:8000', 'http://0.0.0.0:8000',...
+
+
+.. py:data:: INSTALLED_APPS
+   :type:  List[str]
+   :value: ['django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes',...
+
+
+.. py:data:: MIDDLEWARE
+   :type:  List[str]
+   :value: ['iommi.live_edit.Middleware', 'django.middleware.security.SecurityMiddleware',...
+
+
+.. py:data:: ROOT_URLCONF
+   :type:  str
+   :value: 'core.urls'
+
+
+.. py:data:: TEMPLATE_DIR
+   :type:  pathlib.Path
+
+.. py:data:: TEMPLATES
+   :type:  List[Dict[str, Any]]
+
+.. py:data:: WSGI_APPLICATION
+   :type:  str
+   :value: 'core.wsgi.application'
+
+
+.. py:data:: DATABASES
+   :type:  Dict[str, Dict]
+
+.. py:data:: AUTH_USER_MODEL
+   :type:  str
+   :value: 'users.CustomUser'
+
+
+.. py:data:: AUTH_PASSWORD_VALIDATORS
+   :type:  List[Dict]
+
+.. py:data:: AUTHENTICATION_BACKENDS
+   :type:  List[str]
+   :value: ['django.contrib.auth.backends.ModelBackend']
+
+
+.. py:data:: LOGIN_URL
+   :type:  str
+   :value: 'django_auth_adfs:login'
+
+
+.. py:data:: LOGIN_REDIRECT_URL
+   :type:  str
+   :value: 'home'
+
+
+.. py:data:: LOGOUT_REDIRECT_URL
+   :type:  str
+   :value: 'home'
+
+
+.. py:data:: adfs_client_id
+   :type:  str
+
+.. py:data:: adfs_client_secret
+   :type:  str
+
+.. py:data:: adfs_tenant_id
+   :type:  str
+
+.. py:data:: AUTH_ADFS
+   :type:  Dict[str, Any]
+
+.. py:data:: SECURE_PROXY_SSL_HEADER
+   :type:  Tuple[str, str]
+   :value: ('X-Forwarded-Proto', 'https')
+
+
+.. py:data:: LANGUAGE_CODE
+   :type:  str
+   :value: 'en-uk'
+
+
+.. py:data:: TIME_ZONE
+   :type:  str
+   :value: 'GMT'
+
+
+.. py:data:: USE_I18N
+   :type:  bool
+   :value: True
+
+
+.. py:data:: USE_L10N
+   :type:  bool
+   :value: True
+
+
+.. py:data:: USE_TZ
+   :type:  bool
+   :value: True
+
+
+.. py:data:: STATIC_ROOT
+   :type:  pathlib.Path
+
+.. py:data:: STATIC_URL
+   :type:  str
+   :value: '/static/'
+
+
+.. py:data:: STATICFILES_DIRS
+   :type:  Tuple[pathlib.Path]
+
+.. py:data:: DEFAULT_AUTO_FIELD
+   :type:  str
+   :value: 'django.db.models.BigAutoField'
+
+
+.. py:data:: EMAIL_BACKEND
+   :type:  str
+   :value: 'django.core.mail.backends.console.EmailBackend'
+
+
+.. py:data:: MESSAGE_TAGS
+   :type:  Dict[int, str]
+
+.. py:data:: SITE_ID
+   :type:  int
+   :value: 1
+
+
+.. py:data:: IOMMI_DEFAULT_STYLE
+   :type:  iommi.style.Style
+
+.. py:data:: IOMMI_DEBUG
+   :type:  bool
+
+.. py:data:: IOMMI_MAIN_MENU
+   :type:  str
+   :value: 'app.urls.main_menu'
+
+
+.. py:data:: SIMPLE_HISTORY_ENABLED
+   :type:  bool
+   :value: False
+
+
+.. py:data:: X_FRAME_OPTIONS
+   :type:  str
+   :value: 'SAMEORIGIN'
+
+
+.. py:data:: MARKDOWNIFY
+   :type:  Dict[str, Any]
+
+.. py:data:: LOG_DIRECTORY
+   :type:  pathlib.Path
+
+.. py:function:: skip_static_records(record: logging.LogRecord) -> bool
+
+   Skip log messages to the static file directory.
+
+   :param record:
+   :return:
+
+
+.. py:data:: LOGGING
+   :type:  Dict[str, Any]
+
+.. py:data:: YEAR_MINIMUM_VALUE
+   :type:  int
+   :value: 2000
+
+
+.. py:data:: HOURS_MAXIMUM_VALUE
+   :type:  int
+   :value: 2000
+
+
+.. py:data:: ICON_HISTORY
+   :type:  str
+   :value: 'clock-rotate-left'
+
+
+.. py:data:: ICON_EDIT
+   :type:  str
+   :value: 'pencil'
+
+
+.. py:data:: ICON_DELETE
+   :type:  str
+   :value: 'trash'
+
+
+.. py:data:: ICON_CREATE
+   :type:  str
+   :value: 'plus'
+
+

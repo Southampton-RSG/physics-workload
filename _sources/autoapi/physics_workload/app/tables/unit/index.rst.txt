@@ -1,0 +1,86 @@
+physics_workload.app.tables.unit
+================================
+
+.. py:module:: physics_workload.app.tables.unit
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.tables.unit.UnitTable
+
+
+Module Contents
+---------------
+
+.. py:class:: UnitTable(**kwargs)
+
+   Bases: :py:obj:`iommi.Table`
+
+
+   Describe a table. Example:
+
+   .. code-block:: python
+
+       class AlbumTable(Table):
+           name = Column()
+           artist = Column()
+
+           class Meta:
+               sortable = False
+
+       # @test
+       artist = Artist.objects.create(name='Black Sabbath')
+       Album.objects.create(name='Heaven & Hell', artist=artist, year=1980),
+       Album.objects.create(name='Mob Rules', artist=artist, year=1981),
+
+       show_output(AlbumTable(rows=Album.objects.all()))
+       # @end
+
+   :param rows: a list or QuerySet of objects
+   :param columns: (use this only when not using the declarative style) a list of Column objects
+   :param attrs: dict of strings to string/callable of HTML attributes to apply to the table
+   :param row__attrs: dict of strings to string/callable of HTML attributes to apply to the row. Callables are passed the row as argument.
+   :param row__template: name of template (or `Template` object) to use for rendering the row
+   :param bulk_filter: filters to apply to the `QuerySet` before performing the bulk operation
+   :param bulk_exclude: exclude filters to apply to the `QuerySet` before performing the bulk operation
+   :param sortable: set this to `False` to turn off sorting for all columns
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: auto
+
+
+      .. py:attribute:: columns
+
+
+      .. py:attribute:: query
+
+
+      .. py:attribute:: page_size
+         :value: 20
+
+
+
+      .. py:attribute:: h_tag
+         :value: None
+
+
+
+      .. py:attribute:: iommi_style
+
+
+
+   .. py:method:: filter_status_into_query(value_string_or_f) -> django.db.models.Q
+      :staticmethod:
+
+
+
+   .. py:method:: annotate_query_set(query_set: django.db.models.QuerySet[app.models.Unit]) -> django.db.models.QuerySet[app.models.Unit]
+      :staticmethod:
+
+
+

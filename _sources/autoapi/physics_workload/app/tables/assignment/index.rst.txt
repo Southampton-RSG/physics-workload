@@ -1,0 +1,207 @@
+physics_workload.app.tables.assignment
+======================================
+
+.. py:module:: physics_workload.app.tables.assignment
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.tables.assignment.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.tables.assignment.AssignmentTable
+   physics_workload.app.tables.assignment.AssignmentStaffTable
+   physics_workload.app.tables.assignment.AssignmentStaffEditTable
+   physics_workload.app.tables.assignment.AssignmentTaskTable
+   physics_workload.app.tables.assignment.AssignmentTaskEditTable
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
+
+.. py:class:: AssignmentTable(**kwargs)
+
+   Bases: :py:obj:`iommi.Table`
+
+
+   
+   :param rows: a list or QuerySet of objects
+   :param columns: (use this only when not using the declarative style) a list of Column objects
+   :param attrs: dict of strings to string/callable of HTML attributes to apply to the table
+   :param row__attrs: dict of strings to string/callable of HTML attributes to apply to the row. Callables are passed the row as argument.
+   :param row__template: name of template (or `Template` object) to use for rendering the row
+   :param bulk_filter: filters to apply to the `QuerySet` before performing the bulk operation
+   :param bulk_exclude: exclude filters to apply to the `QuerySet` before performing the bulk operation
+   :param sortable: set this to `False` to turn off sorting for all columns
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: auto__model
+
+
+      .. py:attribute:: columns
+
+
+
+.. py:class:: AssignmentStaffTable(**kwargs)
+
+   Bases: :py:obj:`iommi.Table`
+
+
+   
+   :param rows: a list or QuerySet of objects
+   :param columns: (use this only when not using the declarative style) a list of Column objects
+   :param attrs: dict of strings to string/callable of HTML attributes to apply to the table
+   :param row__attrs: dict of strings to string/callable of HTML attributes to apply to the row. Callables are passed the row as argument.
+   :param row__template: name of template (or `Template` object) to use for rendering the row
+   :param bulk_filter: filters to apply to the `QuerySet` before performing the bulk operation
+   :param bulk_exclude: exclude filters to apply to the `QuerySet` before performing the bulk operation
+   :param sortable: set this to `False` to turn off sorting for all columns
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: auto
+
+
+      .. py:attribute:: columns
+
+
+      .. py:attribute:: rows
+
+
+      .. py:attribute:: iommi_style
+
+
+
+.. py:class:: AssignmentStaffEditTable(**kwargs)
+
+   Bases: :py:obj:`iommi.EditTable`
+
+
+   
+   :param rows: a list or QuerySet of objects
+   :param columns: (use this only when not using the declarative style) a list of Column objects
+   :param attrs: dict of strings to string/callable of HTML attributes to apply to the table
+   :param row__attrs: dict of strings to string/callable of HTML attributes to apply to the row. Callables are passed the row as argument.
+   :param row__template: name of template (or `Template` object) to use for rendering the row
+   :param bulk_filter: filters to apply to the `QuerySet` before performing the bulk operation
+   :param bulk_exclude: exclude filters to apply to the `QuerySet` before performing the bulk operation
+   :param sortable: set this to `False` to turn off sorting for all columns
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: auto
+
+
+      .. py:attribute:: columns
+
+
+      .. py:attribute:: rows
+
+
+      .. py:attribute:: iommi_style
+
+
+      .. py:attribute:: edit_actions
+
+
+      .. py:method:: extra__post_save(staff: app.models.Staff, **_)
+         :staticmethod:
+
+
+         :param staff:
+         :param _:
+         :return:
+
+
+
+
+.. py:class:: AssignmentTaskTable(**kwargs)
+
+   Bases: :py:obj:`iommi.EditTable`
+
+
+   
+   :param rows: a list or QuerySet of objects
+   :param columns: (use this only when not using the declarative style) a list of Column objects
+   :param attrs: dict of strings to string/callable of HTML attributes to apply to the table
+   :param row__attrs: dict of strings to string/callable of HTML attributes to apply to the row. Callables are passed the row as argument.
+   :param row__template: name of template (or `Template` object) to use for rendering the row
+   :param bulk_filter: filters to apply to the `QuerySet` before performing the bulk operation
+   :param bulk_exclude: exclude filters to apply to the `QuerySet` before performing the bulk operation
+   :param sortable: set this to `False` to turn off sorting for all columns
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: auto
+
+
+      .. py:attribute:: columns
+
+
+      .. py:attribute:: rows
+
+
+      .. py:attribute:: iommi_style
+
+
+
+.. py:class:: AssignmentTaskEditTable(**kwargs)
+
+   Bases: :py:obj:`iommi.EditTable`
+
+
+   
+   :param rows: a list or QuerySet of objects
+   :param columns: (use this only when not using the declarative style) a list of Column objects
+   :param attrs: dict of strings to string/callable of HTML attributes to apply to the table
+   :param row__attrs: dict of strings to string/callable of HTML attributes to apply to the row. Callables are passed the row as argument.
+   :param row__template: name of template (or `Template` object) to use for rendering the row
+   :param bulk_filter: filters to apply to the `QuerySet` before performing the bulk operation
+   :param bulk_exclude: exclude filters to apply to the `QuerySet` before performing the bulk operation
+   :param sortable: set this to `False` to turn off sorting for all columns
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: auto
+
+
+      .. py:attribute:: columns
+
+
+      .. py:attribute:: rows
+
+
+      .. py:attribute:: iommi_style
+
+
+      .. py:attribute:: edit_actions
+
+
+      .. py:method:: extra__post_save(task: app.models.Task, **_)
+         :staticmethod:
+
+
+         :param task:
+         :param _:
+         :return:
+
+
+
+

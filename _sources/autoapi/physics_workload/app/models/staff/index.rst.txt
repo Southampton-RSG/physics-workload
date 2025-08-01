@@ -1,0 +1,189 @@
+physics_workload.app.models.staff
+=================================
+
+.. py:module:: physics_workload.app.models.staff
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.models.staff.logger
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.models.staff.Staff
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   physics_workload.app.models.staff.update_staff_link
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
+
+.. py:class:: Staff
+
+   Bases: :py:obj:`app.models.common.ModelCommon`
+
+
+   Member of staff; not necessarily a current user.
+
+   :attribute icon: Icon to use in the front end.
+   :attribute url_root: Root URL for the model.
+   :attribute user: The user account corresponding to this staff member, may be none.
+   :attribute account: The active directory account name for this staff member.
+   :attribute name: The name of this staff member.
+
+
+   .. py:attribute:: DYNAMIC_FIELDS
+      :value: ['load_balance_historic', 'load_balance_final', 'load_target', 'load_assigned']
+
+
+
+   .. py:attribute:: icon
+      :value: 'user'
+
+
+
+   .. py:attribute:: url_root
+      :value: 'staff'
+
+
+
+   .. py:attribute:: user
+
+
+   .. py:attribute:: account
+
+
+   .. py:attribute:: name
+
+
+   .. py:attribute:: academic_group
+
+
+   .. py:attribute:: gender
+
+
+   .. py:attribute:: load_target
+
+
+   .. py:attribute:: load_assigned
+
+
+   .. py:attribute:: load_external
+
+
+   .. py:attribute:: hours_fixed
+
+
+   .. py:attribute:: fte_fraction
+
+
+   .. py:attribute:: load_balance_final
+
+
+   .. py:attribute:: load_balance_historic
+
+
+   .. py:attribute:: notes
+
+
+   .. py:class:: Meta
+
+      .. py:attribute:: ordering
+         :value: ['name']
+
+
+
+      .. py:attribute:: verbose_name
+         :value: 'Staff Member'
+
+
+
+      .. py:attribute:: verbose_name_plural
+         :value: 'Staff Members'
+
+
+
+      .. py:attribute:: indexes
+
+
+      .. py:attribute:: constraints
+
+
+
+   .. py:method:: has_access(user: django.contrib.auth.models.AbstractUser | django.contrib.auth.models.AnonymousUser) -> bool
+
+      Does the user have access to this object?
+
+      :param user: The user in question.
+      :return: True if the user has access, or the user is this staff member.
+
+
+
+   .. py:method:: __str__()
+
+      Default rendering of a staff member shows their load balance
+
+      :return: Their name plus load balance.
+
+
+
+   .. py:method:: get_instance_header(text: str | None = None) -> str
+
+      Creates a header for staff, without their load balance in.
+
+      :param text: Ignored, only exists to match signature.
+      :return: A header with just the name.
+
+
+
+   .. py:method:: get_load_balance()
+
+      Gets how much under or overloaded the staff member is.
+
+      :return: The balance of assigned load against target load, negative if underloaded.
+
+
+
+   .. py:method:: update_load_assigned()
+
+      Updates own assigned load by summing the load of the assignments.
+
+      :return: True if the total load has changed, false if not.
+
+
+
+   .. py:method:: update_load_target()
+
+      Updates the target load from the standard load settings.
+
+      :return: True if the load target has changed, false if not.
+
+
+
+.. py:function:: update_staff_link(sender, instance, created, **kwargs)
+
+   Link newly created CustomUser to a staff member.
+
+   :param sender:
+   :param instance:
+   :param created:
+   :param kwargs:
+   :return:
+
+

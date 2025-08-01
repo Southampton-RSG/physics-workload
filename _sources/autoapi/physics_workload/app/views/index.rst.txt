@@ -1,0 +1,26 @@
+physics_workload.app.views
+==========================
+
+.. py:module:: physics_workload.app.views
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   physics_workload.app.views.home_view_redirect
+
+
+Package Contents
+----------------
+
+.. py:function:: home_view_redirect(request: django.http.HttpRequest) -> django.http.HttpResponseRedirect
+
+   Handles what the front page should look like for different users.
+   If the user is logged in and not an admin, then redirect them to their staff page.
+
+   :param request:
+   :return:
+
+

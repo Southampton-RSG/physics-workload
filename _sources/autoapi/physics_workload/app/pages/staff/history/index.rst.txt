@@ -1,0 +1,67 @@
+physics_workload.app.pages.staff.history
+========================================
+
+.. py:module:: physics_workload.app.pages.staff.history
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.pages.staff.history.StaffHistoryDetail
+   physics_workload.app.pages.staff.history.StaffHistoryList
+
+
+Module Contents
+---------------
+
+.. py:class:: StaffHistoryDetail(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   View showing the detail of a staff member at a point in time.
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
+
+
+   .. py:attribute:: assignments
+
+
+.. py:class:: StaffHistoryList(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   List of History entries for a staff member.
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: plot
+
+
+   .. py:attribute:: list
+
+
+   .. py:class:: Meta
+
+      .. py:method:: extra_evaluated__plot(params: Dict[str, Any], staff: app.models.Staff, **_) -> str
+         :staticmethod:
+
+
+         Creates a graph of the staff balance over time.
+
+         :param params: The Iommi view params.
+         :param staff: The Staff instance, provided via URL decoding.
+         :return: The HTML code of the graph.
+
+
+
+

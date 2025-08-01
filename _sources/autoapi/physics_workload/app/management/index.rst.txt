@@ -1,0 +1,15 @@
+physics_workload.app.management
+===============================
+
+.. py:module:: physics_workload.app.management
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/physics_workload/app/management/commands/index
+
+
