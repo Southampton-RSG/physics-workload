@@ -135,8 +135,12 @@ class StaffDetail(Page):
         editable=False,
         actions__submit=None,
     )
-    assignments_editable = AssignmentStaffEditTable()
-    assignments = AssignmentStaffTable()
+    assignments_editable = AssignmentStaffEditTable(
+        include=lambda user, **_: user.is_staff
+    )
+    assignments = AssignmentStaffTable(
+        include=lambda user, **_: not user.is_staff
+    )
 
 
 class StaffList(Page):

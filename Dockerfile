@@ -17,3 +17,4 @@ RUN uv run sync
 
 # Copy across the rest of the files
 COPY . .
+WORKDIR physics_workload

@@ -121,33 +121,33 @@ print-%:
 data: site school unit task
 
 site:
-	uv run manage.py loaddata site info
+	uv run physics_workload/manage.py loaddata site info
 
 school: site
-	uv run manage.py loaddata standard_load academic_group
+	uv run physics_workload/manage.py loaddata standard_load academic_group
 
 staff: school
-	uv run manage.py shell < ./scripts/import_staff_from_csv.py
+	uv run physics_workload/manage.py shell < ./scripts/import_staff_from_csv.py
 
 unit: school
-	uv run manage.py loaddata load_function
-	uv run manage.py shell < ./scripts/import_units_from_csv.py
+	uv run physics_workload/manage.py loaddata load_function
+	uv run physics_workload/manage.py shell < ./scripts/import_units_from_csv.py
 
 task: unit staff
-	uv run manage.py shell < ./scripts/import_nonunit_tasks_from_csv.py
-	uv run manage.py shell < ./scripts/import_unit_tasks_from_csv.py
+	uv run physics_workload/manage.py shell < ./scripts/import_nonunit_tasks_from_csv.py
+	uv run physics_workload/manage.py shell < ./scripts/import_unit_tasks_from_csv.py
 
 database:
-	-rm -rf app/migrations/*.py
+	-rm -rf physics_workload/app/migrations/*.py
 	-rm data/db.sqlite3
-	touch app/migrations/__init__.py
-	uv run manage.py makemigrations
-	uv run manage.py migrate
+	touch physics_workload/app/migrations/__init__.py
+	uv run physics_workload/manage.py makemigrations
+	uv run physics_workload/manage.py migrate
 
 superuser:
-	uv run manage.py shell < ./scripts/make_swm1r18_superuser.py
+	uv run physics_workload/manage.py shell < ./scripts/make_swm1r18_superuser.py
 
 initialise:
-	uv run manage.py initialise
+	uv run physics_workload/manage.py initialise
 
 all: database data initialise

@@ -10,7 +10,7 @@ class TaskTable(Table):
         auto = dict(
             model=Task,
             include=[
-                "name",
+                "title",
                 "load_calc",
                 "load_calc_first",
                 "assignment_set",
@@ -36,7 +36,7 @@ class TaskTable(Table):
             ),
             sortable=True,
         )
-        columns__name = dict(
+        columns__title = dict(
             after="owner",
             cell__url=lambda row, user, **_: row.get_absolute_url_authenticated(user),
             filter=dict(
@@ -47,7 +47,7 @@ class TaskTable(Table):
         columns__load_calc = dict(
             group="Load",
             display_name="Normal",
-            after="name",
+            after="title",
         )
         columns__load_calc_first = dict(
             group="Load",

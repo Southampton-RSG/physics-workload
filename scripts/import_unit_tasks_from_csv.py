@@ -69,7 +69,7 @@ for column in [
 
 # Track what's made
 assignments_created: int = 0
-history_date: datetime = datetime(year=2024, month=9, day=20, hour=0, minute=0, second=0)
+history_date: datetime = datetime(year=2024, month=9, day=20, hour=0, minute=0, second=0, tzinfo=ZoneInfo("GMT"))
 
 for idx, row in load_df.iterrows():
     # Iterate through the dataframe, and for each row create a new unit and save the details.
@@ -125,7 +125,7 @@ for idx, row in load_df.iterrows():
 
     elif str(row.task_name).lower() == "deputy":
         try:
-            task: Task = Task.objects.get(unit=unit, name="Deputy Lead")
+            task: Task = Task.objects.get(unit=unit, title="Deputy Lead")
             logger.info(
                 f"Found existing deputy lead task: {task}"
             )

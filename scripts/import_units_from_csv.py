@@ -148,7 +148,7 @@ for idx, row in load_df.iterrows():
 
         task, created = Task.objects.get_or_create(
             unit=unit,
-            name="Unit Lead",
+            title="Unit Lead",
             description="Co-ordinates/teaches unit.",
             is_lead=True,
             is_required=True,
@@ -164,7 +164,7 @@ for idx, row in load_df.iterrows():
         if row.hours_fixed_deputy:
             task, created = Task.objects.get_or_create(
                 unit=unit,
-                name="Deputy Lead",
+                title="Deputy Lead",
                 description="Deputy co-ordinator for the unit.",
                 is_required=True,
                 is_unique=True,

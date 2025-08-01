@@ -58,12 +58,12 @@ class AssignmentStaffTable(Table):
         )
         rows = lambda staff, **_: Assignment.objects.filter(staff=staff)
         iommi_style = floating_fields_select2_inline_style
-        include = lambda user, **_: not user.is_staff
 
 
 class AssignmentStaffEditTable(EditTable):
-    """ """
+    """
 
+    """
     class Meta:
         auto = dict(
             model=Assignment,
@@ -105,10 +105,6 @@ class AssignmentStaffEditTable(EditTable):
             ),
             task=dict(
                 field__include=True,
-                cell=dict(
-                    value=lambda row, **_: row.task.get_name() if hasattr(row, "task") else None,
-                    url=lambda row, **_: row.task.get_absolute_url() if hasattr(row, "task") else None,
-                ),
             ),
             delete=EditColumn.delete(
                 header__attrs__class={"text-center": True},
@@ -119,7 +115,6 @@ class AssignmentStaffEditTable(EditTable):
         rows = lambda staff, **_: Assignment.objects.filter(staff=staff)
         iommi_style = floating_fields_select2_inline_style
         edit_actions = dict(save=dict(attrs__class={"btn-primary": False, "btn-success": True}))
-        include = lambda user, **_: user.is_staff
 
         @staticmethod
         def extra__post_save(staff: Staff, **_):

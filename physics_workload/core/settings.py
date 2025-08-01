@@ -10,8 +10,9 @@ from django.contrib import messages
 # Load settings.ini from the customisations dir
 config: AutoConfig = AutoConfig()
 
-PROJECT_DIR: Path = Path(__file__).parent  # physics-workload/core/
-BASE_DIR: Path = Path(__file__).parent.parent  # physics-workload/
+PROJECT_DIR: Path = Path(__file__).parent  # physics_workload/physics-workload/core/
+BASE_DIR: Path = Path(__file__).parent.parent  # physics_workload/physics-workload/
+DATA_DIR: Path = Path(__file__).parent.parent.parent  # physics_workload/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY: str = config("SECRET_KEY", default="None")
@@ -108,7 +109,7 @@ WSGI_APPLICATION: str = "core.wsgi.application"
 DATABASES: Dict[str, Dict] = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "data" / "db.sqlite3",
+        "NAME": DATA_DIR / "data" / "db.sqlite3",
     }
 }
 
@@ -179,7 +180,7 @@ USE_TZ: bool = True
 ################################################################################
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-STATIC_ROOT: Path = BASE_DIR / "staticfiles"
+STATIC_ROOT: Path = DATA_DIR / "staticfiles"
 STATIC_URL: str = "/static/"
 
 # Extra places for collectstatic to find static files.
@@ -263,7 +264,7 @@ MARKDOWNIFY: Dict[str, Any] = {
 ################################################################################
 from logging import LogRecord  # noqa: E402
 
-LOG_DIRECTORY: Path = BASE_DIR / "logs"
+LOG_DIRECTORY: Path = DATA_DIR / "logs"
 
 
 def skip_static_records(record: LogRecord) -> bool:

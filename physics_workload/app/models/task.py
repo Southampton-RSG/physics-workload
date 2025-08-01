@@ -1,9 +1,12 @@
 # -*- encoding: utf-8 -*-
 from logging import Logger, getLogger
+from typing import Type
 
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import PROTECT, BooleanField, CharField, CheckConstraint, FloatField, IntegerField, Q, TextField, UniqueConstraint
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.utils.html import format_html
 from simple_history.models import HistoricForeignKey
 
@@ -41,7 +44,8 @@ class Task(ModelCommon):
     )
 
     # === CHANGEABLE FIELDS ===
-    name = CharField(max_length=128, blank=False)
+    name = CharField(max_length=128, blank=False)  # A hidden, uneditable, qualified name
+    title = CharField(max_length=128, blank=False)   # The editable version of the name
 
     is_required = BooleanField(
         default=False,
@@ -143,10 +147,6 @@ class Task(ModelCommon):
     # TaskFullTime components. Polymorphism and SimpleHistory don't play nice.
     # ==========================================================================
     FIELDS_TASK_FULL_TIME = (
-        "name",
-        "description",
-        "is_required",
-        "is_unique",
         "is_full_time",
     )
 
@@ -167,10 +167,10 @@ class Task(ModelCommon):
         verbose_name_plural = "Tasks"
         constraints = [
             UniqueConstraint(
-                fields=["unit", "name"], name="unit_task_name", violation_error_message="Units cannot have multiple tasks with the same name."
+                fields=["unit", "title"], name="unit_task_name", violation_error_message="Units cannot have multiple tasks with the same name."
             ),
             UniqueConstraint(
-                fields=["academic_group", "name"],
+                fields=["academic_group", "title"],
                 name="unit_group_name",
                 violation_error_message="Academic groups cannot have multiple tasks with the same name.",
             ),
@@ -183,20 +183,9 @@ class Task(ModelCommon):
 
     def __str__(self):
         """
-        :return: The name, with unit if it's a unit, with first-time load if valid
+        :return: The name. We cache it to avoid multiple table queries per display.
         """
-        text = f"{self.name}"
-        if self.unit:
-            text = f"{self.unit.code} - " + text
-        elif self.academic_group:
-            text = f"{self.academic_group.short_name} - " + text
-
-        if self.load_calc != self.load_calc_first:
-            text += f" [{self.load_calc:.0f} / {self.load_calc_first:.0f}]"
-        else:
-            text += f" [{self.load_calc:.0f}]"
-
-        return text
+        return self.name
 
     def get_name(self):
         """
@@ -208,6 +197,19 @@ class Task(ModelCommon):
             return f"{self.academic_group.short_name} - {self.name}"
         else:
             return f"{self.name}"
+
+    def get_name_with_load(self):
+        """
+        :return: The name of the task, with unit code if possible, and load hours
+        """
+        text = self.get_name()
+
+        if self.load_calc != self.load_calc_first:
+            text += f" [{self.load_calc:.0f} / {self.load_calc_first:.0f}]"
+        else:
+            text += f" [{self.load_calc:.0f}]"
+
+        return text
 
     def get_instance_header(self, text: str | None = None) -> str:
         """
@@ -299,7 +301,6 @@ class Task(ModelCommon):
 
     def calculate_load(self, students: int | None, is_first_time: bool = False) -> float:
         """
-
         :return:
         """
         if self.is_full_time:
@@ -378,6 +379,17 @@ class Task(ModelCommon):
         else:
             return load_calc * self.load_multiplier
 
+
+
+@receiver(pre_save, sender=Task)
+def update_task_name(sender: Type[Task], instance: Task, **kwargs):
+    """
+    :param sender:
+    :param instance: The updated instance, an in-memory version.
+    :param kwargs:
+    :return:
+    """
+    instance.name = instance.get_name()
 
 #
 # @receiver(post_delete, sender=Task)

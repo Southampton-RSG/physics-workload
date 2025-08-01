@@ -34,7 +34,7 @@ class TaskDetailForm(TaskForm):
     class Meta:
         instance = lambda task, **_: task
         auto__exclude = [
-            "name",
+            "title",
             "unit",
             "academic_group",
             "load_fixed",
@@ -99,6 +99,7 @@ class TaskCreateForm(TaskForm):
         auto = dict(
             model=Task,
             exclude=[
+                "name",
                 "unit",
                 "is_lead",
                 "coursework_fraction",
@@ -128,6 +129,7 @@ class TaskEditForm(TaskForm):
         h_tag = None
         instance = lambda task, **_: task
         auto__exclude = [
+            "name",
             "unit",
             "academic_group",
             "load_calc",
@@ -190,6 +192,7 @@ class UnitTaskLeadCreateForm(TaskForm):
     class Meta:
         h_tag = None
         auto__exclude = [
+            "name",
             "academic_group",
             "load_function",
             "students",
@@ -198,7 +201,7 @@ class UnitTaskLeadCreateForm(TaskForm):
             "is_full_time",
         ]
         fields = dict(
-            name=dict(
+            title=dict(
                 initial="Unit Lead",
                 group="Basic",
             ),
@@ -229,6 +232,7 @@ class UnitTaskCreateForm(TaskForm):
     class Meta:
         h_tag = None
         auto__exclude = [
+            "name",
             "academic_group",
             "is_lead",
             "coursework_fraction",
@@ -237,7 +241,7 @@ class UnitTaskCreateForm(TaskForm):
             "load_calc_first",
         ]
         fields = dict(
-            name__group="Basic",
+            title__group="Basic",
             is_unique__group="Basic",
             is_required__group="Basic",
             unit=Field.non_rendered(
@@ -256,11 +260,10 @@ class TaskFullTimeCreateForm(TaskForm):
     class Meta:
         h_tag = None
         auto__include = [
-            "name",
+            "title",
             "is_unique",
             "is_required",
             "is_full_time",
-            "name",
             "description",
         ]
         fields = dict(

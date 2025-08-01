@@ -156,3 +156,4 @@ target
 staticfiles/
 *.csv
 *.xlsx
+*/migrations/*

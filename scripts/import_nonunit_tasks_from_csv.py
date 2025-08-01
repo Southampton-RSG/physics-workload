@@ -45,7 +45,7 @@ for idx, row in load_df.iterrows():
         task, created = Task.objects.get_or_create(
             pk=100+idx,
             academic_group=AcademicGroup.objects.get(code=row.academic_group) if not isnull(row.academic_group) else None,
-            name=row.task_name,
+            title=row.task_name,
             description=row.description,
             notes=row.notes,
             load_fixed=row.load_fixed if row.load_fixed != 912 else 0,
