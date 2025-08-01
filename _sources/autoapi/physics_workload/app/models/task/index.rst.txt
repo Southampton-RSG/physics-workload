@@ -151,13 +151,13 @@ Module Contents
 
 
 
-   .. py:method:: get_name()
+   .. py:method:: get_name() -> str
 
       :return: The name of the task, with unit code if possible
 
 
 
-   .. py:method:: get_name_with_load()
+   .. py:method:: get_name_with_load() -> str
 
       :return: The name of the task, with unit code if possible, and load hours
 
