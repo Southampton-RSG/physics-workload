@@ -579,7 +579,7 @@ wheels = [
 
 [[package]]
 name = "django-plotly-dash"
-version = "2.4.5"
+version = "2.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "channels" },
@@ -591,9 +591,9 @@ dependencies = [
     { name = "plotly" },
     { name = "werkzeug" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e2/18/345958d595a120601fbf18fc6e24bc9223c76fcab82fb625a524c07dddc2/django_plotly_dash-2.4.5.tar.gz", hash = "sha256:f64611d0c2ed9f0319eadb8ffb886a012816406ff0e23232371037f4d66962aa", size = 40740, upload-time = "2025-02-06T03:51:54.591Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/36/8a/53da9e9801abb85007666c5ac726af051e1527e343dbf48699fcc1fd616d/django_plotly_dash-2.5.0.tar.gz", hash = "sha256:d598254a857b9e0ecc8d04a0ce56ac5b493236c4bd788b737b25dbba0b0a43a7", size = 41139, upload-time = "2025-07-09T03:49:43.094Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b4/e7/0c7af1988f0cfc1a48bd87f592ce9a720b1eeae262c5cce2bbdd330a4c78/django_plotly_dash-2.4.5-py3-none-any.whl", hash = "sha256:bc918eeb30bf23f7e32332f38c61f01c95e4cce173a59e3c4600b2344f77a5a5", size = 55684, upload-time = "2025-02-06T03:51:52.605Z" },
+    { url = "https://files.pythonhosted.org/packages/d6/82/4aa9b1b770cfcd02329ff1b9e92bf22fba794182e2b3cdba73e895724c92/django_plotly_dash-2.5.0-py3-none-any.whl", hash = "sha256:c8d872d2ace80ea4d4725fcabab060218baf6a41ecbdb09e89e3b4375e700f42", size = 55876, upload-time = "2025-07-09T03:49:41.966Z" },
 ]
 
 [[package]]
@@ -628,9 +628,9 @@ wheels = [
 
 [[package]]
 name = "dpd-components"
-version = "0.1.0"
+version = "0.2.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/fc/c4/1cc6b54e862fee31a52cb58a671553bf605f5dfbb16cfab155fe6b5d5bbf/dpd_components-0.1.0.tar.gz", hash = "sha256:613a6b17d3d7dd449be060e739e4ce36692b46fa012c3a86ee947f6337d09548", size = 4337, upload-time = "2018-07-10T22:34:16.683Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8b/1b/9a200a62cb5f0e441294428ce87fa78ef215293616827350f9a4d265c9b6/dpd_components-0.2.0.tar.gz", hash = "sha256:5db0f68abf2f8d3b0219876b6bac78eca1e311ae71062ea7531508f10f28f6b5", size = 7697, upload-time = "2025-07-09T03:36:39.81Z" }
 
 [[package]]
 name = "dunamai"
