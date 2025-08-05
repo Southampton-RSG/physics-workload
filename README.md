@@ -2,10 +2,10 @@
 
 Tool for managing staff teaching time.
 
-[![Build Status](https://github.com/Southampton-RSG/teaching-time-tool/actions/workflows/build.yaml/badge.svg?branch=main&event=push)](https://github.com/Southampton-RSG/teaching-time-tool/actions/workflows/build.yaml)
-[![codecov](https://codecov.io/gh/Southampton-RSG/teaching-time-tool/branch/main/graph/badge.svg)](https://codecov.io/gh/Southampton-RSG/teaching-time-tool)
-[![License](https://img.shields.io/github/license/Southampton-RSG/teaching-time-tool)](https://github.com/Southampton-RSG/teaching-time-tool)
-[![PyPI](https://img.shields.io/pypi/v/teaching-time-tool.svg)](https://pypi.python.org/pypi/teaching-time-tool)
+[![Build Status](https://github.com/Southampton-RSG/physics-workload/actions/workflows/build.yaml/badge.svg?branch=main&event=push)](https://github.com/Southampton-RSG/physics-workload/actions/workflows/build.yaml)
+[![codecov](https://codecov.io/gh/Southampton-RSG/physics-workload/branch/main/graph/badge.svg)](https://codecov.io/gh/Southampton-RSG/physics-workload)
+[![License](https://img.shields.io/github/license/Southampton-RSG/physics-workload)](https://github.com/Southampton-RSG/physics-workload)
+[![PyPI](https://img.shields.io/pypi/v/physics-workload.svg)](https://pypi.python.org/pypi/physics-workload)
 
 
 ## Installation
