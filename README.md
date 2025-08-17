@@ -8,6 +8,7 @@ Tool for managing staff teaching time.
 [![PyPI](https://img.shields.io/pypi/v/physics-workload.svg)](https://pypi.python.org/pypi/physics-workload)
 
 
+<<<<<<< before updating
 ## Installation
 
 Clone the repo to the server:
@@ -58,5 +59,7 @@ sudo docker compose up
 
 # Extra
 
+=======
+>>>>>>> after updating
 > [!NOTE]
 > This library was generated using [copier](https://copier.readthedocs.io/en/stable/) from the [Base Python Project Template repository](https://github.com/python-project-templates/base).
