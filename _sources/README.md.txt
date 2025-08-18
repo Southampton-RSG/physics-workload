@@ -27,7 +27,7 @@ Start the server (and associated containers) using:
 
 ```bash
 screen
-sudo docker compose up
+sudo docker compose up web
 ```
 
 ### Initialising
@@ -53,7 +53,7 @@ To update the tool, take the containers down, rebuild, and restart using:
 screen -r
 sudo docker compose down 
 sudo docker compose build --no-cache
-sudo docker compose up
+sudo docker compose up web
 ```
 
 # Extra

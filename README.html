@@ -381,7 +381,7 @@ They aren’t included in the repo as they contain personally identifiable data.
 <p>The tool is run using <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code>. Generally, it’s best to do this in a <code class="docutils literal notranslate"><span class="pre">screen</span></code> session.
 Start the server (and associated containers) using:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>screen
-sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up
+sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>web
 </pre></div>
 </div>
 <section id="initialising">
@@ -404,7 +404,7 @@ edit the script <code class="docutils literal notranslate"><span class="pre">mak
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>screen<span class="w"> </span>-r
 sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>down<span class="w"> </span>
 sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>build<span class="w"> </span>--no-cache
-sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up
+sudo<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>web
 </pre></div>
 </div>
 </section>
