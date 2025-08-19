@@ -18,7 +18,6 @@ Tool for managing staff teaching time.
 [![License](https://img.shields.io/github/license/Southampton-RSG/physics-workload)](https://github.com/Southampton-RSG/physics-workload)
 [![PyPI](https://img.shields.io/pypi/v/physics-workload.svg)](https://pypi.python.org/pypi/physics-workload)
 
-
 ## Installation
 
 Clone the repo to the server:
