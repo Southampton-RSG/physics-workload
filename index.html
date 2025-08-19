@@ -377,6 +377,40 @@ git<span class="w"> </span>clone<span class="w"> </span>https://github.com/South
 </div>
 <p>Also copy the cut-down spreadsheets derived from the <code class="docutils literal notranslate"><span class="pre">workload</span> <span class="pre">2425.xlsx</span></code> spreadsheet into the same directory as the code.
 They aren’t included in the repo as they contain personally identifiable data.</p>
+<section id="file-server">
+<h3>File Server<a class="headerlink" href="#file-server" title="Link to this heading">¶</a></h3>
+<p>If using this on a machine serving multiple sites,
+you’ll need to add the configuration file to your existing Nginx setup.
+Assign ownership of the directory to the <code class="docutils literal notranslate"><span class="pre">physics-workload-staff</span></code> group and add <code class="docutils literal notranslate"><span class="pre">nginx</span></code> to it:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>physics-workload-staff<span class="w"> </span>nginx
+$<span class="w"> </span>sudo<span class="w"> </span>chgrp<span class="w"> </span>-R<span class="w"> </span>voidorchestra-staff<span class="w"> </span>/var/www/physics-workload
+$<span class="w"> </span>sudo<span class="w"> </span>chmod<span class="w"> </span>-R<span class="w"> </span>g+rw<span class="w"> </span>/var/www/physics-workload<span class="w"> </span>
+</pre></div>
+</div>
+<p>Then, depending on your Linux distribution:</p>
+<section id="debian-ubuntu">
+<h4>Debian/Ubuntu<a class="headerlink" href="#debian-ubuntu" title="Link to this heading">¶</a></h4>
+<p>Copy or link <code class="docutils literal notranslate"><span class="pre">nginx/physics-workload.conf</span></code> to your <code class="docutils literal notranslate"><span class="pre">/etc/nginx/sites-enabled/</span></code> directory, then restart Nginx:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/var/www/physics-workload/nginx/physics-workload.conf<span class="w"> </span>/etc/nginx/sites-enabled/<span class="w"> </span>
+$<span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> </span>reload<span class="w"> </span>nginx
+$<span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>nginx
+</pre></div>
+</div>
+</section>
+<section id="fedora-rhel">
+<h4>Fedora/RHEL<a class="headerlink" href="#fedora-rhel" title="Link to this heading">¶</a></h4>
+<p>Copy <code class="docutils literal notranslate"><span class="pre">nginx/physics-workload.conf</span></code> file to your <code class="docutils literal notranslate"><span class="pre">/etc/nginx/conf.d</span></code> directory.
+Then, flag the log directory as a log directory under SELinux,
+and the output directory as as HTML content directory too:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>sudo<span class="w"> </span>cp<span class="w"> </span>/var/www/voidorchestra/nginx/physics-workload.conf<span class="w"> </span>/etc/nginx/conf.d/<span class="w"> </span>
+$<span class="w"> </span>sudo<span class="w"> </span>semanage<span class="w"> </span>fcontext<span class="w"> </span>-a<span class="w"> </span>-t<span class="w"> </span>httpd_sys_content_t<span class="w"> </span><span class="s2">&quot;/var/www/physics-workload/staticfiles(/.*)?&quot;</span>
+$<span class="w"> </span>sudo<span class="w"> </span>restorecon<span class="w"> </span>-R<span class="w"> </span>-v<span class="w"> </span>/var/www/physics-workload/staticfiles
+$<span class="w"> </span>sudo<span class="w"> </span>semanage<span class="w"> </span>fcontext<span class="w"> </span>-a<span class="w"> </span>-t<span class="w"> </span>httpd_log_t<span class="w"> </span><span class="s2">&quot;/var/www/physics-workload/logs(/.*)?&quot;</span>
+$<span class="w"> </span>sudo<span class="w"> </span>restorecon<span class="w"> </span>-R<span class="w"> </span>-v<span class="w"> </span>/var/www/physics-workload/logs/
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 <section id="running">
 <h2>Running<a class="headerlink" href="#running" title="Link to this heading">¶</a></h2>
