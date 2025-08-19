@@ -13,14 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: actions-ext/python/setup@main
-<<<<<<< before updating
       - run: | 
           sudo apt-get update
           sudo apt-get install -y libldap2-dev libssl-dev libsasl2-dev
-      - run: uv pip install .
-=======
       - run: uv pip install .[develop]
->>>>>>> after updating
       - run: uv pip install yardang
       - run: yardang build
       - uses: peaceiris/actions-gh-pages@v4
