@@ -138,11 +138,16 @@ js/coverage
 js/dist
 js/lib
 js/node_modules
+js/test-results
+js/playwright-report
 js/*.tgz
+physics_workload/extension
 
 # Jupyter
 .ipynb_checkpoints
 .autoversion
+!physics_workload/extension/physics_workload.json
+!physics_workload/extension/install.json
 physics_workload/nbextension
 physics_workload/labextension
 
