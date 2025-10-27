@@ -663,15 +663,15 @@ wheels = [
 
 [[package]]
 name = "iommi"
-version = "7.14.5"
+version = "7.19.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "pyparsing" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fb/a4/f33b78292b25897e1c9e9d85e7b93c087e1ee4ce21bbb28810f2f2ee7f01/iommi-7.14.5.tar.gz", hash = "sha256:1ca0e6322381642a009967fc64093094fc18ec7f4232f6b7cd564d053681062d", size = 200120, upload-time = "2025-08-02T00:10:33.303Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/49/09/4f81d59d145f8df4e71390a9807838b32ec66361bd4785060119e280a67f/iommi-7.19.0.tar.gz", hash = "sha256:457d83cbe3b9020679a24dfa5a4edfd9eafb9a700eacb34d69cb205d2577bbc1", size = 212532, upload-time = "2025-10-23T19:30:02.238Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ee/ba/167805ac04fc2d2e2da0a34e2d0fd5aed05e0df3ce0d3d3c6c86794e0fc6/iommi-7.14.5-py2.py3-none-any.whl", hash = "sha256:e26a661b21bd6655e2703d1b7fb4d004ecc1524e06e04d70c5be850cb088cc44", size = 338963, upload-time = "2025-08-02T00:10:32.021Z" },
+    { url = "https://files.pythonhosted.org/packages/c9/7e/c93892eb8f0418be0693f333ffcb4fc8c1ba7114fbee3cd64f4efa578cf0/iommi-7.19.0-py2.py3-none-any.whl", hash = "sha256:090ed36cf8c59c0d5cfa7291281c2ddbd11945e8744d1a7822fb1c21b55a7556", size = 361939, upload-time = "2025-10-23T19:30:00.724Z" },
 ]
 
 [[package]]
