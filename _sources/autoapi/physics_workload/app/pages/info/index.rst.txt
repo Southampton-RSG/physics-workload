@@ -81,6 +81,38 @@ Module Contents
        post_handler(form.bind(request=req('post')))
        # @end
 
+   Use of Form.layout:
+
+   .. code-block:: python
+       from django.contrib.auth import get_user_model
+       from django.utils.translation import gettext_lazy
+       from iommi._web_compat import Template
+
+       class UserForm(Form):
+           class Meta:
+               auto__model = get_user_model()
+               layout = Panel(dict(
+                   p_main=Panel.fieldset(dict(
+                       username=Panel.field(),
+                       p_fullname=Panel.row(dict(
+                           first_name=Panel.field(col__attrs__class__firstname=True),
+                           last_name=Panel.field(),
+                       )),
+                       # examples of custom html parts:
+                       p_foo=Panel.row(dict(
+                           p_bar=gettext_lazy('Some plain text'),
+                           p_baz=Template('{% load i18n %}<span>{% translate "Foobar!" %}</span>'),
+                       )),
+                       p_qux=Fragment(template='path/to/template.html'),
+                       p_quux=html.h3('Quux'),
+                       p_corge__template='path/to/another_template.html',
+                   )),
+                   p_permissions=Panel.fieldset(dict(
+                       # ...
+                   )),
+                   p_error=Panel.alert('Error!', level='error'),
+               ))
+
 
    .. py:class:: Meta
 

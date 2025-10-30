@@ -34,6 +34,9 @@ Module Contents
    Pairs a Staff member up with the task they're performing.
 
 
+   .. py:method:: get_epoch_count() -> int
+
+
    .. py:attribute:: icon
       :value: 'clipboard'
 
