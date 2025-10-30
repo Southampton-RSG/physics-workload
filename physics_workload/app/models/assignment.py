@@ -15,6 +15,9 @@ class Assignment(ModelCommon):
     Pairs a Staff member up with the task they're performing.
     """
 
+    def get_epoch_count(self) -> int:
+        return self.epoch_set.count()
+
     icon = "clipboard"
     url_root = "assignment"
 
