@@ -55,6 +55,7 @@ INSTALLED_APPS: List[str] = [
     "django_plotly_dash.apps.DjangoPlotlyDashConfig",
     "django_auth_adfs",
     "markdownify",
+    "rules",  # Rules-based object auth
     "users",  # Enable the custom users app
     "app",  # Enable the inner app
 ]
@@ -77,7 +78,7 @@ MIDDLEWARE: List[str] = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "iommi.sql_trace.Middleware",
     "iommi.profiling.Middleware",
-    "iommi.experimental.main_menu.main_menu_middleware",
+    "iommi.main_menu.main_menu_middleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "iommi.middleware",
 ]
@@ -141,8 +142,8 @@ AUTHENTICATION_BACKENDS: List[str] = [
 # DJANGO AUTH ADFS
 ################################################################################
 LOGIN_URL: str = "django_auth_adfs:login"
-LOGIN_REDIRECT_URL: str = "home"  # Route defined in app/urls.py
-LOGOUT_REDIRECT_URL: str = "home"  # Route defined in app/urls.py
+LOGIN_REDIRECT_URL: str = "main_menu.home"  # Route defined in app/urls.py
+LOGOUT_REDIRECT_URL: str = "main_menu.home"  # Route defined in app/urls.py
 
 adfs_client_id: str = config("ADFS_CLIENT_ID", default="None")
 adfs_client_secret: str = config("ADFS_CLIENT_SECRET", default="None")
@@ -160,6 +161,7 @@ AUTH_ADFS: Dict[str, Any] = {
     "RELYING_PARTY_ID": adfs_client_id,
 }
 AUTHENTICATION_BACKENDS += [
+    "rules.permissions.ObjectPermissionBackend",
     "django_auth_adfs.backend.AdfsAuthCodeBackend",
 ]
 # Ensures that the URL uses HTTPS, even if Django is serving to Nginx over HTTP
@@ -218,7 +220,7 @@ from iommi.style import Style  # noqa: E402
 from app.style import floating_fields_style  # noqa: E402
 
 IOMMI_DEFAULT_STYLE: Style = floating_fields_style
-IOMMI_DEBUG: bool = config("DEBUG_IOMMI", default=False, cast=bool)
+IOMMI_DEBUG: bool = config("DEBUG", default=False, cast=bool)
 IOMMI_MAIN_MENU: str = "app.urls.main_menu"
 
 ################################################################################

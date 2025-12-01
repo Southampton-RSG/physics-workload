@@ -1,59 +1,54 @@
-from dash_bootstrap_templates import load_figure_template
 from django.conf import settings
-from iommi.experimental.main_menu import M
+from iommi.main_menu import M
 from iommi.path import register_path_decoding
 
-from app.auth import has_access_decoder
 from app.models.staff import Staff
 from app.pages.staff import StaffCreate, StaffDelete, StaffDetail, StaffEdit, StaffList
 from app.pages.staff.history import StaffHistoryDetail, StaffHistoryList
 
-load_figure_template("bootstrap_dark")
-
-register_path_decoding(
-    staff=has_access_decoder(Staff, "You may only view your own Staff details."),
-)
+register_path_decoding(staff=Staff)
 register_path_decoding(
     staff_history=lambda string, **_: Staff.history.get(history_id=int(string)),
 )
 
 staff_submenu: M = M(
     icon=Staff.icon,
-    view=StaffList,
-    include=lambda request, **_: request.user.is_authenticated,
+    view=StaffList().as_view(),
+    include=lambda user, **_: user.is_authenticated,
     items=dict(
         create=M(
             icon=settings.ICON_CREATE,
-            include=lambda request, **_: request.user.is_staff,
-            view=StaffCreate,
+            include=lambda user, **_: user.has_perm("app.add_staff"),
+            view=StaffCreate().as_view(),
         ),
         detail=M(
             display_name=lambda staff, **_: staff.name,
-            open=True,
+            include=lambda user, staff, **_: user.has_perm("app.view_staff", staff),
             params={"staff"},
             path="<staff>/",
-            url=lambda staff, **_: f"/{Staff.url_root}/{staff.account}/",
-            view=StaffDetail,
+            url=lambda staff, **_: staff.get_absolute_url(),
+            view=StaffDetail().as_view(),
             items=dict(
                 edit=M(
                     icon=settings.ICON_EDIT,
-                    view=StaffEdit,
-                    include=lambda request, **_: request.user.is_staff,
+                    include=lambda user, staff, **_: user.has_perm("app.change_staff", staff),
+                    view=StaffEdit().as_view(),
                 ),
                 delete=M(
                     icon=settings.ICON_DELETE,
-                    view=StaffDelete,
-                    include=lambda request, **_: request.user.is_staff,
+                    include=lambda user, staff, **_: user.has_perm("app.delete_staff", staff),
+                    view=StaffDelete().as_view(),
                 ),
                 history=M(
                     icon=settings.ICON_HISTORY,
-                    view=StaffHistoryList,
+                    # If you can view, you can view history, so no extra permissions checked
+                    view=StaffHistoryList().as_view(),
                     items=dict(
                         detail=M(
                             display_name=lambda staff_history, **_: staff_history.history_date.date(),
                             params={"staff_history"},
                             path="<staff_history>/",
-                            view=StaffHistoryDetail,
+                            view=StaffHistoryDetail().as_view(),
                         )
                     ),
                 ),

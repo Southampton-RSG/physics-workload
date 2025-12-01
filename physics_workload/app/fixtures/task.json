@@ -1,0 +1,10 @@
+[
+  {
+    "model": "app.Task",
+    "pk": 1,
+    "fields": {
+      "title": "1st Year Tutees",
+      "load_function": 5
+    }
+  },
+]

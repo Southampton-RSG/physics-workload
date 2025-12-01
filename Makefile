@@ -43,18 +43,6 @@ lints: lint
 fix: fix-py fix-docs  ## run all autoformatters
 format: fix
 
-################
-# Other Checks #
-################
-.PHONY: check-manifest checks check
-
-check-manifest:  ## check python sdist manifest with check-manifest
-	check-manifest -v
-
-checks: check-manifest
-
-# Alias
-check: checks
 
 #########
 # TESTS #
@@ -87,20 +75,6 @@ minor:  ## bump a minor version
 major:  ## bump a major version
 	@bump-my-version bump major
 
-########
-# DIST #
-########
-.PHONY: dist dist-build dist-sdist dist-local-wheel publish
-
-dist-build:  # build python dists
-	python -m build -w -s
-
-dist-check:  ## run python dist checker with twine
-	python -m twine check dist/*
-
-dist: clean dist-build dist-check  ## build all dists
-
-publish: dist  ## publish python assets
 
 #########
 # CLEAN #
@@ -112,6 +86,7 @@ deep-clean: ## clean everything from the repository
 
 clean: ## clean the repository
 	rm -rf .coverage coverage cover htmlcov logs build dist *.egg-info
+	mkdir logs
 
 ############################################################################################
 
@@ -139,15 +114,20 @@ school: site
 	uv run physics_workload/manage.py loaddata standard_load academic_group
 
 staff: school
-	uv run physics_workload/manage.py shell < ./scripts/import_staff_from_csv.py
+	uv run physics_workload/manage.py importstaff "workload_2425.xlsx" "workload_2526_rolled.xlsx"
 
 unit: school
 	uv run physics_workload/manage.py loaddata load_function
-	uv run physics_workload/manage.py shell < ./scripts/import_units_from_csv.py
+	uv run physics_workload/manage.py importunits "workload_2425.xlsx" 24
+	uv run physics_workload/manage.py importunits "workload_2526_rolled.xlsx" 25
 
 task: unit staff
-	uv run physics_workload/manage.py shell < ./scripts/import_nonunit_tasks_from_csv.py
-	uv run physics_workload/manage.py shell < ./scripts/import_unit_tasks_from_csv.py
+	uv run physics_workload/manage.py importunittasks "workload_2425.xlsx" "workload_2526_rolled.xlsx"
+	uv run physics_workload/manage.py importnonunittasks "workload_2425.xlsx" "workload_2526_rolled.xlsx"
+
+assignment: task
+	uv run physics_workload/manage.py loaddata task
+	uv run physics_workload/manage.py importassignments "workload_2425.xlsx" "workload_2526_rolled.xlsx"
 
 database:
 	-rm -rf physics_workload/app/migrations/*.py
@@ -163,3 +143,6 @@ initialise:
 	uv run physics_workload/manage.py initialise
 
 all: database data initialise
+
+server:
+	uv run physics_workload/manage.py runserver

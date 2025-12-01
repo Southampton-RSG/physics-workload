@@ -1,0 +1,23 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run Server" type="UvRunConfigurationType" factoryName="UvRunConfigurationType">
+    <option name="args">
+      <list>
+        <option value="runserver" />
+      </list>
+    </option>
+    <option name="checkSync" value="true" />
+    <option name="env">
+      <map />
+    </option>
+    <option name="runType" value="MODULE" />
+    <option name="scriptOrModule" value="physics_workload.manage:main" />
+    <option name="uvArgs">
+      <list>
+        <option value="--with" />
+        <option value="develop" />
+      </list>
+    </option>
+    <option name="uvSdkKey" value="uv (physics-workload)" />
+    <method v="2" />
+  </configuration>
+</component>

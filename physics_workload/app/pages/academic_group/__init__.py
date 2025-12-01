@@ -21,7 +21,7 @@ class AcademicGroupTaskCreate(Page):
     """
 
     header = Header(
-        lambda params, **_: params.academic_group.get_instance_header(),
+        lambda academic_group, **_: academic_group.get_instance_header(),
         children__suffix=SuffixCreate(),
     )
     form = TaskForm.create(
@@ -32,7 +32,7 @@ class AcademicGroupTaskCreate(Page):
             "academic_group",
         ],
         fields__academic_group=Field.non_rendered(
-            initial=lambda params, **_: params.academic_group,
+            initial=lambda academic_group, **_: academic_group,
         ),
     )
 
@@ -43,7 +43,7 @@ class AcademicGroupDetail(Page):
     as well as any modules and their assignment status.
     """
 
-    header = Header(lambda params, **_: params.academic_group.get_instance_header())
+    header = Header(lambda academic_group, **_: academic_group.get_instance_header())
     details = AcademicGroupDetailForm()
     staff = StaffTable(
         attrs__class={"mb-3": True},
@@ -60,7 +60,7 @@ class AcademicGroupDetail(Page):
             owner__include=False,
         ),
         query__include=False,
-        rows=lambda params, **_: TaskTable.annotate_query_set(params.academic_group.task_set),
+        rows=lambda academic_group, **_: TaskTable.annotate_query_set(academic_group.task_set),
     )
 
     units = Table(
@@ -73,7 +73,7 @@ class AcademicGroupDetail(Page):
             cell__template="app/academic_group/task_set.html",
             after="students",
         ),
-        rows=lambda params, **_: Unit.objects.filter(academic_group=params.academic_group).annotate(
+        rows=lambda academic_group, **_: Unit.objects.filter(academic_group=academic_group).annotate(
             assignment_open=Count("task_set__is_required") - Count("task_set__assignment_set"),
         ),
         page_size=20,
@@ -88,13 +88,13 @@ class AcademicGroupEdit(Page):
     """
 
     header = Header(
-        lambda params, **_: params.academic_group.get_instance_header(),
+        lambda academic_group, **_: academic_group.get_instance_header(),
         children__suffix=SuffixEdit(),
     )
     form = Form.edit(
         h_tag=None,
         auto__model=AcademicGroup,
-        instance=lambda params, **_: params.academic_group,
+        instance=lambda academic_group, **_: academic_group,
         fields__code__group="row1",
         fields__short_name__group="row1",
         fields__name__group="row1",
@@ -107,7 +107,7 @@ class AcademicGroupCreate(Page):
     Page showing an academic group to be created
     """
 
-    header = Header(lambda params, **_: AcademicGroup.get_model_header_singular())
+    header = Header(AcademicGroup.get_model_header_singular())
     form = Form.create(
         h_tag=None,
         auto__model=AcademicGroup,
@@ -123,14 +123,15 @@ class AcademicGroupDelete(Page):
     """
 
     header = Header(
-        lambda params, **_: params.academic_group.get_instance_header(),
+        lambda academic_group, **_: academic_group.get_instance_header(),
         children__suffix=SuffixDelete(),
     )
-    warning = html.p("If this group has been used, edit it and remove the 'active' flag instead.")
+    warning = html.p("You cannot delete this group if staff have been assigned to it.")
+
     form = Form.delete(
         h_tag=None,
         auto__model=AcademicGroup,
-        instance=lambda params, **_: params.academic_group,
+        instance=lambda academic_group, **_: academic_group,
         fields__code__group="row1",
         fields__short_name__group="row1",
         fields__name__group="row1",
@@ -163,16 +164,16 @@ class AcademicGroupList(Page):
             units=Column(
                 cell__value=lambda row, **_: row.unit_set.count(),
             ),
-            name__cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
+            name__cell__url=lambda row, user, **_: row.get_absolute_url_if_permitted(user),
             load_balance=Column(
-                include=lambda request, **_: request.user.is_staff,
+                include=lambda user, **_: user.is_staff,
                 after="units",
                 group="Load Balance",
                 display_name="Current",
                 cell=dict(value=lambda row, **_: row.get_load_balance(), attrs__class=lambda value, **_: get_balance_classes(value)),
             ),
             load_balance_historic=dict(
-                include=lambda request, **_: request.user.is_staff,
+                include=lambda user, **_: user.is_staff,
                 after=LAST,
                 group="Load Balance",
                 display_name="Historic",

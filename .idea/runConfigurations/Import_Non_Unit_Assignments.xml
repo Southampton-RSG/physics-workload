@@ -1,0 +1,25 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Import Non-Unit Assignments" type="UvRunConfigurationType" factoryName="UvRunConfigurationType">
+    <option name="args">
+      <list>
+        <option value="importassignments" />
+        <option value="workload_2425.xlsx" />
+        <option value="workload_2526_rolled.xlsx" />
+      </list>
+    </option>
+    <option name="checkSync" value="true" />
+    <option name="env">
+      <map />
+    </option>
+    <option name="runType" value="MODULE" />
+    <option name="scriptOrModule" value="physics_workload.manage:main" />
+    <option name="uvArgs">
+      <list>
+        <option value="--with" />
+        <option value="develop" />
+      </list>
+    </option>
+    <option name="uvSdkKey" value="uv (physics-workload)" />
+    <method v="2" />
+  </configuration>
+</component>

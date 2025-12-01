@@ -2,6 +2,8 @@
 from logging import Logger, getLogger
 from typing import Type
 
+from django.contrib.auth import get_user_model
+from rules import predicate, is_staff, add_perm
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import PROTECT, BooleanField, CharField, CheckConstraint, FloatField, IntegerField, Q, TextField, UniqueConstraint
@@ -17,6 +19,8 @@ from app.models.unit import Unit
 
 # Set up logging for this file
 logger: Logger = getLogger(__name__)
+
+User = get_user_model()
 
 
 class Task(ModelCommon):
@@ -222,11 +226,17 @@ class Task(ModelCommon):
         Preprend the unit if this is a unit task
         """
         if self.unit:
-            return f"/{Unit.url_root}/{self.unit.pk}/{self.pk}/"
+            return self.unit.get_absolute_url()+f"{self.pk}/"
         elif self.academic_group:
-            return f"/{AcademicGroup.url_root}/{self.academic_group.pk}/{self.pk}/"
+            return self.academic_group.get_absolute_url()+f"{self.pk}/"
         else:
-            return super().get_absolute_url()
+            return f"/{self.url_root}/{self.pk}/"
+
+    def get_absolute_url_if_permitted(self, user: User) -> str | None:
+        if user.has_perm("app.view_task", self):
+            return self.get_absolute_url()
+        else:
+            return None
 
     def has_any_provisional(self) -> bool:
         return any(self.assignment_set.values_list("is_provisional", flat=True))
@@ -404,3 +414,19 @@ def update_task_name(sender: Type[Task], instance: Task, **kwargs):
 #         f"Deleted {type(instance)} {instance}; updating the standard load."
 #     )
 #     StandardLoad.objects.latest().update_calculated_loads()
+
+@predicate
+def is_in_task(user: User, task: Task) -> bool:
+    """
+    Is the user one of the staff assigned to this task?
+    :param user: The curent user.
+    :param task: The task to check.
+    :return: If they're assigned or not.
+    """
+    return user.staff in task.assignment_set.all().values_list('staff', flat=True)
+
+
+add_perm("app.add_task", is_staff)
+add_perm("app.change_task", is_staff)
+add_perm("app.delete_task", is_staff)
+add_perm("app.view_task", is_staff | is_in_task)

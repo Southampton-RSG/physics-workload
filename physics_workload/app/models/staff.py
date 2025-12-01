@@ -1,7 +1,8 @@
 from logging import Logger, getLogger
 
+from rules import add_perm, is_staff, predicate
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, AnonymousUser
+from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import (
     CharField,
@@ -25,6 +26,8 @@ from app.models.common import ModelCommon
 from users.models import CustomUser
 
 logger: Logger = getLogger(__name__)
+
+User = get_user_model()
 
 
 class Staff(ModelCommon):
@@ -50,7 +53,8 @@ class Staff(ModelCommon):
         on_delete=SET_NULL,
     )
     account = CharField(
-        max_length=16, unique=True, blank=False, primary_key=True, help_text=format_html("Active Directory account e.g. <tt>js1a25</tt>")
+        max_length=16, unique=True, blank=False, primary_key=True,
+        help_text=format_html("Active Directory account e.g. <tt>js1a25</tt>")
     )
     name = CharField(
         max_length=128,
@@ -131,7 +135,24 @@ class Staff(ModelCommon):
             )
         ]
 
-    def has_access(self, user: AbstractUser | AnonymousUser) -> bool:
+    def get_absolute_url(self) -> str:
+        """
+        Gets the URL for this staff member's page.
+        :return: The URL.
+        """
+        return f"/{self.url_root}/{self.pk}/"
+
+    def get_absolute_url_if_permitted(self, user: User) -> str | None:
+        """
+        Gets the URL for this staff member's page if the user has the rights to view it.
+        :return: The URL, or None if they don't.
+        """
+        if user.has_perm("app.view_staff", self):
+            return self.get_absolute_url()
+        else:
+            return None
+
+    def has_access(self, user: User) -> bool:
         """
         Does the user have access to this object?
 
@@ -260,3 +281,21 @@ def update_staff_link(sender, instance, created, **kwargs):
                 logger.info(f"Created Staff: '{account}' - {staff}")
             else:
                 logger.info(f"Updated Staff: '{account}' - {staff}")
+
+
+@predicate
+def is_staff_for_user(user: User, staff: Staff) -> bool:
+    """
+    Does this staff account correspond to the current user?
+
+    :param user: The current user.
+    :param staff: The teaching staff.
+    :return: True if so.
+    """
+    return user.staff == staff
+
+
+add_perm("app.add_staff", is_staff)
+add_perm("app.change_staff", is_staff | is_staff_for_user)
+add_perm("app.delete_staff", is_staff)
+add_perm("app.view_staff", is_staff | is_staff_for_user)

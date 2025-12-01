@@ -2,7 +2,7 @@
 Handles the URLs for the Standard Load
 """
 
-from iommi.experimental.main_menu import M
+from iommi.main_menu import M
 from iommi.path import register_path_decoding
 
 from app.models.standard_load import StandardLoad

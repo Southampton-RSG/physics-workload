@@ -1,12 +1,16 @@
 from logging import Logger, getLogger
 from typing import Dict
 
+from django.contrib.auth import get_user_model
 from django.db.models import CharField, IntegerField, Sum
+from rules import add_perm, is_staff, predicate
 
 from app.models.common import ModelCommon
 from users.models import CustomUser
 
 logger: Logger = getLogger(__name__)
+
+User = get_user_model()
 
 
 class AcademicGroup(ModelCommon):
@@ -42,6 +46,15 @@ class AcademicGroup(ModelCommon):
 
     def __str__(self):
         return f"{self.short_name}"
+
+    def get_absolute_url(self) -> str:
+        return f"/{self.url_root}/{self.pk}/"
+
+    def get_absolute_url_if_permitted(self, user) -> str|None:
+        if user.has_perm("app.view_academicgroup", self):
+            return self.get_absolute_url()
+        else:
+            return None
 
     def get_short_name(self) -> str:
         """
@@ -96,3 +109,20 @@ class AcademicGroup(ModelCommon):
         load_assigned: int = aggregates["load_assigned__sum"] if aggregates["load_assigned__sum"] else 0
         load_target: int = aggregates["load_target__sum"] if aggregates["load_target__sum"] else 0
         return load_assigned - load_target
+
+
+@predicate
+def is_group_member(user: User, academic_group: AcademicGroup) -> bool:
+    """
+    Is this user a member of this group?
+    :param user:
+    :param academic_group:
+    :return:
+    """
+    return academic_group.staff_set.contains(user.staff)
+
+
+add_perm("app.add_academicgroup", is_staff)
+add_perm("app.change_academicgroup", is_staff | is_group_member)
+add_perm("app.delete_academicgroup", is_staff)
+add_perm("app.view_academicgroup", is_staff | is_group_member)

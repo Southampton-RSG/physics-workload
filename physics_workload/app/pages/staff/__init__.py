@@ -125,7 +125,7 @@ class StaffDetail(Page):
                 non_editable_input__attrs__class=lambda field, **_: get_balance_classes_form(field.value),
             ),
             notes=dict(
-                include=lambda user, **_: user.is_staff,
+                include=lambda staff, user, **_: user.is_staff and staff.notes,
                 after=LAST,
                 non_editable_input__attrs__class={
                     "form-control-plaintext": True,

@@ -3,7 +3,6 @@ from logging import Logger, getLogger
 from django.db.models import F, Q, QuerySet
 from iommi import Action, Column, Field, Table
 
-from app.auth import has_staff_access
 from app.models import AcademicGroup, Assignment, Staff
 from app.style import floating_fields_style, get_balance_classes
 
@@ -33,12 +32,12 @@ class StaffTable(Table):
         columns = dict(
             account=dict(
                 cell=dict(
-                    url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
+                    url=lambda row, user, **_: row.get_absolute_url_if_permitted(user),
                     value=lambda row, **_: row.account if not row.account.startswith("unconnected") else None,
                 ),
             ),
             name=dict(
-                cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
+                cell__url=lambda row, user, **_: row.get_absolute_url_if_permitted(user),
                 filter=dict(
                     include=True,
                     freetext=True,
@@ -46,41 +45,36 @@ class StaffTable(Table):
             ),
             academic_group=Column(
                 after="name",
+                cell__url=lambda row, user, **_: row.academic_group.get_absolute_url_if_permitted(user) if row.academic_group else None,
                 display_name="Group",
                 filter__include=True,
-                cell__url=lambda row, request, **_: row.academic_group.get_absolute_url_authenticated(request.user) if row.academic_group else None,
             ),
             gender=dict(
                 filter__include=True,
                 render_column=False,
             ),
             assignment_set=dict(
+                cell=dict(
+                    value=lambda row, **_: Assignment.objects.filter(staff=row),
+                    template="app/staff/assignment_set.html",
+                ),
                 include=lambda user, **_: user.is_staff,
-                cell__value=lambda row, **_: Assignment.objects.filter(staff=row),
-                cell__template="app/staff/assignment_set.html",
             ),
             load_balance_historic=dict(
-                group="Load Balance",
+                cell__attrs__class=lambda row, **_: get_balance_classes(row.load_balance_historic),
                 display_name="Historic",
-                cell=dict(
-                    value=lambda request, row, **_: row.load_balance_historic if row.has_access(request.user) else None,
-                    attrs__class=lambda row, **_: get_balance_classes(row.load_balance_historic),
-                ),
-                include=lambda request, **_: request.user.is_staff,
+                group="Load Balance",
+                include=lambda user, **_: user.is_staff,
             ),
             load_balance=dict(
-                group="Load Balance",
+                cell__attrs__class=lambda row, **_: get_balance_classes(row.load_balance),
                 display_name="Current",
-                cell=dict(
-                    value=lambda request, row, **_: row.load_balance if row.has_access(request.user) else None,
-                    attrs__class=lambda row, **_: get_balance_classes(row.load_balance),
-                ),
-                include=lambda request, **_: request.user.is_staff,
+                group="Load Balance",
+                include=lambda user, **_: user.is_staff,
             ),
         )
         query = dict(
             advanced__include=False,
-            include=lambda request, **_: has_staff_access(request.user),
             form=dict(
                 fields=dict(
                     status=Field.choice(
@@ -109,12 +103,18 @@ class StaffTable(Table):
             filters=dict(
                 status__value_to_q=lambda value_string_or_f, **_: StaffTable.filter_status_into_query(value_string_or_f),
             ),
+            include=lambda user, **_: user.is_staff,
         )
-        # empty_message="No staff available.
         iommi_style = floating_fields_style
 
     @staticmethod
     def filter_status_into_query(value_string_or_f: str) -> Q:
+        """
+        Converts as the 'status' value from the dropdown into a DB query filter.
+
+        :param value_string_or_f: Should be either "Overloaded", "Underloaded" or "---" or potentiqlly None.
+        :return: The query.
+        """
         if value_string_or_f == "Underloaded":
             return Q(load_balance__lt=0)
         elif value_string_or_f == "Overloaded":

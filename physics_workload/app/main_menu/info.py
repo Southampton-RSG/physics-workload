@@ -4,7 +4,7 @@ plus the way you get to the 'main' about page as a logged-in user.
 """
 
 from django.conf import settings
-from iommi.experimental.main_menu import M
+from iommi.main_menu import M
 from iommi.path import register_path_decoding
 
 from app.auth import has_access_decoder

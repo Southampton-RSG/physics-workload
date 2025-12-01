@@ -1,3 +1,4 @@
+from logging import Logger, getLogger
 from typing import Any, Dict, List
 
 from django.template import Template
@@ -11,6 +12,8 @@ from app.models import AcademicGroup
 from app.pages.components.suffixes import SuffixHistory
 from app.style import get_balance_classes
 from app.utility import year_to_academic_year
+
+logger: Logger = getLogger(__name__)
 
 
 class AcademicGroupHistoryList(Page):
@@ -41,21 +44,31 @@ class AcademicGroupHistoryList(Page):
             history_id=Column(
                 render_column=False,
             ),
-            load_balance_final=dict(
-                after="history_date",
-                group="Load Balance",
-                display_name="Final",
-                cell=dict(
-                    attrs__class=lambda row, **_: get_balance_classes(row.load_balance_final),
-                ),
-            ),
             load_balance_historic=dict(
-                after="load_balance_final",
-                group="Load Balance",
-                display_name="Cumulative",
+                after="history_date",
                 cell=dict(
                     attrs__class=lambda row, **_: get_balance_classes(row.load_balance_historic),
                 ),
+                display_name="Historic",
+                group="Load Balance",
+            ),
+            load_balance_final=dict(
+                after="load_balance_historic",
+                cell=dict(
+                    attrs__class=lambda row, **_: get_balance_classes(row.load_balance_final),
+                ),
+                group="Load Balance",
+                display_name="Final",
+            ),
+            load_balance_cumulative=Column(
+                after="load_balance_final",
+                cell=dict(
+                    value=lambda row, **_: row.load_balance_historic + row.load_balance_final,
+                    attrs__class=lambda row, **_: get_balance_classes(row.load_balance_historic + row.load_balance_final),
+                ),
+                display_name="Cumulative",
+                group="Load Balance",
+                sortable=False,
             ),
         ),
         rows=lambda academic_group, **_: academic_group.history.all(),
@@ -63,26 +76,30 @@ class AcademicGroupHistoryList(Page):
 
     class Meta:
         @staticmethod
-        def extra_evaluated__plot(params: Dict[str, Any], academic_group: AcademicGroup, **_) -> str:
+        def extra_evaluated__plot(academic_group: AcademicGroup, **_) -> str:
             """
             Creates a graph of the staff balance over time.
 
-            :param params: The Iommi view params.
             :param staff: The Staff instance, provided via URL decoding.
             :return: The HTML code of the graph.
             """
-            dates: List[str] = [year_to_academic_year(timezone.now())]
-            balance_cumulative: List[float] = [academic_group.load_balance_historic + academic_group.get_load_balance()]
-            balance_yearly: List[float] = [academic_group.get_load_balance()]
+            dates: List[str] = []
+            balance_cumulative: List[float] = []
+            balance_yearly: List[float] = []
 
-            for academic_group_historic in academic_group.history.all():
-                dates.append(year_to_academic_year(academic_group_historic.history_date.year))
-                balance_cumulative.append(academic_group_historic.load_balance_historic + academic_group_historic.load_balance_final)
-                balance_yearly.append(academic_group_historic.load_balance_final)
+            for academic_group_historic in academic_group.history.order_by('history_date').all():
+                dates.append(year_to_academic_year(academic_group_historic.history_date))
 
-            dates.reverse()
-            balance_yearly.reverse()
-            balance_cumulative.reverse()
+                this_year: int = academic_group_historic.load_balance_final
+                previous_years: int = academic_group_historic.load_balance_historic
+                cumulative_at_end: int = this_year + previous_years
+
+                balance_yearly.append(this_year)
+                balance_cumulative.append(cumulative_at_end)
+
+            dates.append(year_to_academic_year(timezone.now()))
+            balance_cumulative.append(academic_group.load_balance_historic + academic_group.get_load_balance())
+            balance_yearly.append(academic_group.get_load_balance())
 
             figure: Figure = Figure(
                 data=[

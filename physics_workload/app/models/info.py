@@ -1,8 +1,10 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
 from django.db.models import CharField, TextField
 from django.utils.html import mark_safe
 
 from app.models.common import ModelCommon
+
+User = get_user_model
 
 
 class Info(ModelCommon):
@@ -40,7 +42,7 @@ class Info(ModelCommon):
         """
         return f"/{self.url_root}/{self.page}/edit/"
 
-    def has_access(self, user: AbstractUser) -> bool:
+    def has_access(self, user: User) -> bool:
         """
         Only users assigned to a task can see the details
         :param user: The user
