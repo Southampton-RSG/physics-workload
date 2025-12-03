@@ -152,18 +152,6 @@ class Staff(ModelCommon):
         else:
             return None
 
-    def has_access(self, user: User) -> bool:
-        """
-        Does the user have access to this object?
-
-        :param user: The user in question.
-        :return: True if the user has access, or the user is this staff member.
-        """
-        if super().has_access(user):
-            return True
-        else:
-            return user == self.user
-
     def __str__(self):
         """
         Default rendering of a staff member shows their load balance
@@ -296,6 +284,6 @@ def is_staff_for_user(user: User, staff: Staff) -> bool:
 
 
 add_perm("app.add_staff", is_staff)
-add_perm("app.change_staff", is_staff | is_staff_for_user)
+add_perm("app.change_staff", is_staff)
 add_perm("app.delete_staff", is_staff)
 add_perm("app.view_staff", is_staff | is_staff_for_user)

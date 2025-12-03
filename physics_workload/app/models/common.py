@@ -1,9 +1,11 @@
 from abc import abstractmethod
 
-from django.contrib.auth.models import AbstractUser, AnonymousUser
+from django.contrib.auth import get_user_model
 from django.db.models import Model
 from django.template.loader import render_to_string
 from simple_history.models import HistoricalRecords
+
+User = get_user_model()
 
 
 class ModelCommon(Model):
@@ -40,15 +42,13 @@ class ModelCommon(Model):
         """
         return f"/{type(self).url_root}/{self.pk}/"
 
-    def get_absolute_url_authenticated(self, user: AbstractUser | AnonymousUser | None) -> str:
+    @abstractmethod
+    def get_absolute_url_if_permitted(self, user: User) -> str:
         """
         :param user: The user to check authorisation for.
         :return: The absolute URL for the detail view of this particular instance of the model if allowed, or blank.
         """
-        if user and user.is_authenticated and (user.is_staff or self.has_access(user)):
-            return self.get_absolute_url()
-        else:
-            return ""
+        raise NotImplementedError()
 
     def get_instance_header(self, text: str | None = None) -> str:
         """
@@ -95,17 +95,6 @@ class ModelCommon(Model):
                 "text": cls._meta.verbose_name.title(),
             },
         )
-
-    @abstractmethod
-    def has_access(self, user: AbstractUser | AnonymousUser) -> bool:
-        """
-        :param user: The user checking access.
-        :return: True if debug auth is on or the user is staff.
-        """
-        if user.is_staff:
-            return True
-        else:
-            return False
 
 
 # class TaskOwner(ModelCommon):

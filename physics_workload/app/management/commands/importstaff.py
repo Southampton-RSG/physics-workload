@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand
 from django.db.models import Sum
 from pandas import DataFrame, isna, read_csv
 
-from app.management.load_csv import csv_file_only, load_staff_contracts_from_excel, xlsx_file_only
+from app.management.load_utils import csv_file_only, load_staff_contracts_from_excel, xlsx_file_only
 from app.models import AcademicGroup, Staff
 
 logger: Logger = getLogger(__name__)

@@ -76,6 +76,7 @@ floating_fields_style: Style = Style(
     Form__assets__custom_floating_select2_css=Asset.css(attrs__href="/static/css/custom-floating-select2.css"),
     Field__shortcuts__text=floating_fields,
     Field__shortcuts__textarea=floating_fields,
+    Field__shortcuts__textarea__input__attrs__style={"min-height": "8rem"},
     Field__shortcuts__number=floating_fields,
     Field__shortcuts__integer=floating_fields,
     Field__shortcuts__choice=floating_fields,

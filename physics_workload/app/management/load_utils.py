@@ -3,15 +3,26 @@ Utility functions for loading CSV and XLSX files.
 """
 
 from argparse import ArgumentTypeError
-from logging import Logger, getLogger
 from json import dumps
+from logging import Logger, getLogger
 from pathlib import Path
 
 import pandas
-from pandas import DataFrame, Series, read_csv, to_numeric, read_excel, isna, concat
+from pandas import DataFrame, Series, concat, isna, read_excel, to_numeric
 
 # Set up logging
 logger: Logger = getLogger(__name__)
+
+
+UNIT_PREFIXES: set[str] = {"PHYS", "OPTO", "MATH", "UOSM"}
+ADMIN_PREFIXES: set[str] = {"MANG", "COMM", "PCAP", "MARK"}
+SPECIAL_CODES: set[str] = {"OTHER", "TUTOR"}
+
+TITLE_UNIT_LEAD: str = "Unit Lead"
+TITLE_UNIT_DEPUTY: str = "Deputy Lead"
+TITLE_PROJECT_MARKING: str = "Project Marking"
+TITLE_DISSERTATION: str = "Dissertation Marking"
+UNIT_TUITION: str = "TUTOR"
 
 
 def csv_file_only(param: str) -> Path:
@@ -53,16 +64,25 @@ def strip_dataframe_whitespace(dataframe: DataFrame):
     """
     def parse_object(x: object) -> object:
         if isinstance(x, str):
-            return str.strip(x)
+            x = x.strip()
+            x.replace("—", "-")
+            x.replace("–", "-")
+            x.replace("  ", " ")
+            return x
         else:
             return x
 
     logger.info("Strip trailing whitespace")
     for column in dataframe.columns:
-        if dataframe[column].dtype in ['object', 'str']:
+        if dataframe[column].dtype == 'str':
+            dataframe[column] = dataframe[column].str.strip()
+            dataframe[column] = dataframe[column].str.replace("—", "-")
+            dataframe[column] = dataframe[column].str.replace("–", "-")
+            dataframe[column] = dataframe[column].str.replace("  ", " ")
+        elif dataframe[column].dtype == 'object':
             dataframe[column] = dataframe[column].apply(parse_object)
 
-        dataframe[dataframe[column] == ''] = None
+        dataframe.loc[dataframe[column] == '', column] = None
 
 
 def convert_columns_to_ints(dataframe: DataFrame, columns: list[str]):
@@ -92,6 +112,7 @@ def convert_percentage_columns_to_floats(dataframe: DataFrame, columns: list[str
         dataframe.loc[equation_rows, column] = dataframe.loc[equation_rows, column].astype('str').str.lstrip('=').apply(pandas.eval).astype('float')
         percentage_rows = dataframe[column].astype('str').str.contains('%').fillna(False)
         dataframe.loc[percentage_rows, column] = dataframe.loc[percentage_rows, column].astype('str').str.rstrip('%').astype('float')/100.0
+        dataframe[column] = dataframe[column].astype('float')
 
 
 def load_units_from_load_master_excel(path: Path) -> DataFrame:
@@ -120,94 +141,24 @@ def load_units_from_load_master_excel(path: Path) -> DataFrame:
             'Examination (fraction of module mark)': 'exam_mark_fraction',
             'Fraction of Examination marked by coordinator': 'task__exam_fraction',
             'Total Number of CATS': 'credits',
-            'Task Description': 'task__name',
+            'Task Description': 'task__title',
             'Number of Students': 'students',
             'Description/Unit title': 'unit_name',
             'Task Category/Unit Code': 'code',
             dataframe.columns[17]: 'notes'
         },
     )
-
-    # Stop when we get to the non-unit tasks
-    end_index: int = dataframe[dataframe["conversion_old_to_new"] == "School Management Roles"].index[0]
-    dataframe = dataframe[:end_index].apply(to_numeric, errors='ignore')
-
+    dataframe = dataframe[dataframe.code.astype("str").str.contains("|".join(UNIT_PREFIXES))]
     strip_dataframe_whitespace(dataframe)
 
-    logger.info("Convert raw numbers columns to ints")
     convert_columns_to_ints(
         dataframe,
         ['hours_fixed_deputy', 'synoptic_lectures', 'coursework', 'credits', 'students', 'lectures']
     )
-
-    logger.info("Convert fraction columns to floats")
     convert_percentage_columns_to_floats(
         dataframe,
         ['exam_mark_fraction', 'coursework_mark_fraction', 'task__coursework_fraction', 'task__exam_fraction']
     )
-    return dataframe
-
-
-def load_nonunit_tasks_from_load_master_csv(
-        path: Path,
-) -> DataFrame:
-    """
-    Loads non-unit tasks from the Load Master tab of the spreadsheet
-
-    Note: More prep is required for this one. The notes all need to be consolidated into a single column, titled 'Notes'.
-    The group column needs to be named 'Group'.
-    DF keys are approached from the perspective of a `Task` model.
-
-    :param path: Path to the file to load. Should be the 'load master' tab of the CSV,
-        but cut to only the rows with non-unit tasks.
-    :return: The data.
-    """
-
-    logger.info(f"Importing non-unit tasks from: {path}")
-
-    # Read the unit task CSV.
-    dataframe: DataFrame = read_csv(path, sheet_name="Load Master", header=0, index_col=False)
-    dataframe = dataframe.rename(
-        columns={
-            'Unit co-ord load': 'load_fixed',
-            'lst time unit co-ord load': 'load_fixed_first',
-            'Group': 'group',
-            'Description/Unit title': 'name',
-            'Notes': 'notes',
-        },
-
-    )
-
-    logger.info("Strip trailing whitespace")
-    strip_dataframe_whitespace(dataframe)
-
-    logger.info("Convert raw numbers columns to ints")
-    convert_columns_to_ints(
-        dataframe,
-        ['load_fixed', 'load_fixed_first']
-    )
-
-    def convert_load_fixed_first(row: Series):
-        """
-        The first-time load column can be either an offset (e.g. +15 hours) *or* a flat value (e.g. 115 hours).
-
-        :param row: A row from the dataframe.
-        :return: The first-time task offset, or None if none.
-        """
-        if not row['load_fixed_first']:
-            return None
-        elif row['load_fixed'] == row['load_fixed_first']:
-            return None
-        elif row['load_fixed_first'] > row['load_fixed']:
-            return row['load_fixed_first'] - row['load_fixed']
-        else:
-            return row['load_fixed_first']
-
-    logger.info("Standardising fixed load first-time adjustment column")
-    dataframe['load_fixed_first'] = dataframe.apply(convert_load_fixed_first)
-
-    logger.info("Converting unit codes")
-    dataframe['group'] = dataframe.apply(lambda row: row['group'][0] if row['group'] else None)
     return dataframe
 
 
@@ -256,12 +207,11 @@ def load_nonunit_tasks_from_excel(path: Path) -> DataFrame:
         if notes:
             return notes
         else:
-            return "NO NOTES"
+            return "<NO NOTES>"
 
-    start_index: int = df_1[df_1.conversion_old_to_new == "S2"].index[-1] + 1
-    end_index: int = df_1[df_1.conversion_old_to_new == "Project Supervision"].index[0]
-    df_1 = df_1[start_index:end_index]
-    df_1 = df_1[df_1.unit__code.isin(['MANG', 'COMM', 'PCAP'])]
+    split_index: int = df_1[df_1.conversion_old_to_new == "Project Supervision"].index[0]
+    df_1 = df_1[:split_index]
+    df_1 = df_1[df_1.unit__code.isin(ADMIN_PREFIXES)]
     df_1['task__notes'] = df_1[df_1.columns[6:]].apply(combine_columns, axis=1)
     df_1 = df_1.drop(columns=set(df_1.columns) - set(desired_columns))
     strip_dataframe_whitespace(df_1)
@@ -277,10 +227,8 @@ def load_nonunit_tasks_from_excel(path: Path) -> DataFrame:
             "Unit co-ord load": "task__load_fixed",
         },
     )
-    start_index: int = df_2[df_2.conversion_old_to_new == "Administration"].index[0] + 1
-    end_index: int = df_2[df_2.conversion_old_to_new == "PCAP"].index[0]
-    df_2 = df_2[start_index:end_index]
-    df_2 = df_2[df_2.unit__code.isin(["MANG", "COMM", "PCAP"])]
+    df_2 = df_2[split_index:]
+    df_2 = df_2[df_2.unit__code.isin(ADMIN_PREFIXES)]
     df_2["task__notes"] = df_2[df_2.columns[5:]].apply(combine_columns, axis=1)
     df_2 = df_2.drop(columns=set(df_2.columns) - set(desired_columns))
     strip_dataframe_whitespace(df_2)
@@ -304,7 +252,7 @@ def load_staff_tasks_from_excel(path: Path) -> DataFrame:
     dataframe.rename(
         columns={
             'STAFF': 'staff__name',
-            'TASK CAT/UNIT CODE': 'code',
+            'TASK CAT/UNIT CODE': 'unit__code',
             'TASK DETAIL': 'task__title',
             'Comments': 'task__notes',
             'DESCRIPTION/UNIT TITLE': 'task__description',
@@ -316,11 +264,30 @@ def load_staff_tasks_from_excel(path: Path) -> DataFrame:
     # Remove whitespace, then drop the rows with no staff name or "Total" in
     strip_dataframe_whitespace(dataframe)
     dataframe = dataframe[dataframe.staff__name.astype(bool)]  # Remove lines with no staff
-    dataframe = dataframe[dataframe.code.astype(bool)]  # Remove lines with no task code
-    dataframe = dataframe[dataframe.task__title.astype(bool) | dataframe.task__description.astype(bool)]  # Rremove 'summary' lines (may have '-')
-    dataframe.loc[dataframe.code.isin(["MANG", "COMM", "PCAP"]), "task__title"] = dataframe.task__description
-    dataframe.loc[dataframe.code.isin(["MANG", "COMM", "PCAP"]), "task__description"] = None
-    dataframe = dataframe[dataframe.staff__name.str.contains("Total") == False]
+    dataframe = dataframe[~isna(dataframe.staff__name)]  # Remove lines with no staff...
+    dataframe = dataframe[dataframe.staff__name.str.contains("Total") != True]  # Remove 'total' lines
+    dataframe = dataframe[dataframe.unit__code.astype(bool)]  # Remove lines with no task code
+    dataframe = dataframe[dataframe.unit__code.str.contains("-") != True] # Remove lines that are code '-'
+    dataframe = dataframe[~isna(dataframe.unit__code)]  # Remove lines with no unit code
+    dataframe = dataframe[dataframe.task__title.astype(bool) | dataframe.task__description.astype(bool)]  # Remove 'summary' lines (may have '-')
+
+    # The admin tasks are structured differently...
+    dataframe.loc[dataframe.unit__code.isin(ADMIN_PREFIXES), "task__title"] = dataframe.task__description
+    dataframe.loc[dataframe.unit__code.isin(ADMIN_PREFIXES), "task__description"] = None
+
+    # As are tuition ones numbers?
+    def parse_students(value: object) -> int:
+        if isinstance(value, str):
+            try:
+                return int(value.split()[0])
+            except ValueError:
+                return 0
+        else:
+            return int(value)
+
+    dataframe["assignment__students"] = 0
+    dataframe.loc[dataframe.unit__code == UNIT_TUITION, "assignment__students"] = dataframe[dataframe.unit__code == UNIT_TUITION].task__title.apply(parse_students)
+
     return dataframe
 
 

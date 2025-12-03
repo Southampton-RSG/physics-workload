@@ -117,17 +117,15 @@ staff: school
 	uv run physics_workload/manage.py importstaff "workload_2425.xlsx" "workload_2526_rolled.xlsx"
 
 unit: school
-	uv run physics_workload/manage.py loaddata load_function
-	uv run physics_workload/manage.py importunits "workload_2425.xlsx" 24
+	uv run physics_workload/manage.py loaddata load_function unit
 	uv run physics_workload/manage.py importunits "workload_2526_rolled.xlsx" 25
 
 task: unit staff
-	uv run physics_workload/manage.py importunittasks "workload_2425.xlsx" "workload_2526_rolled.xlsx"
-	uv run physics_workload/manage.py importnonunittasks "workload_2425.xlsx" "workload_2526_rolled.xlsx"
+	uv run physics_workload/manage.py loaddata task
+	uv run physics_workload/manage.py importnonunittasks "workload_2526_rolled.xlsx" 25
 
 assignment: task
-	uv run physics_workload/manage.py loaddata task
-	uv run physics_workload/manage.py importassignments "workload_2425.xlsx" "workload_2526_rolled.xlsx"
+	uv run physics_workload/manage.py importassignments "workload_2526_rolled.xlsx" 25
 
 database:
 	-rm -rf physics_workload/app/migrations/*.py
@@ -137,7 +135,7 @@ database:
 	uv run physics_workload/manage.py migrate
 
 superuser:
-	uv run physics_workload/manage.py shell < ./scripts/make_swm1r18_superuser.py
+	uv run physics_workload/manage.py makestaff --superuser swm1r18
 
 initialise:
 	uv run physics_workload/manage.py initialise

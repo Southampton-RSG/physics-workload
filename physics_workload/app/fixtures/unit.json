@@ -2,42 +2,10 @@
   {
     "model": "app.Unit",
     "fields": {
-      "name": "Physics from Evidence I",
-      "code": "PHYS2022",
-      "has_dissertation": 0,
-      "has_placement": 0,
+      "name": "First Year Tutoring",
+      "code": "TUTOR",
       "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "students": 109,
-      "credits": 15
-    }
-  },
-  {
-    "model": "app.Unit",
-    "fields": {
-      "name": "Galaxies",
-      "code": "PHYS2013",
-      "academic_group": "A",
-      "has_dissertation": 0,
-      "has_placement": 0,
-      "lectures": 33,
-      "coursework": 5,
-      "coursework_mark_fraction": 0.25,
-      "exam_mark_fraction": 0.75,
-      "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ",
-      "students": 54,
-      "credits": 15
-    }
-  },
-  {
-    "model": "app.Unit",
-    "fields": {
-      "name": "MPhys with Indsutrial Placement",
-      "code": "PHYS6027",
-      "has_dissertation": 0,
-      "has_placement": 1,
-      "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-      "students": 2,
-      "credits": 15
+      "students": 0
     }
   }
 ]

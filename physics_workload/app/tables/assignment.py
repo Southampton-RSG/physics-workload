@@ -1,6 +1,7 @@
 from logging import Logger, getLogger
 
-from iommi import EditColumn, EditTable, Table
+from django.http import HttpResponseRedirect
+from iommi import EditColumn, EditTable, Table, Action
 
 from app.models import Assignment, Staff, Task
 from app.style import base_style, floating_fields_select2_inline_style
@@ -60,6 +61,12 @@ class AssignmentStaffTable(Table):
         iommi_style = floating_fields_select2_inline_style
 
 
+def handle_bulk_approval(table, request, **_):
+    table.rows.update(is_provisional=False)
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+
+
 class AssignmentStaffEditTable(EditTable):
     """ """
 
@@ -113,7 +120,14 @@ class AssignmentStaffEditTable(EditTable):
         )
         rows = lambda staff, **_: Assignment.objects.filter(staff=staff)
         iommi_style = floating_fields_select2_inline_style
-        edit_actions = dict(save=dict(attrs__class={"btn-primary": False, "btn-success": True}))
+        edit_actions = dict(
+            save=dict(attrs__class={"btn-primary": False, "btn-success": True}),
+            approve_provisional=Action.submit(
+                display_name="Approve Provisional",
+                attrs__class={"btn-primary": False, "btn-info": True},
+                post_handler=handle_bulk_approval,
+            ),
+        )
 
         @staticmethod
         def extra__post_save(staff: Staff, **_):
@@ -173,7 +187,8 @@ class AssignmentTaskEditTable(EditTable):
                 field__parsed_data=lambda task, **_: task,
             ),
             students=dict(
-                field__include=True,
+                include=lambda task, **_: task.assignment_students != "INVALID",
+                field__include=lambda task, **_: task.assignment_students != "INVALID",
                 cell__attrs__style={"width": "6em"},
             ),
             is_first_time=dict(
@@ -208,7 +223,16 @@ class AssignmentTaskEditTable(EditTable):
         )
         rows = lambda task, **_: Assignment.objects.filter(task=task)
         iommi_style = floating_fields_select2_inline_style
-        edit_actions = dict(save=dict(attrs__class={"btn-primary": False, "btn-success": True}))
+        edit_actions = dict(
+            save=dict(
+                attrs__class={"btn-primary": False, "btn-success": True}
+            ),
+            approve_provisional=Action.submit(
+                display_name="Approve Provisional",
+                attrs__class={"btn-primary": False, "btn-info": True},
+                post_handler=handle_bulk_approval,
+            ),
+        )
 
         @staticmethod
         def extra__post_save(task: Task, **_):

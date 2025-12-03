@@ -1,8 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Server" type="UvRunConfigurationType" factoryName="UvRunConfigurationType">
+  <configuration default="false" name="Import Assignments" type="UvRunConfigurationType" factoryName="UvRunConfigurationType">
     <option name="args">
       <list>
-        <option value="runserver" />
+        <option value="importassignments" />
+        <option value="workload_2526_rolled.xlsx" />
+        <option value="25" />
       </list>
     </option>
     <option name="checkSync" value="true" />

@@ -16,8 +16,8 @@ cd /var/www/
 git clone https://github.com/Southampton-RSG/physics-workload
 ```
 
-Also copy the cut-down spreadsheets derived from the `workload 2425.xlsx` spreadsheet into the same directory as the code.
-They aren't included in the repo as they contain personally identifiable data.
+Also copy the `workload 2526_rolled.xlsx` spreadsheet into the same directory as the code.
+It's not included in the repo as it contains personally identifiable data.
 
 ### File Server
 
@@ -71,12 +71,20 @@ If this is the first time the tool is being run, import the `.csv` data:
 sudo docker exec -it physics-workload-django /bin/bash 
 make clean
 make data
-make superuser
 ```
 
 Then, log into the website to link your user account to the site.
-The command `make superuser` will then make the `swm1r18` account site staff;
-edit the script `make_swm1r18_superuser.py` to change the account.
+The command `python physics_workload/manage.py makestaff <account>` will then make the user associated with the 365 account `<account>` site staff;
+e.g. 
+```bash
+python physics_workload/manage.py makestaff swm1r18
+```
+
+### Manual Tweaks
+
+The output of `make data` should list the Tasks, Staff and Units that weren't able to be automatically imported.
+You should then get a file `failed_assignments.csv` out; 
+this is the lines from the "Staff Tasks" sheet of the Excel file that failed to import. 
 
 ## Updating
 

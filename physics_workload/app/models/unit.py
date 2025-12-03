@@ -1,5 +1,7 @@
 # -*- encoding: utf-8 -*-
-from django.contrib.auth.models import AbstractUser
+from rules import predicate, add_perm, is_staff
+
+from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import BooleanField, CharField, CheckConstraint, F, FloatField, IntegerField, Q, TextField
 from django.db.models.deletion import PROTECT
@@ -7,6 +9,8 @@ from simple_history.models import HistoricForeignKey
 
 from app.models.academic_group import AcademicGroup
 from app.models.common import ModelCommon
+
+User = get_user_model()
 
 
 class Unit(ModelCommon):
@@ -100,6 +104,12 @@ class Unit(ModelCommon):
     def __str__(self) -> str:
         return f"{self.code} - {self.name}"
 
+    def get_absolute_url_if_permitted(self, user: User) -> str:
+        if user.has_perm("app.view_unit", self):
+            return self.get_absolute_url()
+        else:
+            return ""
+
     def get_short_name(self) -> str:
         """
         :return: Just returns the code. Needed for parity with the AcademicGroup model, for Task ownership.
@@ -118,21 +128,6 @@ class Unit(ModelCommon):
         """
         if self.has_dissertation:
             return sum(self.task_set.values_list("student", flat=True))
-
-    def has_access(self, user: AbstractUser) -> bool:
-        """
-        Only users assigned to a module can see the details
-        :param user: The user
-        :return: True if the user is assigned to a task in this module
-        """
-        if super().has_access(user):
-            return True
-        elif not user.is_anonymous:
-            for task in self.task_set.all():
-                if user.staff in task.assignment_set.values_list("staff", flat=True):
-                    return True
-
-        return False
 
     def update_load(self) -> bool:
         """
@@ -164,3 +159,19 @@ class Unit(ModelCommon):
             standard_load.update_target_load_per_fte()
 
         return recalculate_loads
+
+
+@predicate
+def is_user_assigned_to_unit(user: User, unit: Unit) -> bool:
+    for assignment_set in unit.task_set.values_list("assignment_set", flat=True):
+        for assignment in assignment_set:
+            if assignment.staff == user.staff:
+                return True
+
+    return False
+
+
+add_perm("view_unit", is_staff | is_user_assigned_to_unit)
+add_perm("change_unit", is_staff)
+add_perm("delete_unit", is_staff)
+add_perm("add_unit", is_staff)

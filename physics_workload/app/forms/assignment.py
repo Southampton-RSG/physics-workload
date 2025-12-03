@@ -31,7 +31,7 @@ class AssignmentTaskUniqueForm(Form):
             ),
             students=dict(
                 group="Row",
-                include=lambda task, **_: not task.is_full_time and not task.is_lead,
+                include=lambda task, **_: not task.is_full_time and not task.is_lead and not task.assignment_students == "INVALID",
             ),
             staff__group="Row",
             is_first_time__group="Row",

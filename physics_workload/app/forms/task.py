@@ -42,9 +42,11 @@ class TaskDetailForm(TaskForm):
             "load_multiplier",
             "description",
             "notes",
+            "name",
         ]
         title = "Details"
         fields = dict(
+            academic_group__include=lambda task, **_: task.academic_group,
             load_calc__group="Calculated Load",
             load_calc_first=dict(
                 group="Calculated Load",
@@ -53,6 +55,7 @@ class TaskDetailForm(TaskForm):
             is_required=dict(
                 group="Calculated Load",
                 after="load_calc_first",
+                include=lambda task, **_: task.is_required,
             ),
             is_full_time=dict(
                 include=lambda task, **_: task.is_full_time,
@@ -85,10 +88,13 @@ class TaskDetailForm(TaskForm):
                 after="exam_fraction",
             ),
             students=dict(
-                include=lambda task, **_: task.load_function,
+                include=lambda task, **_: not task.assignment_students=="INVALID",
                 group="Calculation Details",
                 after="load_function",
             ),
+            assignment_students=dict(
+                include=False,
+            )
         )
         editable = False
 
@@ -115,6 +121,7 @@ class TaskCreateForm(TaskForm):
             load_multiplier__group="Load",
             load_function__group="Calculation Details",
             students__group="Calculation Details",
+            assignment_students__group="Calculation Details",
             is_unique__group="Switches",
             is_required__group="Switches",
         )
@@ -167,6 +174,10 @@ class TaskEditForm(TaskForm):
                 include=lambda task, **_: not task.is_lead and not task.is_full_time,
                 group="Calculation Details",
             ),
+            assignment_students=dict(
+                include=lambda task, **_: not task.is_lead and not task.is_full_time,
+                group="Calculation Details",
+            ),
             students=dict(
                 include=lambda task, **_: not task.is_lead and not task.is_full_time,
                 group="Calculation Details",
@@ -204,6 +215,9 @@ class UnitTaskLeadCreateForm(TaskForm):
             title=dict(
                 initial="Unit Lead",
                 group="Basic",
+            ),
+            assignment_students=Field.hardcoded(
+                parsed_data="INVALID"
             ),
             is_unique=dict(
                 group="Basic",
@@ -252,6 +266,7 @@ class UnitTaskCreateForm(TaskForm):
             load_fixed_first__group="Load",
             load_multiplier__group="Load",
             load_function__group="Calculation",
+            assignment_students__group="Calculation",
             students__group="Calculation",
         )
 
@@ -265,8 +280,10 @@ class TaskFullTimeCreateForm(TaskForm):
             "is_required",
             "is_full_time",
             "description",
+            "assignment_students",
         ]
         fields = dict(
+            assignment_students=Field.hardcoded(parsed_data="INVALID"),
             is_full_time=dict(
                 group="Switches",
                 initial=True,

@@ -179,5 +179,6 @@ class AcademicGroupList(Page):
                 display_name="Historic",
                 cell__attrs__class=lambda value, **_: get_balance_classes(value),
             ),
+            load_balance_final__include=False,
         ),
     )

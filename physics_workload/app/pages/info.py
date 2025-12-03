@@ -22,6 +22,22 @@ class InfoForm(Form):
         assets = autosize_js
 
 
+class InfoDetail(Page):
+    header = Header(
+        lambda info, **_: info.get_instance_header(),
+        children__header=SuffixEdit(),
+    )
+    form = InfoForm.edit(
+        h_tag=None,
+        instance=lambda info, **_: info,
+        auto=dict(
+            model=Info,
+            exclude=["name", "page"],
+        ),
+        editable=False,
+    )
+
+
 class InfoEdit(Page):
     header = Header(
         lambda info, **_: info.get_instance_header(),

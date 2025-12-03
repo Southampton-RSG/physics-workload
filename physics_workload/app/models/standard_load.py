@@ -1,8 +1,9 @@
 from logging import Logger, getLogger
 from typing import Dict
 
+from rules import add_perm, predicate, always_true, is_staff
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, AnonymousUser
+from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db.models import FloatField, IntegerField, Sum, TextField
 
@@ -12,6 +13,8 @@ from app.models.staff import Staff
 from app.models.task import Task
 
 logger: Logger = getLogger(__name__)
+
+User = get_user_model()
 
 
 class StandardLoad(ModelCommon):
@@ -146,14 +149,6 @@ class StandardLoad(ModelCommon):
         """
         return super().get_instance_header(text=f"Standard Load {self}")
 
-    def has_access(self, user: AbstractUser | AnonymousUser) -> bool:
-        """
-        You can always see the load details
-        :param user: The user to test access for.
-        :return: True, always
-        """
-        return True
-
     def update_target_load_per_fte(self):
         """
 
@@ -229,3 +224,20 @@ class StandardLoad(ModelCommon):
                 staff.update_load_target()
 
         return recalculate_target_load
+
+
+@predicate
+def is_latest_standardload(user: User, standard_load: StandardLoad) -> bool:
+    """
+    Is the user trying to copy/modify the latest standard load?
+    :param user: The current user.
+    :param standard_load: The standard load to check. Must exist for new ones to be based on, for example.
+    :return: If it's the latest or not.
+    """
+    return standard_load == StandardLoad.objects.latest()
+
+
+add_perm("app.add_standardload", is_staff & is_latest_standardload)
+add_perm("app.change_standardload", is_staff & is_latest_standardload)
+add_perm("app.delete_standardload", is_staff & is_latest_standardload)
+add_perm("app.view_standardload", always_true)

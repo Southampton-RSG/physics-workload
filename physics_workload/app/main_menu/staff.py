@@ -7,9 +7,7 @@ from app.pages.staff import StaffCreate, StaffDelete, StaffDetail, StaffEdit, St
 from app.pages.staff.history import StaffHistoryDetail, StaffHistoryList
 
 register_path_decoding(staff=Staff)
-register_path_decoding(
-    staff_history=lambda string, **_: Staff.history.get(history_id=int(string)),
-)
+register_path_decoding(staff_history=lambda string, **_: Staff.history.get(history_id=int(string)))
 
 staff_submenu: M = M(
     icon=Staff.icon,

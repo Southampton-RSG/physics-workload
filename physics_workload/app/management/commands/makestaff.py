@@ -35,9 +35,9 @@ class Command(BaseCommand):
         :param parser: The argument parser object.
         """
         parser.add_argument(
-            "email",
-            type=email_type,
-            help="The email of the account to register as staff for the site. They must already have logged in once.",
+            "account",
+            type=str,
+            help="The university account to register as staff for the site. They must already have logged in once.",
         )
         parser.add_argument(
             "--superuser",
@@ -47,20 +47,20 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: str, **options: Unpack[str | bool]):
-        if "email" not in options:
-            raise CommandError("No email provided")
+        if "account" not in options:
+            raise CommandError("No account provided")
 
         try:
-            user = get_user_model().objects.get(email=options["email"])
+            user = get_user_model().objects.get(username=f"{options['account']}@soton.ac.uk")
             user.is_staff = True
             user.is_active = True
             user.is_superuser = options.get("superuser", False)
             user.save()
 
             if user.is_superuser:
-                self.stdout.write(self.style.SUCCESS(f"Registered user with email '{options['email']}' as superuser"))
+                self.stdout.write(self.style.SUCCESS(f"Registered user with account '{options['account']}' as superuser"))
             else:
-                self.stdout.write(self.style.SUCCESS(f"Registered user with email '{options['email']}' as staff"))
+                self.stdout.write(self.style.SUCCESS(f"Registered user with account '{options['account']}' as staff"))
 
         except get_user_model().DoesNotExist:
-            raise CommandError(f"No user found with email '{options['email']}'")
+            raise CommandError(f"No user found with account '{options['account']}'")

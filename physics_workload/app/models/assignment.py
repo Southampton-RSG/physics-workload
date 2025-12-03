@@ -1,5 +1,6 @@
 from logging import Logger, getLogger
 
+import simpleeval
 from django.db.models import CASCADE, PROTECT, BooleanField, CheckConstraint, Index, IntegerField, Q, TextField
 from simple_history.models import HistoricForeignKey
 
@@ -56,7 +57,6 @@ class Assignment(ModelCommon):
             Index(fields=["staff"]),
             Index(fields=["task"]),
         ]
-        unique_together = ("task", "staff")
         ordering = ("-staff", "task")
         verbose_name = "Assignment"
         verbose_name_plural = "Assignments"

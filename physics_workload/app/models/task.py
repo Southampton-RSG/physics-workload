@@ -97,8 +97,18 @@ class Task(ModelCommon):
     FIELDS_TASK_GENERIC = (
         "load_function",
         "students",
+        "requires_students",
     )
 
+    assignment_students = CharField(
+        default="OPTIONAL",
+        choices={
+            "OPTIONAL": "Optional",
+            "REQUIRED": "Required",
+            "INVALID": "Invalid"
+        },
+        help_text="Do assignments to this task need a number of students?"
+    )
     load_function = HistoricForeignKey(
         LoadFunction,
         blank=True,
@@ -177,9 +187,19 @@ class Task(ModelCommon):
                 violation_error_message="Academic groups cannot have multiple tasks with the same name.",
             ),
             CheckConstraint(
-                check=(Q(unit__isnull=False) & Q(is_lead=True)) | Q(is_lead=False),
+                condition=(Q(unit__isnull=False) & Q(is_lead=True)) | Q(is_lead=False),
                 name="unit_lead_required",
                 violation_error_message="Cannot be co-ordinator of a Unit without a linked unit.",
+            ),
+            CheckConstraint(
+                condition=Q(is_full_time=False) | Q(load_function__isnull=True),
+                name="cannot_scale_fulltime",
+                violation_error_message="Cannot assign a load function to a full-time task.",
+            ),
+            CheckConstraint(
+                condition=Q(unit__isnull=False) | Q(load_function__isnull=True) | Q(students__isnull=False) | Q(assignment_students="REQUIRED"),
+                name="must_provide_or_require_students",
+                violation_error_message="Must either provide students on the task, or require assignments to provide students.",
             ),
         ]
 
@@ -243,19 +263,6 @@ class Task(ModelCommon):
 
     def has_any_first_time(self) -> bool:
         return any(self.assignment_set.values_list("is_first_time", flat=True))
-
-    def has_access(self, user: AbstractUser) -> bool:
-        """
-        Only users assigned to a task can see the details
-        :param user: The user
-        :return: True if the user is assigned to this task
-        """
-        if super().has_access(user):
-            return True
-        elif user.is_anonymous:
-            return False
-        else:
-            return user.staff in self.assignment_set.values_list("staff", flat=True)
 
     def update_load(self, cascade=True, save=False) -> True:
         """
@@ -366,7 +373,10 @@ class Task(ModelCommon):
 
             load: float = load_coursework + load_exam
 
-            load_calc_first = load + self.load_fixed + load_lecture_first + self.load_fixed_first
+            load_calc_first = load + self.load_fixed + load_lecture_first
+            if self.load_fixed_first:
+                load_calc_first += self.load_fixed_first
+
             load_calc = load + self.load_fixed + load_lecture
 
         else:
@@ -380,7 +390,9 @@ class Task(ModelCommon):
                 except Exception as calculation_exception:
                     raise calculation_exception
 
-            load_calc_first = load_calc + self.load_fixed_first
+            load_calc_first = load_calc
+            if self.load_fixed_first:
+                load_calc_first += self.load_fixed_first
 
         if is_first_time:
             return load_calc_first * self.load_multiplier

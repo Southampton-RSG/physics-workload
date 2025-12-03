@@ -14,14 +14,14 @@ class UnitTable(Table):
             assignment_provisional=Column(render_column=False),
             # -------- VISIBLE COLUMNS ------
             code=dict(
-                cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
+                cell__url=lambda user, row, **_: row.get_absolute_url_if_permitted(user),
                 filter=dict(
                     include=True,
                     freetext=True,
                 ),
             ),
             name=dict(
-                cell__url=lambda row, request, **_: row.get_absolute_url_authenticated(request.user),
+                cell__url=lambda user, row, **_: row.get_absolute_url_if_permitted(user),
                 filter=dict(
                     include=True,
                     freetext=True,
@@ -31,7 +31,7 @@ class UnitTable(Table):
                 display_name="Tasks",
                 cell=dict(
                     template="app/unit/task_set.html",
-                    value=lambda request, row, **_: Task.objects.filter(unit=row) if row.has_access(request.user) else None,
+                    value=lambda user, row, **_: Task.objects.filter(unit=row) if user.has_perm("app.view_task", row) else None,
                 ),
                 after="students",
                 sort_key="assignment_required",
@@ -48,7 +48,7 @@ class UnitTable(Table):
             ),
             form=dict(
                 fields__status=Field.choice(
-                    include=lambda request, **_: request.user.is_staff,
+                    include=lambda user, **_: user.is_staff,
                     display_name="Status",
                     choices=[
                         "---",

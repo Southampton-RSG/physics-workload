@@ -1,18 +1,16 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Import Non-Unit Assignments" type="UvRunConfigurationType" factoryName="UvRunConfigurationType">
+  <configuration default="false" name="Initialise" type="UvRunConfigurationType" factoryName="UvRunConfigurationType">
     <option name="args">
       <list>
-        <option value="importassignments" />
-        <option value="workload_2425.xlsx" />
-        <option value="workload_2526_rolled.xlsx" />
+        <option value="initialise" />
       </list>
     </option>
     <option name="checkSync" value="true" />
     <option name="env">
       <map />
     </option>
-    <option name="runType" value="MODULE" />
-    <option name="scriptOrModule" value="physics_workload.manage:main" />
+    <option name="runType" value="SCRIPT" />
+    <option name="scriptOrModule" value="$PROJECT_DIR$/physics_workload/manage.py" />
     <option name="uvArgs">
       <list>
         <option value="--with" />

@@ -71,21 +71,6 @@ class AcademicGroup(ModelCommon):
         """
         return super().get_instance_header(text=self.name)
 
-    def has_access(self, user: CustomUser) -> bool:
-        """
-        Only users assigned who are members of an academic group can view it.
-
-        :param user: The user.
-        :return: True if the user is allowed to view the group.
-        """
-        if super().has_access(user):
-            return True
-
-        elif not user.is_anonymous:
-            return user.staff.academic_group == self
-
-        return False
-
     def update_load(self) -> bool:
         """
         Updates the load balance for the group

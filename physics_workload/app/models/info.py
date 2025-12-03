@@ -1,10 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.db.models import CharField, TextField
 from django.utils.html import mark_safe
+from rules import always_true, is_staff, add_perm
 
 from app.models.common import ModelCommon
 
-User = get_user_model
+User = get_user_model()
 
 
 class Info(ModelCommon):
@@ -31,21 +32,17 @@ class Info(ModelCommon):
 
     def get_absolute_url(self) -> str:
         """
-        :return: The URL of the edit view for the info
+        :return: The URL of the view the info is for
         """
         return f"/{self.page}"
 
     def get_edit_url(self) -> str:
         """
-
-        :return:
+        :return: The URL of the edit view for the info
         """
         return f"/{self.url_root}/{self.page}/edit/"
 
-    def has_access(self, user: User) -> bool:
-        """
-        Only users assigned to a task can see the details
-        :param user: The user
-        :return: True if the user is assigned to this task
-        """
-        return super().has_access(user)
+add_perm("app.add_info", is_staff)
+add_perm("app.change_info", is_staff)
+add_perm("app.delete_info", is_staff)
+add_perm("app.view_info", always_true)

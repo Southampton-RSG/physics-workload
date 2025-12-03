@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.core.validators import MinValueValidator
 from django.db.models import CharField, CheckConstraint, F, IntegerField, Q, TextField
 from django.utils.html import format_html
+from rules import add_perm, always_true, is_staff
 from simpleeval import simple_eval
 
 from app.models.common import ModelCommon
@@ -58,7 +59,7 @@ class LoadFunction(ModelCommon):
             )
         ]
 
-    def evaluate(self, students: int, unit: object | None = None) -> float | None:
+    def evaluate(self, students: int | None, unit: object | None = None) -> float | None:
         """
         Runs the equation for a given number of students.
 
@@ -68,7 +69,7 @@ class LoadFunction(ModelCommon):
         """
         names: Dict[str, int] = {}
 
-        if students:
+        if students is not None:
             names["s"] = students
 
         if unit:
@@ -80,6 +81,8 @@ class LoadFunction(ModelCommon):
         else:
             return 0
 
-    def has_access(self, user: AbstractUser | AnonymousUser) -> bool:
-        """You can always see the load functions"""
-        return True
+
+add_perm("app.add_loadfunction", is_staff)
+add_perm("app.change_loadfunction", is_staff)
+add_perm("app.delete_loadfunction", is_staff)
+add_perm("app.view_loadfunction", always_true)

@@ -27,7 +27,7 @@ class TaskTable(Table):
         columns__owner = Column(
             cell=dict(
                 value=lambda row, **_: TaskTable.get_owner_for_task(row),
-                url=lambda value, user, **_: value.get_absolute_url_authenticated(user) if value else None,
+                url=lambda value, user, **_: value.get_absolute_url_if_permitted(user) if value else None,
             ),
             auto_rowspan=True,
             filter=dict(
@@ -38,22 +38,24 @@ class TaskTable(Table):
         )
         columns__title = dict(
             after="owner",
-            cell__url=lambda row, user, **_: row.get_absolute_url_authenticated(user),
+            cell__url=lambda row, user, **_: row.get_absolute_url_if_permitted(user),
             filter=dict(
                 include=True,
                 freetext=True,
             ),
         )
         columns__load_calc = dict(
-            group="Load",
-            display_name="Normal",
             after="title",
+            display_name="Normal",
+            group="Load",
+            include=lambda user, **_: user.is_staff
         )
         columns__load_calc_first = dict(
-            group="Load",
-            display_name="First time",
             after="load_calc",
             cell__value=lambda row, **_: row.load_calc_first if row.load_calc_first != row.load_calc else None,
+            display_name="First time",
+            group="Load",
+            include=lambda user, **_: user.is_staff,
         )
         columns__assignment_set = dict(
             cell=dict(
@@ -105,7 +107,7 @@ class TaskTable(Table):
         Annotates the passed QuerySet with any additional data needed for columns,
         convenience method to keep consistent between uses.
         :param query_set: QuerySet to annotate.
-        :return: Annotated QuerySet, with the number of assignments yet needed added as `assignment_open`
+        :return: Annotated QuerySet, with the number of assignments needed added as `assignment_open`
         """
         return query_set.annotate(
             assignment_required=Case(

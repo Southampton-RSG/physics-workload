@@ -6,10 +6,20 @@ from zoneinfo import ZoneInfo
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from pandas import DataFrame, isnull
+from pandas import DataFrame, isna, read_excel
 
-from app.management.load_csv import load_staff_tasks_from_excel, xlsx_file_only
-from app.models import Assignment, Staff, Task, Unit, AcademicGroup
+from app.management.load_utils import (
+    ADMIN_PREFIXES,
+    SPECIAL_CODES,
+    TITLE_UNIT_DEPUTY,
+    TITLE_UNIT_LEAD,
+    TITLE_PROJECT_MARKING,
+    TITLE_DISSERTATION,
+    UNIT_PREFIXES,
+    load_staff_tasks_from_excel,
+    xlsx_file_only,
+)
+from app.models import AcademicGroup, Assignment, Staff, Task, Unit
 
 logger: Logger = getLogger(__name__)
 
@@ -24,14 +34,14 @@ class Command(BaseCommand):
         :param parser: The argument parser object.
         """
         parser.add_argument(
-            "2024",
+            "path",
             type=xlsx_file_only,
-            help="Excel file for 2024/2025",
+            help="Path to excel file for units",
         )
         parser.add_argument(
-            "2025",
-            type=xlsx_file_only,
-            help="Excel file for 2025/2026"
+            "year",
+            type=int,
+            help="Starting year of the spreadsheet, i.e. 24 for 2024/2025."
         )
 
     def handle(self, *args: Path, **options):
@@ -42,123 +52,219 @@ class Command(BaseCommand):
         :param options: The dictionary of options passed to the script.
         """
 
+        # Set up logging
+        logger: Logger = getLogger(__name__)
+
+        # Track the history of creation
         settings.SIMPLE_HISTORY_ENABLED = True
-        load_files: dict[int, Path] = {
-            2024: options["2024"],
-            2025: options["2025"],
-        }
+        history_date: datetime = datetime(
+            year=options["year"],
+            month=9,
+            day=20,
+            hour=0,
+            minute=0,
+            second=0,
+            tzinfo=ZoneInfo("GMT"),
+        )
 
-        # Track what's made
-        assignments_created: int = 0
-        assignments_updated: int = 0
-        assignments_skipped: int = 0
-        assignments_failed: int = 0
+        # Read the XLSX
+        load_df: DataFrame = load_staff_tasks_from_excel(options["path"])
 
-        for year, load_file in load_files.items():
-            # Read the staff CSV, and convert the empty cells to 0.
-            load_df: DataFrame = load_staff_tasks_from_excel(load_file)
-            load_df.to_csv("test_assignments.csv", index=False)
+        # Track what we're creating
+        assignments_created: list[Assignment] = []
+        assignments_skipped: list[Assignment] = []
+        assignments_failed: list[int] = []
+        students_failed: list[str] = []
 
-            history_date: datetime = datetime(year=2024, month=9, day=20, hour=0, minute=0, second=0, tzinfo=ZoneInfo("GMT"))
+        # Make sure all the staff are valid
+        staff_missing: list[str] = []
+        for staff__name in load_df.staff__name.unique():
+            try:
+                staff: Staff = Staff.objects.get(name__iexact=staff__name)
+            except Staff.DoesNotExist:
+                staff_missing.append(staff__name)
+                logger.error(f"Staff '{staff__name}' does not exist.")
 
-            for idx, row in load_df.iterrows():
-                # Iterate through the dataframe, and for each row create a new unit and save the details.
-                code: str = row.code
-                task: Task | None = None
-                academic_group: AcademicGroup | None = None
-                found_assignment: bool = False
-                save_assignment: bool = False
+        if staff_missing:
+            staff_missing.sort()
+            self.stderr.write(
+                self.style.WARNING(f"Staff not imported: {', '.join(staff_missing)}")
+            )
 
-                if str(code).upper() not in ["MANG", "COMM", "PCAP"]:
-                    # Skip this line if it's not a valid non-unit task code
-                    continue
-                else:
-                    logger.debug(f"Importing row {idx}: {row.code}")
+        # Make sure all the units are valid
+        units_missing: list[str] = []
+        for unit__code in set(load_df.unit__code.astype('str').unique()) - ADMIN_PREFIXES - SPECIAL_CODES:
+            try:
+                unit: Unit = Unit.objects.get(code=unit__code)
+            except Unit.DoesNotExist:
+                units_missing.append(unit__code)
+                logger.error(f"Unit '{unit__code}' does not exist.")
+
+        if units_missing:
+            units_missing.sort()
+            self.stderr.write(
+                self.style.WARNING(f"Units not imported: {', '.join(units_missing)}")
+            )
+
+        tasks_missing: list[str] = []
+        for idx, row in load_df.iterrows():
+            academic_group: AcademicGroup|None = None
+            students: list[int]|None = None
+            task: Task|None = None
+            staff: Staff|None = None
+            unit: Unit|None = None
+            title: str|None = None
+
+            # Iterate through the dataframe, and for each row create a new unit and save the details.
+            try:
+                staff = Staff.objects.get(name__iexact=row.staff__name)
+            except Staff.DoesNotExist:
+                assignments_failed.append(idx)
+                continue
+
+            try:
+                # Look for an academic group if possible
+                academic_group = AcademicGroup.objects.get(code=str(row.academic_group__name)[0])
+            except AcademicGroup.DoesNotExist:
+                pass  # Some tasks don't need one anyway
+
+            if row.unit__code in units_missing:
+                assignments_failed.append(idx)
+                continue
+
+            elif row.unit__code.upper() in ADMIN_PREFIXES:
+                # Found an admin task
+                logger.debug(f"Importing admin task from row {idx}")
 
                 try:
-                    # Skip this if the staff can't be found
-                    staff: Staff = Staff.objects.get(name=row.staff__name)
-                    logger.debug(f"Found staff: {staff}: {row.staff__name}")
-                except Staff.DoesNotExist:
-                    logger.warning(f"No staff named: {row.staff__name}")
-                    continue
-
-                try:
-                    # Look for an academic group if possible
-                    academic_group = AcademicGroup.objects.get(code=str(row.academic_group__name)[0])
-                except AcademicGroup.DoesNotExist:
-                    academic_group = None
-
-                try:
-                    task= Task.objects.get(
+                    task: Task = Task.objects.get(
                         title__iexact=row.task__title,
                         academic_group=academic_group,
                     )
                 except Task.DoesNotExist:
-                    pass
-
-                if not task:
                     try:
-                        task: Task = Task.objects.get(title__iexact=row.task__title)
+                        task = Task.objects.get(
+                            title__iexact=row.task__title,
+                        )
                     except Task.DoesNotExist:
-                        pass
+                        logger.error(f"Task '{row.task__title}' does not exist.")
+                        tasks_missing.append(row.task__title)
+                        assignments_failed.append(idx)
+                        continue
 
-                if not task:
-                    # Just manually check then...
-                    for task_candidate in Task.objects.filter(unit=None).all():
-                        if task_candidate.title.replace(" - ", " ") == row.task__title:
-                            task = task_candidate
-                        elif task_candidate.title.split("(")[0] == row.task__title:
-                            task = task_candidate
-
-                if not task:
-                    logger.debug(f"Could not find task named: {row.task__title}")
-                    assignments_failed += 1
-                    continue
+            elif row.unit__code[:4].upper() in UNIT_PREFIXES:
+                # Found a unit task
+                logger.debug(f"Importing unit task from row {idx}")
 
                 try:
-                    if task.is_unique:
-                        assignment: Assignment = Assignment.objects.get(task=task)
-                    else:
-                        assignment: Assignment = Assignment.objects.get(task=task, staff=staff)
+                    unit = Unit.objects.get(code=row.unit__code)
+                except Unit.DoesNotExist:
+                    pass
 
-                    found_assignment = True
-                except Assignment.DoesNotExist:
-                    found_assignment = False
-                except Exception as e:
-                    logger.exception(e)
-                    raise e
+                if isinstance(row.task__title, str):
+                    if "coord" in row.task__title.lower():
+                        title = TITLE_UNIT_LEAD
+                    elif "deputy" in row.task__title.lower():
+                        title = TITLE_UNIT_DEPUTY
 
-                if found_assignment:
-                    if assignment.history.order_by('-history_date').first().history_date.year != year:
-                        assignments_updated += 1
-                        assignment.staff = staff
-                        assignment.is_provisional = True
-                        save_assignment = True
+                if not title and isinstance(row.task__description, str):
+                    if "project" in row.task__description.lower():
+                        title = TITLE_PROJECT_MARKING
+                    elif "dissertation" in row.task__description.lower():
+                        title = TITLE_DISSERTATION
+
+                    if "+" in str(row.task__title):
+                        assignments_failed.append(idx)
+                        students_failed.append(row.task__title)
+                        continue
+
+                    students = []
+                    for value in str(row.task__title).split():
+                        try:
+                            students.append(int(value))
+                        except ValueError:
+                            pass
+
+                if not title:
+                    title = row.task__description.lower()
+
+                try:
+                    task: Task = Task.objects.get(
+                        unit=unit, title__iexact=title,
+                    )
+                except Task.DoesNotExist:
+                    logger.error(f"Task '{unit} - {row.task__title}' does not exist.")
+                    tasks_missing.append(f"{unit} - {row.task__title}")
+                    assignments_failed.append(idx)
+                    continue
+
+            elif row.unit__code.upper() in SPECIAL_CODES:
+                if row.unit__code.upper() == "TUTOR":
+                    if not isna(row.task__notes) and "S1" in row.task__notes:
+                        task = Task.objects.get(title__iexact="Drop-In Sessions (S1)")
+                    elif not isna(row.task__notes) and "S2" in row.task__notes:
+                        task = Task.objects.get(title__iexact="Drop-In Sessions (S2)")
                     else:
-                        assignments_skipped += 1
+                        task = Task.objects.get(title__iexact="Tuition")
+                        students = [row.assignment__students]
                 else:
-                    assignments_created += 1
-                    assignment: Assignment = Assignment(
+                    assignments_failed.append(idx)
+                    continue
+            else:
+                logger.error(f"Row {idx} - {row.task__title}' does not exist.")
+                assignments_failed.append(idx)
+                continue
+
+            try:
+                assignment: Assignment = Assignment.objects.get(
+                    task=task, staff=staff
+                )
+                assignments_skipped.append(assignment)
+            except Assignment.MultipleObjectsReturned:
+                continue
+
+            except Assignment.DoesNotExist:
+                if students:
+                    for student_number in students:
+                        assignment = Assignment(
+                            task=task,
+                            staff=staff,
+                            is_first_time=True,
+                            is_provisional=True,
+                            students=student_number,
+                        )
+                        assignment._history_date = history_date
+                        assignment.save()
+                        assignments_created.append(assignment)
+                else:
+                    assignment = Assignment(
                         task=task,
                         staff=staff,
                         is_first_time=True,
                         is_provisional=True,
                     )
-                    save_assignment = True
-                    logger.debug(f"Assigning: {staff} to {task}")
+                    assignment._history_date = history_date
+                    assignment.save()
+                    assignments_created.append(assignment)
 
-                if save_assignment:
-                    try:
-                        assignment._history_date = history_date
-                        assignment.save()
-                    except Exception as e:
-                        logger.exception(e)
-                        raise e
-
-        # Stop tracking history changes.
         settings.SIMPLE_HISTORY_ENABLED = False
 
+        if tasks_missing:
+            tasks_missing.sort()
+            self.stderr.write(self.style.WARNING(f"Tasks not imported: {', '.join(tasks_missing)}"))
+
+        if students_failed:
+            students_failed.sort()
+            self.stderr.write(self.style.WARNING(f"Student counts not parsed: {', '.join(students_failed)}"))
+            self.stderr.write(self.style.WARNING("Just use a spaced list, e.g. '1 2 1'"))
+
         self.stdout.write(
-            self.style.SUCCESS(f"Non-unit task assignments complete. Created: {assignments_created}, updated: {assignments_updated}, skipped: {assignments_skipped}, failed: {assignments_failed}.")
+            self.style.SUCCESS(
+                f"Assignments complete. Created: {len(assignments_created)}, skipped: {len(assignments_skipped)}."
+            )
         )
+
+        dataframe_failed: DataFrame = read_excel(
+            options['path'], sheet_name="Staff Tasks", header=0, index_col=False
+        ).loc[assignments_failed]
+        dataframe_failed.to_csv("failed_assignments.csv", index=False)

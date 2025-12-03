@@ -3,8 +3,91 @@
     "model": "app.Task",
     "pk": 1,
     "fields": {
-      "title": "1st Year Tutees",
-      "load_function": 5
+      "unit": "TUTOR",
+      "title": "Tuition",
+      "load_function": 5,
+      "assignment_students": "REQUIRED"
     }
   },
+  {
+    "model": "app.Task",
+    "pk": 2,
+    "fields": {
+      "unit": "TUTOR",
+      "title": "Senior Tutor",
+      "is_required": true,
+      "load_fixed": 175,
+      "assignment_students": "INVALID"
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": 3,
+    "fields": {
+      "unit": "TUTOR",
+      "title": "Additional Senior Tutor",
+      "load_fixed": 50,
+      "load_fixed_first": 25,
+      "assignment_students": "INVALID"
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": 4,
+    "fields": {
+      "unit": "TUTOR",
+      "title": "Drop-In Sessions (S1)",
+      "load_fixed": 50,
+      "assignment_students": "INVALID"
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": 5,
+    "fields": {
+      "unit": "TUTOR",
+      "title": "Drop-In Sessions (S2)",
+      "load_fixed": 50,
+      "assignment_students": "INVALID"
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": 6,
+    "fields": {
+      "unit": "PHYS3018",
+      "title": "Project Marking",
+      "assignment_students": "REQUIRED",
+      "load_function": 1
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": 7,
+    "fields": {
+      "unit": "PHYS6006",
+      "title": "Project Marking",
+      "assignment_students": "REQUIRED",
+      "load_function": 2
+    }
+  },
+  {
+    "model": "app.Task",
+    "pk": 8,
+    "fields": {
+      "title": "Cleanroom Rep",
+      "load_fixed": 35,
+      "assignment_students": "INVALID"
+    }
+  },
+    {
+    "model": "app.Task",
+    "pk": 9,
+    "fields": {
+      "unit": "PHYS6009",
+      "title": "Dissertation Marking",
+      "assignment_students": "REQUIRED",
+      "load_function": 3
+    }
+  }
 ]
