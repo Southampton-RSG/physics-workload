@@ -4,6 +4,14 @@ physics_workload.app.models.common
 .. py:module:: physics_workload.app.models.common
 
 
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.models.common.User
+
+
 Classes
 -------
 
@@ -14,6 +22,8 @@ Classes
 
 Module Contents
 ---------------
+
+.. py:data:: User
 
 .. py:class:: ModelCommon(*args, **kwargs)
 
@@ -64,7 +74,9 @@ Module Contents
 
 
 
-   .. py:method:: get_absolute_url_authenticated(user: django.contrib.auth.models.AbstractUser | django.contrib.auth.models.AnonymousUser | None) -> str
+   .. py:method:: get_absolute_url_if_permitted(user: User) -> str
+      :abstractmethod:
+
 
       :param user: The user to check authorisation for.
       :return: The absolute URL for the detail view of this particular instance of the model if allowed, or blank.
@@ -103,15 +115,6 @@ Module Contents
 
       Creates a header for a create view for this model.
       :return: The rendered template, for use on the page.
-
-
-
-   .. py:method:: has_access(user: django.contrib.auth.models.AbstractUser | django.contrib.auth.models.AnonymousUser) -> bool
-      :abstractmethod:
-
-
-      :param user: The user checking access.
-      :return: True if debug auth is on or the user is staff.
 
 
 

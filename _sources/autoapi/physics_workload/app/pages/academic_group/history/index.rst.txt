@@ -4,6 +4,14 @@ physics_workload.app.pages.academic_group.history
 .. py:module:: physics_workload.app.pages.academic_group.history
 
 
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.pages.academic_group.history.logger
+
+
 Classes
 -------
 
@@ -14,6 +22,9 @@ Classes
 
 Module Contents
 ---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
 
 .. py:class:: AcademicGroupHistoryList(**kwargs)
 
@@ -34,13 +45,12 @@ Module Contents
 
    .. py:class:: Meta
 
-      .. py:method:: extra_evaluated__plot(params: Dict[str, Any], academic_group: app.models.AcademicGroup, **_) -> str
+      .. py:method:: extra_evaluated__plot(academic_group: app.models.AcademicGroup, **_) -> str
          :staticmethod:
 
 
          Creates a graph of the staff balance over time.
 
-         :param params: The Iommi view params.
          :param staff: The Staff instance, provided via URL decoding.
          :return: The HTML code of the graph.
 

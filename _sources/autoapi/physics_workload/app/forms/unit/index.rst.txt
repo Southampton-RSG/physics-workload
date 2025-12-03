@@ -54,14 +54,7 @@ Module Contents
 
 
 
-      .. py:attribute:: fields__academic_group__group
-         :value: 'Basics'
-
-
-
-      .. py:attribute:: fields__academic_group__non_editable_input__template
-         :value: 'app/choice_url.html'
-
+      .. py:attribute:: fields__academic_group
 
 
       .. py:attribute:: fields__students__group

@@ -10,6 +10,7 @@ Classes
 .. autoapisummary::
 
    physics_workload.app.pages.info.InfoForm
+   physics_workload.app.pages.info.InfoDetail
    physics_workload.app.pages.info.InfoEdit
 
 
@@ -135,6 +136,22 @@ Module Contents
 
       .. py:attribute:: assets
 
+
+
+.. py:class:: InfoDetail(**kwargs)
+
+   Bases: :py:obj:`iommi.Page`
+
+
+   A page is used to compose iommi parts into a bigger whole.
+
+   See the `howto <https://docs.iommi.rocks//cookbook_parts_pages.html#parts-pages>`_ for example usages.
+
+
+   .. py:attribute:: header
+
+
+   .. py:attribute:: form
 
 
 .. py:class:: InfoEdit(**kwargs)

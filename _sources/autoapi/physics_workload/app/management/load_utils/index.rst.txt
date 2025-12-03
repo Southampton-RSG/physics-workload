@@ -1,0 +1,168 @@
+physics_workload.app.management.load_utils
+==========================================
+
+.. py:module:: physics_workload.app.management.load_utils
+
+.. autoapi-nested-parse::
+
+   Utility functions for loading CSV and XLSX files.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.management.load_utils.logger
+   physics_workload.app.management.load_utils.UNIT_PREFIXES
+   physics_workload.app.management.load_utils.ADMIN_PREFIXES
+   physics_workload.app.management.load_utils.SPECIAL_CODES
+   physics_workload.app.management.load_utils.TITLE_UNIT_LEAD
+   physics_workload.app.management.load_utils.TITLE_UNIT_DEPUTY
+   physics_workload.app.management.load_utils.TITLE_PROJECT_MARKING
+   physics_workload.app.management.load_utils.TITLE_DISSERTATION
+   physics_workload.app.management.load_utils.UNIT_TUITION
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   physics_workload.app.management.load_utils.csv_file_only
+   physics_workload.app.management.load_utils.xlsx_file_only
+   physics_workload.app.management.load_utils.strip_dataframe_whitespace
+   physics_workload.app.management.load_utils.convert_columns_to_ints
+   physics_workload.app.management.load_utils.convert_percentage_columns_to_floats
+   physics_workload.app.management.load_utils.load_units_from_load_master_excel
+   physics_workload.app.management.load_utils.load_nonunit_tasks_from_excel
+   physics_workload.app.management.load_utils.load_staff_tasks_from_excel
+   physics_workload.app.management.load_utils.load_staff_contracts_from_excel
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+   :type:  logging.Logger
+
+.. py:data:: UNIT_PREFIXES
+   :type:  set[str]
+
+.. py:data:: ADMIN_PREFIXES
+   :type:  set[str]
+
+.. py:data:: SPECIAL_CODES
+   :type:  set[str]
+
+.. py:data:: TITLE_UNIT_LEAD
+   :type:  str
+   :value: 'Unit Lead'
+
+
+.. py:data:: TITLE_UNIT_DEPUTY
+   :type:  str
+   :value: 'Deputy Lead'
+
+
+.. py:data:: TITLE_PROJECT_MARKING
+   :type:  str
+   :value: 'Project Marking'
+
+
+.. py:data:: TITLE_DISSERTATION
+   :type:  str
+   :value: 'Dissertation Marking'
+
+
+.. py:data:: UNIT_TUITION
+   :type:  str
+   :value: 'TUTOR'
+
+
+.. py:function:: csv_file_only(param: str) -> pathlib.Path
+
+   Takes a path and makes sure it's a CSV file.
+
+   :param param: The string input parameter.
+   :raises ArgumentTypeError: If it's not a CSV file.
+   :return: That string as a file path.
+
+
+.. py:function:: xlsx_file_only(param: str) -> pathlib.Path
+
+   Takes a path and makes sure it's a CSV file.
+
+   :param param: The string input parameter.
+   :raises ArgumentTypeError: If it's not a CSV file.
+   :return: That string as a file path.
+
+
+.. py:function:: strip_dataframe_whitespace(dataframe: pandas.DataFrame)
+
+   Strips whitespace from all the text columns of a dataframe.
+
+   :param dataframe: The dataframe to strip.
+   :return: None, this is done in-place.
+
+
+.. py:function:: convert_columns_to_ints(dataframe: pandas.DataFrame, columns: list[str])
+
+   Converts a set of columns from floats/text/whatever into ints,
+   and replaces any problems with 0.
+
+   :param dataframe: The dataframe to convert.
+   :param columns: The list of columns to work over.
+   :return: None, this is done in-place.
+
+
+.. py:function:: convert_percentage_columns_to_floats(dataframe: pandas.DataFrame, columns: list[str])
+
+   Converts a set of columns from percentages (expressed as text or equations) into floats.
+
+   :param dataframe: The dataframe to convert.
+   :param columns: The list of columns to work over.
+   :return: None, this is done in-place.
+
+
+.. py:function:: load_units_from_load_master_excel(path: pathlib.Path) -> pandas.DataFrame
+
+   Loads the Units and their task rows from the Load Master tab of the spreadsheet
+
+   DF keys are approached from the perspective of a `Unit` model.
+
+   :param path: The Excel spreadsheet to read.
+   :return: The data.
+
+
+.. py:function:: load_nonunit_tasks_from_excel(path: pathlib.Path) -> pandas.DataFrame
+
+   Loads non-units tasks from the Load Master tab of the spreadsheet
+
+   DF keys are approached from the perspective of a `Unit` model.
+
+   :param path: The Excel spreadsheet to read.
+   :return: The data.
+
+
+.. py:function:: load_staff_tasks_from_excel(path: pathlib.Path) -> pandas.DataFrame
+
+   Loads the "Staff Tasks" sheet of the Excel file.
+
+   This has lines for each task, plus a final line for each staff member saying "Total".
+
+   :param path: The Excel spreadsheet to read.
+   :return: A dataframe that represents the "Staff tasks" sheet.
+
+
+.. py:function:: load_staff_contracts_from_excel(path: pathlib.Path) -> pandas.DataFrame
+
+   Loads the "Staff Contracts" sheet of the Excel file.
+
+   Some of the columns have trailing whitespace in the names (???).
+
+   :param path: The Excel spreadsheet to read.
+   :return: A dataframe that represents the "Staff Contract Detail" sheet.
+
+

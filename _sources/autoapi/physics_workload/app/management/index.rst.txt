@@ -11,5 +11,6 @@ Submodules
    :maxdepth: 1
 
    /autoapi/physics_workload/app/management/commands/index
+   /autoapi/physics_workload/app/management/load_utils/index
 
 

@@ -1,0 +1,25 @@
+physics_workload.app.main_menu.standard_load
+============================================
+
+.. py:module:: physics_workload.app.main_menu.standard_load
+
+.. autoapi-nested-parse::
+
+   Handles the URLs for the Standard Load
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.main_menu.standard_load.standard_load_submenu
+
+
+Module Contents
+---------------
+
+.. py:data:: standard_load_submenu
+   :type:  iommi.main_menu.M
+

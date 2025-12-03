@@ -10,6 +10,7 @@ Attributes
 .. autoapisummary::
 
    physics_workload.app.models.standard_load.logger
+   physics_workload.app.models.standard_load.User
 
 
 Classes
@@ -20,11 +21,21 @@ Classes
    physics_workload.app.models.standard_load.StandardLoad
 
 
+Functions
+---------
+
+.. autoapisummary::
+
+   physics_workload.app.models.standard_load.is_latest_standardload
+
+
 Module Contents
 ---------------
 
 .. py:data:: logger
    :type:  logging.Logger
+
+.. py:data:: User
 
 .. py:class:: StandardLoad
 
@@ -120,14 +131,6 @@ Module Contents
 
 
 
-   .. py:method:: has_access(user: django.contrib.auth.models.AbstractUser | django.contrib.auth.models.AnonymousUser) -> bool
-
-      You can always see the load details
-      :param user: The user to test access for.
-      :return: True, always
-
-
-
    .. py:method:: update_target_load_per_fte()
 
       :return:
@@ -139,5 +142,13 @@ Module Contents
       :param previous_standard_load: The previous version of the standard loads.
       :return: True if other models were updated, False otherwise.
 
+
+
+.. py:function:: is_latest_standardload(user: User, standard_load: StandardLoad) -> bool
+
+   Is the user trying to copy/modify the latest standard load?
+   :param user: The current user.
+   :param standard_load: The standard load to check. Must exist for new ones to be based on, for example.
+   :return: If it's the latest or not.
 
 

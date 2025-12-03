@@ -24,6 +24,14 @@ Classes
    physics_workload.app.tables.assignment.AssignmentTaskEditTable
 
 
+Functions
+---------
+
+.. autoapisummary::
+
+   physics_workload.app.tables.assignment.handle_bulk_approval
+
+
 Module Contents
 ---------------
 
@@ -85,6 +93,8 @@ Module Contents
       .. py:attribute:: iommi_style
 
 
+
+.. py:function:: handle_bulk_approval(table, request, **_)
 
 .. py:class:: AssignmentStaffEditTable(**kwargs)
 

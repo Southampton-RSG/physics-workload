@@ -10,6 +10,7 @@ Attributes
 .. autoapisummary::
 
    physics_workload.app.models.academic_group.logger
+   physics_workload.app.models.academic_group.User
 
 
 Classes
@@ -20,11 +21,21 @@ Classes
    physics_workload.app.models.academic_group.AcademicGroup
 
 
+Functions
+---------
+
+.. autoapisummary::
+
+   physics_workload.app.models.academic_group.is_group_member
+
+
 Module Contents
 ---------------
 
 .. py:data:: logger
    :type:  logging.Logger
+
+.. py:data:: User
 
 .. py:class:: AcademicGroup
 
@@ -83,6 +94,12 @@ Module Contents
    .. py:method:: __str__()
 
 
+   .. py:method:: get_absolute_url() -> str
+
+
+   .. py:method:: get_absolute_url_if_permitted(user) -> str | None
+
+
    .. py:method:: get_short_name() -> str
 
       :return: The short name. Needed for parity with the Unit model, for Task ownership.
@@ -95,15 +112,6 @@ Module Contents
 
       :param text: Text of the header, unused.
       :return: A rendered header string with the name of the instance.
-
-
-
-   .. py:method:: has_access(user: users.models.CustomUser) -> bool
-
-      Only users assigned who are members of an academic group can view it.
-
-      :param user: The user.
-      :return: True if the user is allowed to view the group.
 
 
 
@@ -121,5 +129,13 @@ Module Contents
 
       :return: The load balance.
 
+
+
+.. py:function:: is_group_member(user: User, academic_group: AcademicGroup) -> bool
+
+   Is this user a member of this group?
+   :param user:
+   :param academic_group:
+   :return:
 
 

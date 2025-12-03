@@ -4,6 +4,14 @@ physics_workload.app.models.info
 .. py:module:: physics_workload.app.models.info
 
 
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.models.info.User
+
+
 Classes
 -------
 
@@ -14,6 +22,8 @@ Classes
 
 Module Contents
 ---------------
+
+.. py:data:: User
 
 .. py:class:: Info
 
@@ -53,21 +63,13 @@ Module Contents
 
    .. py:method:: get_absolute_url() -> str
 
-      :return: The URL of the edit view for the info
+      :return: The URL of the view the info is for
 
 
 
    .. py:method:: get_edit_url() -> str
 
-      :return:
-
-
-
-   .. py:method:: has_access(user: django.contrib.auth.models.AbstractUser) -> bool
-
-      Only users assigned to a task can see the details
-      :param user: The user
-      :return: True if the user is assigned to this task
+      :return: The URL of the edit view for the info
 
 
 

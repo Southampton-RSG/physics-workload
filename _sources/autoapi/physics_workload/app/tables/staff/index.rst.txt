@@ -65,6 +65,12 @@ Module Contents
       :staticmethod:
 
 
+      Converts as the 'status' value from the dropdown into a DB query filter.
+
+      :param value_string_or_f: Should be either "Overloaded", "Underloaded" or "---" or potentiqlly None.
+      :return: The query.
+
+
 
    .. py:method:: annotate_rows(rows: django.db.models.QuerySet) -> django.db.models.QuerySet
       :staticmethod:

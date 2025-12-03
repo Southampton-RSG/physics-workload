@@ -4,6 +4,14 @@ physics_workload.app.models.unit
 .. py:module:: physics_workload.app.models.unit
 
 
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.models.unit.User
+
+
 Classes
 -------
 
@@ -12,8 +20,18 @@ Classes
    physics_workload.app.models.unit.Unit
 
 
+Functions
+---------
+
+.. autoapisummary::
+
+   physics_workload.app.models.unit.is_user_assigned_to_unit
+
+
 Module Contents
 ---------------
+
+.. py:data:: User
 
 .. py:class:: Unit
 
@@ -105,6 +123,9 @@ Module Contents
    .. py:method:: __str__() -> str
 
 
+   .. py:method:: get_absolute_url_if_permitted(user: User) -> str
+
+
    .. py:method:: get_short_name() -> str
 
       :return: Just returns the code. Needed for parity with the AcademicGroup model, for Task ownership.
@@ -123,17 +144,11 @@ Module Contents
 
 
 
-   .. py:method:: has_access(user: django.contrib.auth.models.AbstractUser) -> bool
-
-      Only users assigned to a module can see the details
-      :param user: The user
-      :return: True if the user is assigned to a task in this module
-
-
-
    .. py:method:: update_load() -> bool
 
       :return: True if the load of any of the tasks needed updating.
 
 
+
+.. py:function:: is_user_assigned_to_unit(user: User, unit: Unit) -> bool
 

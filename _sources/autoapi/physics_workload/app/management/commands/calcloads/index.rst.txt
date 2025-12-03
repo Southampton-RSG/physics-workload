@@ -1,0 +1,37 @@
+physics_workload.app.management.commands.calcloads
+==================================================
+
+.. py:module:: physics_workload.app.management.commands.calcloads
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.management.commands.calcloads.Command
+
+
+Module Contents
+---------------
+
+.. py:class:: Command(stdout=None, stderr=None, no_color=False, force_color=False)
+
+   Bases: :py:obj:`django.core.management.base.BaseCommand`
+
+
+   Initialises the staff workloads in the database.
+
+
+   .. py:attribute:: help
+      :value: 'Initialises the staff workloads in the database.'
+
+
+
+   .. py:method:: handle(*args, **options)
+
+      The actual logic of the command. Subclasses must implement
+      this method.
+
+
+

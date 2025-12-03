@@ -10,6 +10,13 @@ Submodules
 .. toctree::
    :maxdepth: 1
 
+   /autoapi/physics_workload/app/management/commands/calchistoric/index
+   /autoapi/physics_workload/app/management/commands/calcloads/index
+   /autoapi/physics_workload/app/management/commands/importassignments/index
+   /autoapi/physics_workload/app/management/commands/importnonunittasks/index
+   /autoapi/physics_workload/app/management/commands/importstaff/index
+   /autoapi/physics_workload/app/management/commands/importunits/index
    /autoapi/physics_workload/app/management/commands/initialise/index
+   /autoapi/physics_workload/app/management/commands/makestaff/index
 
 

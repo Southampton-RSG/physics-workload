@@ -10,6 +10,7 @@ Attributes
 .. autoapisummary::
 
    physics_workload.app.models.task.logger
+   physics_workload.app.models.task.User
 
 
 Classes
@@ -26,6 +27,7 @@ Functions
 .. autoapisummary::
 
    physics_workload.app.models.task.update_task_name
+   physics_workload.app.models.task.is_in_task
 
 
 Module Contents
@@ -33,6 +35,8 @@ Module Contents
 
 .. py:data:: logger
    :type:  logging.Logger
+
+.. py:data:: User
 
 .. py:class:: Task
 
@@ -83,8 +87,11 @@ Module Contents
 
 
    .. py:attribute:: FIELDS_TASK_GENERIC
-      :value: ('load_function', 'students')
+      :value: ('load_function', 'students', 'requires_students')
 
+
+
+   .. py:attribute:: assignment_students
 
 
    .. py:attribute:: load_function
@@ -177,18 +184,13 @@ Module Contents
 
 
 
+   .. py:method:: get_absolute_url_if_permitted(user: User) -> str | None
+
+
    .. py:method:: has_any_provisional() -> bool
 
 
    .. py:method:: has_any_first_time() -> bool
-
-
-   .. py:method:: has_access(user: django.contrib.auth.models.AbstractUser) -> bool
-
-      Only users assigned to a task can see the details
-      :param user: The user
-      :return: True if the user is assigned to this task
-
 
 
    .. py:method:: update_load(cascade=True, save=False) -> True
@@ -212,5 +214,13 @@ Module Contents
    :param instance: The updated instance, an in-memory version.
    :param kwargs:
    :return:
+
+
+.. py:function:: is_in_task(user: User, task: Task) -> bool
+
+   Is the user one of the staff assigned to this task?
+   :param user: The curent user.
+   :param task: The task to check.
+   :return: If they're assigned or not.
 
 

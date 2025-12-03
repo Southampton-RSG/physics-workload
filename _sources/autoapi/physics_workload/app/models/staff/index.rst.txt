@@ -10,6 +10,7 @@ Attributes
 .. autoapisummary::
 
    physics_workload.app.models.staff.logger
+   physics_workload.app.models.staff.User
 
 
 Classes
@@ -26,6 +27,7 @@ Functions
 .. autoapisummary::
 
    physics_workload.app.models.staff.update_staff_link
+   physics_workload.app.models.staff.is_staff_for_user
 
 
 Module Contents
@@ -33,6 +35,8 @@ Module Contents
 
 .. py:data:: logger
    :type:  logging.Logger
+
+.. py:data:: User
 
 .. py:class:: Staff
 
@@ -126,12 +130,17 @@ Module Contents
 
 
 
-   .. py:method:: has_access(user: django.contrib.auth.models.AbstractUser | django.contrib.auth.models.AnonymousUser) -> bool
+   .. py:method:: get_absolute_url() -> str
 
-      Does the user have access to this object?
+      Gets the URL for this staff member's page.
+      :return: The URL.
 
-      :param user: The user in question.
-      :return: True if the user has access, or the user is this staff member.
+
+
+   .. py:method:: get_absolute_url_if_permitted(user: User) -> str | None
+
+      Gets the URL for this staff member's page if the user has the rights to view it.
+      :return: The URL, or None if they don't.
 
 
 
@@ -185,5 +194,14 @@ Module Contents
    :param created:
    :param kwargs:
    :return:
+
+
+.. py:function:: is_staff_for_user(user: User, staff: Staff) -> bool
+
+   Does this staff account correspond to the current user?
+
+   :param user: The current user.
+   :param staff: The teaching staff.
+   :return: True if so.
 
 

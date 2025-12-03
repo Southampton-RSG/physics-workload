@@ -115,7 +115,7 @@ Module Contents
       Annotates the passed QuerySet with any additional data needed for columns,
       convenience method to keep consistent between uses.
       :param query_set: QuerySet to annotate.
-      :return: Annotated QuerySet, with the number of assignments yet needed added as `assignment_open`
+      :return: Annotated QuerySet, with the number of assignments needed added as `assignment_open`
 
 
 

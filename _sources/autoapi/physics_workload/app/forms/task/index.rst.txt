@@ -219,7 +219,7 @@ Module Contents
 
 
       .. py:attribute:: auto__include
-         :value: ['title', 'is_unique', 'is_required', 'is_full_time', 'description']
+         :value: ['title', 'is_unique', 'is_required', 'is_full_time', 'description', 'assignment_students']
 
 
 

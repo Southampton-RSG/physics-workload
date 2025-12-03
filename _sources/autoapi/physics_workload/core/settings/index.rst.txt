@@ -156,12 +156,12 @@ Module Contents
 
 .. py:data:: LOGIN_REDIRECT_URL
    :type:  str
-   :value: 'home'
+   :value: 'main_menu.home'
 
 
 .. py:data:: LOGOUT_REDIRECT_URL
    :type:  str
-   :value: 'home'
+   :value: 'main_menu.home'
 
 
 .. py:data:: adfs_client_id

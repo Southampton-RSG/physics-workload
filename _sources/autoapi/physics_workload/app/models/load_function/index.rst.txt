@@ -73,19 +73,13 @@ Module Contents
 
 
 
-   .. py:method:: evaluate(students: int, unit: object | None = None) -> float | None
+   .. py:method:: evaluate(students: int | None, unit: object | None = None) -> float | None
 
       Runs the equation for a given number of students.
 
       :param students: The number of students.
       :param unit: The unit.
       :return: The output of the equation.
-
-
-
-   .. py:method:: has_access(user: django.contrib.auth.models.AbstractUser | django.contrib.auth.models.AnonymousUser) -> bool
-
-      You can always see the load functions
 
 
 

@@ -12,9 +12,10 @@ Submodules
 
    /autoapi/physics_workload/app/admin/index
    /autoapi/physics_workload/app/assets/index
-   /autoapi/physics_workload/app/auth/index
+   /autoapi/physics_workload/app/commands/index
    /autoapi/physics_workload/app/config/index
    /autoapi/physics_workload/app/forms/index
+   /autoapi/physics_workload/app/main_menu/index
    /autoapi/physics_workload/app/management/index
    /autoapi/physics_workload/app/middlewares/index
    /autoapi/physics_workload/app/models/index

@@ -73,11 +73,6 @@ Module Contents
       .. py:attribute:: indexes
 
 
-      .. py:attribute:: unique_together
-         :value: ('task', 'staff')
-
-
-
       .. py:attribute:: ordering
          :value: ('-staff', 'task')
 

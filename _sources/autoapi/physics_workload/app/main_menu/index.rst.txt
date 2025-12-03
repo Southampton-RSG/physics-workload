@@ -1,0 +1,34 @@
+physics_workload.app.main_menu
+==============================
+
+.. py:module:: physics_workload.app.main_menu
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/physics_workload/app/main_menu/academic_group/index
+   /autoapi/physics_workload/app/main_menu/info/index
+   /autoapi/physics_workload/app/main_menu/load_function/index
+   /autoapi/physics_workload/app/main_menu/staff/index
+   /autoapi/physics_workload/app/main_menu/standard_load/index
+   /autoapi/physics_workload/app/main_menu/task/index
+   /autoapi/physics_workload/app/main_menu/unit/index
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.main_menu.main_menu
+
+
+Package Contents
+----------------
+
+.. py:data:: main_menu
+

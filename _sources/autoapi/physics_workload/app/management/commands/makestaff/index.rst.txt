@@ -1,0 +1,72 @@
+physics_workload.app.management.commands.makestaff
+==================================================
+
+.. py:module:: physics_workload.app.management.commands.makestaff
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   physics_workload.app.management.commands.makestaff.RE_EMAIL
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   physics_workload.app.management.commands.makestaff.Command
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   physics_workload.app.management.commands.makestaff.email_type
+
+
+Module Contents
+---------------
+
+.. py:data:: RE_EMAIL
+
+.. py:function:: email_type(value: str) -> str
+
+   Checks a string is an email addresses.
+
+   :param value: The string to check.
+   :raises ArgumentTypeError: If it's not a valid email address.
+   :return: The string, if it's correct.
+
+
+.. py:class:: Command(stdout=None, stderr=None, no_color=False, force_color=False)
+
+   Bases: :py:obj:`django.core.management.base.BaseCommand`
+
+
+   Management command that makes a given user account an active member of staff.
+
+
+   .. py:attribute:: help
+      :value: 'Registers a given email as staff for the site.'
+
+
+
+   .. py:method:: add_arguments(parser: argparse.ArgumentParser)
+
+      Adds the positional argument for email, and flag for superuser status.
+
+      :param parser: The argument parser object.
+
+
+
+   .. py:method:: handle(*args: str, **options: Unpack[str | bool])
+
+      The actual logic of the command. Subclasses must implement
+      this method.
+
+
+
