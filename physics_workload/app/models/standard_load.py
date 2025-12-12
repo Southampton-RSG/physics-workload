@@ -1,11 +1,11 @@
 from logging import Logger, getLogger
 from typing import Dict
 
-from rules import add_perm, predicate, always_true, is_staff
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db.models import FloatField, IntegerField, Sum, TextField
+from rules import add_perm, always_true, is_staff, predicate
 
 from app.models.assignment import Assignment
 from app.models.common import ModelCommon

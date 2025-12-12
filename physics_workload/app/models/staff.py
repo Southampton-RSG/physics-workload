@@ -1,6 +1,5 @@
 from logging import Logger, getLogger
 
-from rules import add_perm, is_staff, predicate
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -19,6 +18,7 @@ from django.db.models.deletion import PROTECT, SET_NULL
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.html import format_html
+from rules import add_perm, is_staff, predicate
 from simple_history.models import HistoricForeignKey
 
 from app.models.academic_group import AcademicGroup
@@ -53,8 +53,7 @@ class Staff(ModelCommon):
         on_delete=SET_NULL,
     )
     account = CharField(
-        max_length=16, unique=True, blank=False, primary_key=True,
-        help_text=format_html("Active Directory account e.g. <tt>js1a25</tt>")
+        max_length=16, unique=True, blank=False, primary_key=True, help_text=format_html("Active Directory account e.g. <tt>js1a25</tt>")
     )
     name = CharField(
         max_length=128,

@@ -6,7 +6,6 @@ from django.db.models import CharField, IntegerField, Sum
 from rules import add_perm, is_staff, predicate
 
 from app.models.common import ModelCommon
-from users.models import CustomUser
 
 logger: Logger = getLogger(__name__)
 
@@ -50,7 +49,7 @@ class AcademicGroup(ModelCommon):
     def get_absolute_url(self) -> str:
         return f"/{self.url_root}/{self.pk}/"
 
-    def get_absolute_url_if_permitted(self, user) -> str|None:
+    def get_absolute_url_if_permitted(self, user) -> str | None:
         if user.has_perm("app.view_academicgroup", self):
             return self.get_absolute_url()
         else:

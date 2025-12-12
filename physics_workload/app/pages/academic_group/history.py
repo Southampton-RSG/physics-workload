@@ -1,5 +1,5 @@
 from logging import Logger, getLogger
-from typing import Any, Dict, List
+from typing import List
 
 from django.template import Template
 from django.utils import timezone
@@ -87,7 +87,7 @@ class AcademicGroupHistoryList(Page):
             balance_cumulative: List[float] = []
             balance_yearly: List[float] = []
 
-            for academic_group_historic in academic_group.history.order_by('history_date').all():
+            for academic_group_historic in academic_group.history.order_by("history_date").all():
                 dates.append(year_to_academic_year(academic_group_historic.history_date))
 
                 this_year: int = academic_group_historic.load_balance_final

@@ -284,18 +284,24 @@ LOGGING: Dict[str, Any] = {
     "disable_existing_loggers": False,  # retain the default loggers
     "handlers": {
         "file_django": {
-            "class": "logging.FileHandler",
+            "class": "logging.handlers.RotatingFileHandler",
             "filename": LOG_DIRECTORY / "django.log",
+            "maxBytes": 1024 * 1024 * 1,
+            "backupCount": 2,
             "formatter": "verbose",
         },
         "file_app": {
-            "class": "logging.FileHandler",
+            "class": "logging.handlers.RotatingFileHandler",
             "filename": LOG_DIRECTORY / "django.app.log",
+            "maxBytes": 1024 * 1024 * 1,
+            "backupCount": 2,
             "formatter": "verbose",
         },
         "file_users": {
-            "class": "logging.FileHandler",
+            "class": "logging.handlers.RotatingFileHandler",
             "filename": LOG_DIRECTORY / "django.users.log",
+            "maxBytes": 1024 * 1024 * 1,
+            "backupCount": 2,
             "formatter": "verbose",
         },
         "console": {

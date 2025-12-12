@@ -3,7 +3,6 @@ Utility functions for loading CSV and XLSX files.
 """
 
 from argparse import ArgumentTypeError
-from json import dumps
 from logging import Logger, getLogger
 from pathlib import Path
 
@@ -62,6 +61,7 @@ def strip_dataframe_whitespace(dataframe: DataFrame):
     :param dataframe: The dataframe to strip.
     :return: None, this is done in-place.
     """
+
     def parse_object(x: object) -> object:
         if isinstance(x, str):
             x = x.strip()
@@ -74,15 +74,15 @@ def strip_dataframe_whitespace(dataframe: DataFrame):
 
     logger.info("Strip trailing whitespace")
     for column in dataframe.columns:
-        if dataframe[column].dtype == 'str':
+        if dataframe[column].dtype == "str":
             dataframe[column] = dataframe[column].str.strip()
             dataframe[column] = dataframe[column].str.replace("—", "-")
             dataframe[column] = dataframe[column].str.replace("–", "-")
             dataframe[column] = dataframe[column].str.replace("  ", " ")
-        elif dataframe[column].dtype == 'object':
+        elif dataframe[column].dtype == "object":
             dataframe[column] = dataframe[column].apply(parse_object)
 
-        dataframe.loc[dataframe[column] == '', column] = None
+        dataframe.loc[dataframe[column] == "", column] = None
 
 
 def convert_columns_to_ints(dataframe: DataFrame, columns: list[str]):
@@ -95,7 +95,7 @@ def convert_columns_to_ints(dataframe: DataFrame, columns: list[str]):
     :return: None, this is done in-place.
     """
     for column in columns:
-        dataframe[column] = to_numeric(dataframe[column], errors='coerce')
+        dataframe[column] = to_numeric(dataframe[column], errors="coerce")
         dataframe[column] = dataframe[column].fillna(0)
 
 
@@ -108,11 +108,11 @@ def convert_percentage_columns_to_floats(dataframe: DataFrame, columns: list[str
     :return: None, this is done in-place.
     """
     for column in columns:
-        equation_rows = dataframe[column].astype('str').str.contains('=').fillna(False)
-        dataframe.loc[equation_rows, column] = dataframe.loc[equation_rows, column].astype('str').str.lstrip('=').apply(pandas.eval).astype('float')
-        percentage_rows = dataframe[column].astype('str').str.contains('%').fillna(False)
-        dataframe.loc[percentage_rows, column] = dataframe.loc[percentage_rows, column].astype('str').str.rstrip('%').astype('float')/100.0
-        dataframe[column] = dataframe[column].astype('float')
+        equation_rows = dataframe[column].astype("str").str.contains("=").fillna(False)
+        dataframe.loc[equation_rows, column] = dataframe.loc[equation_rows, column].astype("str").str.lstrip("=").apply(pandas.eval).astype("float")
+        percentage_rows = dataframe[column].astype("str").str.contains("%").fillna(False)
+        dataframe.loc[percentage_rows, column] = dataframe.loc[percentage_rows, column].astype("str").str.rstrip("%").astype("float") / 100.0
+        dataframe[column] = dataframe[column].astype("float")
 
 
 def load_units_from_load_master_excel(path: Path) -> DataFrame:
@@ -131,33 +131,29 @@ def load_units_from_load_master_excel(path: Path) -> DataFrame:
     dataframe: DataFrame = read_excel(path, sheet_name="Load Master", header=0, index_col=False)
     dataframe = dataframe.rename(
         columns={
-            'Conversion Old-To-New': 'conversion_old_to_new',
-            'Deputy /Assessors etc': 'hours_fixed_deputy',
-            'Number of Synoptic lectures': 'synoptic_lectures',
-            'Number of Lectures/Problems Classes Run by Coordinator': 'lectures',
-            'Coursework (number of items prepared)': 'coursework',
-            'Coursework (fraction of module mark)': 'coursework_mark_fraction',
-            'Fraction of Courseowork marked by coordinator': 'task__coursework_fraction',
-            'Examination (fraction of module mark)': 'exam_mark_fraction',
-            'Fraction of Examination marked by coordinator': 'task__exam_fraction',
-            'Total Number of CATS': 'credits',
-            'Task Description': 'task__title',
-            'Number of Students': 'students',
-            'Description/Unit title': 'unit_name',
-            'Task Category/Unit Code': 'code',
-            dataframe.columns[17]: 'notes'
+            "Conversion Old-To-New": "conversion_old_to_new",
+            "Deputy /Assessors etc": "hours_fixed_deputy",
+            "Number of Synoptic lectures": "synoptic_lectures",
+            "Number of Lectures/Problems Classes Run by Coordinator": "lectures",
+            "Coursework (number of items prepared)": "coursework",
+            "Coursework (fraction of module mark)": "coursework_mark_fraction",
+            "Fraction of Courseowork marked by coordinator": "task__coursework_fraction",
+            "Examination (fraction of module mark)": "exam_mark_fraction",
+            "Fraction of Examination marked by coordinator": "task__exam_fraction",
+            "Total Number of CATS": "credits",
+            "Task Description": "task__title",
+            "Number of Students": "students",
+            "Description/Unit title": "unit_name",
+            "Task Category/Unit Code": "code",
+            dataframe.columns[17]: "notes",
         },
     )
     dataframe = dataframe[dataframe.code.astype("str").str.contains("|".join(UNIT_PREFIXES))]
     strip_dataframe_whitespace(dataframe)
 
-    convert_columns_to_ints(
-        dataframe,
-        ['hours_fixed_deputy', 'synoptic_lectures', 'coursework', 'credits', 'students', 'lectures']
-    )
+    convert_columns_to_ints(dataframe, ["hours_fixed_deputy", "synoptic_lectures", "coursework", "credits", "students", "lectures"])
     convert_percentage_columns_to_floats(
-        dataframe,
-        ['exam_mark_fraction', 'coursework_mark_fraction', 'task__coursework_fraction', 'task__exam_fraction']
+        dataframe, ["exam_mark_fraction", "coursework_mark_fraction", "task__coursework_fraction", "task__exam_fraction"]
     )
     return dataframe
 
@@ -188,8 +184,13 @@ def load_nonunit_tasks_from_excel(path: Path) -> DataFrame:
     )
 
     desired_columns: list[str] = [
-        "unit__code", "task__title", "academic_group__short_name",
-        "task__description", "task__load_fixed_first", "task__load_fixed", "task__notes"
+        "unit__code",
+        "task__title",
+        "academic_group__short_name",
+        "task__description",
+        "task__load_fixed_first",
+        "task__load_fixed",
+        "task__notes",
     ]
 
     def combine_columns(cols: Series) -> str:
@@ -212,7 +213,7 @@ def load_nonunit_tasks_from_excel(path: Path) -> DataFrame:
     split_index: int = df_1[df_1.conversion_old_to_new == "Project Supervision"].index[0]
     df_1 = df_1[:split_index]
     df_1 = df_1[df_1.unit__code.isin(ADMIN_PREFIXES)]
-    df_1['task__notes'] = df_1[df_1.columns[6:]].apply(combine_columns, axis=1)
+    df_1["task__notes"] = df_1[df_1.columns[6:]].apply(combine_columns, axis=1)
     df_1 = df_1.drop(columns=set(df_1.columns) - set(desired_columns))
     strip_dataframe_whitespace(df_1)
 
@@ -233,7 +234,7 @@ def load_nonunit_tasks_from_excel(path: Path) -> DataFrame:
     df_2 = df_2.drop(columns=set(df_2.columns) - set(desired_columns))
     strip_dataframe_whitespace(df_2)
 
-    dataframe: DataFrame = concat([df_1, df_2], sort=False, join='outer')
+    dataframe: DataFrame = concat([df_1, df_2], sort=False, join="outer")
     dataframe.loc[dataframe.task__load_fixed > 700, ("task__load_fixed_first")] = None
     dataframe.loc[dataframe.task__load_fixed > 700, ("task__load_fixed")] = -1
     return dataframe
@@ -251,23 +252,23 @@ def load_staff_tasks_from_excel(path: Path) -> DataFrame:
     dataframe: DataFrame = read_excel(path, sheet_name="Staff Tasks", header=0, index_col=False)
     dataframe.rename(
         columns={
-            'STAFF': 'staff__name',
-            'TASK CAT/UNIT CODE': 'unit__code',
-            'TASK DETAIL': 'task__title',
-            'Comments': 'task__notes',
-            'DESCRIPTION/UNIT TITLE': 'task__description',
-            'Group': "academic_group__name"
+            "STAFF": "staff__name",
+            "TASK CAT/UNIT CODE": "unit__code",
+            "TASK DETAIL": "task__title",
+            "Comments": "task__notes",
+            "DESCRIPTION/UNIT TITLE": "task__description",
+            "Group": "academic_group__name",
         },
-        inplace=True
+        inplace=True,
     )
 
     # Remove whitespace, then drop the rows with no staff name or "Total" in
     strip_dataframe_whitespace(dataframe)
     dataframe = dataframe[dataframe.staff__name.astype(bool)]  # Remove lines with no staff
     dataframe = dataframe[~isna(dataframe.staff__name)]  # Remove lines with no staff...
-    dataframe = dataframe[dataframe.staff__name.str.contains("Total") != True]  # Remove 'total' lines
+    dataframe = dataframe[dataframe.staff__name.str.contains("Total") != True]  # noqa:E712 Remove 'total' lines
     dataframe = dataframe[dataframe.unit__code.astype(bool)]  # Remove lines with no task code
-    dataframe = dataframe[dataframe.unit__code.str.contains("-") != True] # Remove lines that are code '-'
+    dataframe = dataframe[dataframe.unit__code.str.contains("-") != True]  # noqa:E712 Remove lines that are code '-'
     dataframe = dataframe[~isna(dataframe.unit__code)]  # Remove lines with no unit code
     dataframe = dataframe[dataframe.task__title.astype(bool) | dataframe.task__description.astype(bool)]  # Remove 'summary' lines (may have '-')
 
@@ -286,7 +287,9 @@ def load_staff_tasks_from_excel(path: Path) -> DataFrame:
             return int(value)
 
     dataframe["assignment__students"] = 0
-    dataframe.loc[dataframe.unit__code == UNIT_TUITION, "assignment__students"] = dataframe[dataframe.unit__code == UNIT_TUITION].task__title.apply(parse_students)
+    dataframe.loc[dataframe.unit__code == UNIT_TUITION, "assignment__students"] = dataframe[dataframe.unit__code == UNIT_TUITION].task__title.apply(
+        parse_students
+    )
 
     return dataframe
 
@@ -301,14 +304,17 @@ def load_staff_contracts_from_excel(path: Path) -> DataFrame:
     :return: A dataframe that represents the "Staff Contract Detail" sheet.
     """
     dataframe: DataFrame = read_excel(path, sheet_name="Staff Contract Detail", header=0, index_col=False)
-    dataframe = dataframe.rename(
-        columns={ column: column.strip() for column in dataframe.columns }
-    )
+    dataframe = dataframe.rename(columns={column: column.strip() for column in dataframe.columns})
 
     dataframe = dataframe.rename(
         columns={
-            "STAFF": "name", "fte frac": "fte_fraction", "Fixed hrs": "hours_fixed", "Gender": "gender", "Comment": "notes",
-            "Over/Underload This year": "load_balance_final", "Group": "academic_group",
+            "STAFF": "name",
+            "fte frac": "fte_fraction",
+            "Fixed hrs": "hours_fixed",
+            "Gender": "gender",
+            "Comment": "notes",
+            "Over/Underload This year": "load_balance_final",
+            "Group": "academic_group",
         }
     )
 

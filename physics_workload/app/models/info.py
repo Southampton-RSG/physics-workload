@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db.models import CharField, TextField
 from django.utils.html import mark_safe
-from rules import always_true, is_staff, add_perm
+from rules import add_perm, always_true, is_staff
 
 from app.models.common import ModelCommon
 
@@ -41,6 +41,7 @@ class Info(ModelCommon):
         :return: The URL of the edit view for the info
         """
         return f"/{self.url_root}/{self.page}/edit/"
+
 
 add_perm("app.add_info", is_staff)
 add_perm("app.change_info", is_staff)

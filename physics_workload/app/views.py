@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 
 
 def home_redirect(request: HttpRequest) -> HttpResponse:

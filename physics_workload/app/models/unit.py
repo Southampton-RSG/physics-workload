@@ -1,10 +1,9 @@
 # -*- encoding: utf-8 -*-
-from rules import predicate, add_perm, is_staff
-
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import BooleanField, CharField, CheckConstraint, F, FloatField, IntegerField, Q, TextField
 from django.db.models.deletion import PROTECT
+from rules import add_perm, is_staff, predicate
 from simple_history.models import HistoricForeignKey
 
 from app.models.academic_group import AcademicGroup

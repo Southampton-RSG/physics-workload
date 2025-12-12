@@ -6,9 +6,9 @@ from zoneinfo import ZoneInfo
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from pandas import DataFrame, isnull, isna
+from pandas import DataFrame, isna, isnull
 
-from app.management.load_utils import load_staff_tasks_from_excel, xlsx_file_only, load_nonunit_tasks_from_excel
+from app.management.load_utils import load_nonunit_tasks_from_excel, xlsx_file_only
 from app.models import AcademicGroup, Task
 
 logger: Logger = getLogger(__name__)
@@ -28,11 +28,7 @@ class Command(BaseCommand):
             type=xlsx_file_only,
             help="Path to excel file for units",
         )
-        parser.add_argument(
-            "year",
-            type=int,
-            help="Starting year of the spreadsheet, i.e. 24 for 2024/2025."
-        )
+        parser.add_argument("year", type=int, help="Starting year of the spreadsheet, i.e. 24 for 2024/2025.")
 
     def handle(self, *args: Path, **options):
         """
@@ -72,8 +68,10 @@ class Command(BaseCommand):
             # Iterate through the dataframe, and for each row create a new task and save the details.
             try:
                 task: Task = Task.objects.get(
-                    academic_group=AcademicGroup.objects.get(code=row.academic_group__short_name[0]) if not isnull(row.academic_group__short_name) else None,
-                    title=row.task__title
+                    academic_group=AcademicGroup.objects.get(code=row.academic_group__short_name[0])
+                    if not isnull(row.academic_group__short_name)
+                    else None,
+                    title=row.task__title,
                 )
                 tasks_skipped.append(task)
                 logger.debug(f"Skipping task: {task}")
@@ -89,6 +87,9 @@ class Command(BaseCommand):
                     notes=row.task__notes,
                     load_fixed=row.task__load_fixed if row.task__load_fixed != -1 else 0,
                     load_fixed_first=row.task__load_fixed_first if row.task__load_fixed != -1 and not isna(row.task__load_fixed_first) else None,
+                    assignment_students=Task.AssignmentStudentsChoices.OPTIONAL
+                    if row.task_load_fixed != -1
+                    else Task.AssignmentStudentsChoices.INVALID,
                     is_full_time=(row.task__load_fixed == -1),
                 )
                 tasks_created.append(task)
@@ -108,6 +109,4 @@ class Command(BaseCommand):
                 raise e
 
         settings.SIMPLE_HISTORY_ENABLED = False
-        self.stdout.write(
-            self.style.SUCCESS(f"Non-unit tasks complete. Created: {len(tasks_created)}, skipped: {len(tasks_skipped)}")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Non-unit tasks complete. Created: {len(tasks_created)}, skipped: {len(tasks_skipped)}"))

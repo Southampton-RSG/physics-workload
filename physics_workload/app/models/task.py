@@ -3,13 +3,12 @@ from logging import Logger, getLogger
 from typing import Type
 
 from django.contrib.auth import get_user_model
-from rules import predicate, is_staff, add_perm
-from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db.models import PROTECT, BooleanField, CharField, CheckConstraint, FloatField, IntegerField, Q, TextField, UniqueConstraint
+from django.db.models import PROTECT, BooleanField, CharField, CheckConstraint, FloatField, IntegerField, Q, TextChoices, TextField, UniqueConstraint
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.html import format_html
+from rules import add_perm, is_staff, predicate
 from simple_history.models import HistoricForeignKey
 
 from app.models import AcademicGroup
@@ -97,17 +96,18 @@ class Task(ModelCommon):
     FIELDS_TASK_GENERIC = (
         "load_function",
         "students",
-        "requires_students",
+        "assignment_students",
     )
 
+    class AssignmentStudentsChoices(TextChoices):
+        OPTIONAL = "OPTIONAL", "Optional"
+        REQUIRED = "REQUIRED", "Required"
+        INVALID = "INVALID", "Invalid"
+
     assignment_students = CharField(
-        default="OPTIONAL",
-        choices={
-            "OPTIONAL": "Optional",
-            "REQUIRED": "Required",
-            "INVALID": "Invalid"
-        },
-        help_text="Do assignments to this task need a number of students?"
+        choices=AssignmentStudentsChoices,
+        default=AssignmentStudentsChoices.OPTIONAL,
+        help_text="Do assignments to this task need a number of students?",
     )
     load_function = HistoricForeignKey(
         LoadFunction,
@@ -119,7 +119,7 @@ class Task(ModelCommon):
     students = IntegerField(
         null=True,
         blank=True,
-        help_text="Number of students for load function and/or co-ordinator equations. If this task belongs to a Module, falls back to Unit students if empty.",
+        help_text="Number of students for load function equations. Overridden by Assignment student count if provided, falls back to Module student count if empty.",
     )
     # ==========================================================================
 
@@ -226,7 +226,9 @@ class Task(ModelCommon):
         """
         text: str = self.get_name()
 
-        if self.load_calc != self.load_calc_first:
+        if self.assignment_students == Task.AssignmentStudentsChoices.REQUIRED:
+            text += f" [🖩{self.load_function.pk}]"
+        elif self.load_calc != self.load_calc_first:
             text += f" [{self.load_calc:.0f} / {self.load_calc_first:.0f}]"
         else:
             text += f" [{self.load_calc:.0f}]"
@@ -246,9 +248,9 @@ class Task(ModelCommon):
         Preprend the unit if this is a unit task
         """
         if self.unit:
-            return self.unit.get_absolute_url()+f"{self.pk}/"
+            return self.unit.get_absolute_url() + f"{self.pk}/"
         elif self.academic_group:
-            return self.academic_group.get_absolute_url()+f"{self.pk}/"
+            return self.academic_group.get_absolute_url() + f"{self.pk}/"
         else:
             return f"/{self.url_root}/{self.pk}/"
 
@@ -304,7 +306,7 @@ class Task(ModelCommon):
             self.load_calc = load_calc
             self.save()
 
-            if cascade:
+            if cascade or self.assignment_students != Task.AssignmentStudentsChoices.INVALID:
                 for assignment in self.assignment_set.all():
                     assignment.update_load()
 
@@ -318,6 +320,7 @@ class Task(ModelCommon):
         """
         :return:
         """
+
         if self.is_full_time:
             # ==== IF THIS IS A FULL-TIME TASK ====
             from app.models.standard_load import StandardLoad
@@ -427,6 +430,7 @@ def update_task_name(sender: Type[Task], instance: Task, **kwargs):
 #     )
 #     StandardLoad.objects.latest().update_calculated_loads()
 
+
 @predicate
 def is_in_task(user: User, task: Task) -> bool:
     """
@@ -435,7 +439,7 @@ def is_in_task(user: User, task: Task) -> bool:
     :param task: The task to check.
     :return: If they're assigned or not.
     """
-    return user.staff in task.assignment_set.all().values_list('staff', flat=True)
+    return user.staff in task.assignment_set.all().values_list("staff", flat=True)
 
 
 add_perm("app.add_task", is_staff)

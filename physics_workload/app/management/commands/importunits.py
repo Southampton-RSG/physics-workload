@@ -9,11 +9,10 @@ from django.core.management.base import BaseCommand
 from pandas import isnull
 
 from app.management.load_utils import (
-
-    xlsx_file_only,
-    load_units_from_load_master_excel,
-    TITLE_UNIT_LEAD,
     TITLE_UNIT_DEPUTY,
+    TITLE_UNIT_LEAD,
+    load_units_from_load_master_excel,
+    xlsx_file_only,
 )
 from app.models import AcademicGroup, Task, Unit
 
@@ -34,11 +33,7 @@ class Command(BaseCommand):
             type=xlsx_file_only,
             help="Path to excel file for units",
         )
-        parser.add_argument(
-            "year",
-            type=int,
-            help="Starting year of the spreadsheet, i.e. 24 for 2024/2025."
-        )
+        parser.add_argument("year", type=int, help="Starting year of the spreadsheet, i.e. 24 for 2024/2025.")
 
     def handle(self, *args, **options):
         """
@@ -48,7 +43,7 @@ class Command(BaseCommand):
         :param options: A dict of the arguments with names, and any options.
         """
 
-        load_path: Path = options['path']
+        load_path: Path = options["path"]
         load_df = load_units_from_load_master_excel(load_path)
 
         # Assign 'fake' dates to when things are being created.
@@ -144,7 +139,7 @@ class Command(BaseCommand):
                         unit=unit,
                         title=TITLE_UNIT_LEAD,
                         description="Co-ordinates/teaches unit.",
-                        assignment_students="INVALID",
+                        assignment_students=Task.AssignmentStudentsChoices.INVALID,
                         is_lead=True,
                         is_required=True,
                         is_unique=True,
@@ -201,6 +196,7 @@ class Command(BaseCommand):
                         description="Deputy co-ordinator for the unit.",
                         is_required=True,
                         is_unique=False,
+                        assignment_students=Task.AssignmentStudentsChoices.INVALID,
                         load_fixed=row.hours_fixed_deputy,
                     )
                     task._history_date = history_date
@@ -228,8 +224,4 @@ class Command(BaseCommand):
         )
 
         if len(units_failed):
-            self.stdout.write(
-                self.style.WARNING(
-                    f"Failed to import units:\n{load_df.loc[units_failed]}"
-                )
-            )
+            self.stdout.write(self.style.WARNING(f"Failed to import units:\n{load_df.loc[units_failed]}"))

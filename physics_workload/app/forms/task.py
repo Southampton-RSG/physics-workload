@@ -47,10 +47,11 @@ class TaskDetailForm(TaskForm):
         title = "Details"
         fields = dict(
             academic_group__include=lambda task, **_: task.academic_group,
-            load_calc__group="Calculated Load",
+            load_calc=dict(group="Calculated Load", include=lambda task, **_: task.assignment_students != Task.AssignmentStudentsChoices.REQUIRED),
             load_calc_first=dict(
                 group="Calculated Load",
-                include=lambda task, **_: task.load_calc_first != task.load_calc,
+                include=lambda task, **_: task.load_calc_first != task.load_calc
+                and task.assignment_students != Task.AssignmentStudentsChoices.REQUIRED,
             ),
             is_required=dict(
                 group="Calculated Load",
@@ -84,17 +85,18 @@ class TaskDetailForm(TaskForm):
             ),
             load_function=dict(
                 include=lambda task, **_: task.load_function,
+                non_editable_input__template="app/choice_url.html",
                 group="Calculation Details",
                 after="exam_fraction",
             ),
             students=dict(
-                include=lambda task, **_: not task.assignment_students=="INVALID",
+                include=lambda task, **_: task.assignment_students == Task.AssignmentStudentsChoices.OPTIONAL,
                 group="Calculation Details",
                 after="load_function",
             ),
             assignment_students=dict(
                 include=False,
-            )
+            ),
         )
         editable = False
 
@@ -216,9 +218,7 @@ class UnitTaskLeadCreateForm(TaskForm):
                 initial="Unit Lead",
                 group="Basic",
             ),
-            assignment_students=Field.hardcoded(
-                parsed_data="INVALID"
-            ),
+            assignment_students=Field.hardcoded(parsed_data=Task.AssignmentStudentsChoices.INVALID),
             is_unique=dict(
                 group="Basic",
                 initial=True,
@@ -266,7 +266,9 @@ class UnitTaskCreateForm(TaskForm):
             load_fixed_first__group="Load",
             load_multiplier__group="Load",
             load_function__group="Calculation",
-            assignment_students__group="Calculation",
+            assignment_students=dict(
+                group="Calculation",
+            ),
             students__group="Calculation",
         )
 

@@ -1,7 +1,8 @@
 from django.db.models import Case, Count, F, Q, QuerySet, When
+from django.utils.safestring import mark_safe
 from iommi import Column, Field, Table
 
-from app.models import AcademicGroup, Assignment, Task, Unit
+from app.models import AcademicGroup, Assignment, LoadFunction, Task, Unit
 from app.style import floating_fields_style
 
 
@@ -48,7 +49,15 @@ class TaskTable(Table):
             after="title",
             display_name="Normal",
             group="Load",
-            include=lambda user, **_: user.is_staff
+            include=lambda user, **_: user.is_staff,
+            cell=dict(
+                value=lambda row, **_: row.load_calc
+                if row.assignment_students != Task.AssignmentStudentsChoices.REQUIRED
+                else mark_safe(f"<i class='fa fa-{LoadFunction.icon}'></i>"),
+                url=lambda row, **_: None
+                if row.assignment_students != Task.AssignmentStudentsChoices.REQUIRED
+                else row.load_function.get_absolute_url(),
+            ),
         )
         columns__load_calc_first = dict(
             after="load_calc",

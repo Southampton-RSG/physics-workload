@@ -18,9 +18,9 @@ class UnitForm(Form):
         auto__exclude = ["task_set"]
         fields__code__group = "Basics"
         fields__name__group = "Basics"
-        fields__academic_group=dict(
-            group = "Basics",
-            non_editable_input__template = "app/choice_url.html",
+        fields__academic_group = dict(
+            group="Basics",
+            non_editable_input__template="app/choice_url.html",
             include=lambda unit, **_: unit.academic_group,
         )
         fields__students__group = "Basics"

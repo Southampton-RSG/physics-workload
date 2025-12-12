@@ -1,8 +1,6 @@
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic import RedirectView
 from iommi.main_menu import M, MainMenu
-
-from django.urls import reverse_lazy, reverse
 
 from app.main_menu.academic_group import academic_group_submenu
 from app.main_menu.info import info_submenu
@@ -13,7 +11,6 @@ from app.main_menu.task import task_submenu
 from app.main_menu.unit import unit_submenu
 from app.pages.basic import AboutPage, PrivacyPage
 from app.views import home_redirect
-
 
 main_menu = MainMenu(
     items=dict(
@@ -31,10 +28,7 @@ main_menu = MainMenu(
             render=False,
             view=PrivacyPage().as_view(),
         ),
-        about=M(
-            render=False,
-            view=AboutPage().as_view()
-        ),
+        about=M(render=False, view=AboutPage().as_view()),
         staff=staff_submenu,
         module=unit_submenu,
         task=task_submenu,

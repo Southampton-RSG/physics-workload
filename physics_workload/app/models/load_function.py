@@ -1,6 +1,5 @@
 from typing import Dict
 
-from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.core.validators import MinValueValidator
 from django.db.models import CharField, CheckConstraint, F, IntegerField, Q, TextField
 from django.utils.html import format_html

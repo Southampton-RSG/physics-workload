@@ -1,17 +1,15 @@
-from argparse import ArgumentParser, FileType
+from argparse import ArgumentParser
 from datetime import datetime
 from logging import Logger, getLogger
 from pathlib import Path
-from typing import Dict
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.db.models import Sum
-from pandas import DataFrame, isna, read_csv
+from pandas import DataFrame, isna
 
-from app.management.load_utils import csv_file_only, load_staff_contracts_from_excel, xlsx_file_only
+from app.management.load_utils import load_staff_contracts_from_excel, xlsx_file_only
 from app.models import AcademicGroup, Staff
 
 logger: Logger = getLogger(__name__)
@@ -122,7 +120,7 @@ class Command(BaseCommand):
                 staff: Staff = Staff.objects.get(name=row["name"])
                 logger.info(f"Found staff: {staff}: {row['name']}")
 
-                if staff.history.order_by('-history_date').first().history_date.year != 2025:
+                if staff.history.order_by("-history_date").first().history_date.year != 2025:
                     # Have we already done 2025?
                     staff_updated += 1
                     staff._history_date = date_2025
@@ -152,7 +150,4 @@ class Command(BaseCommand):
         # Stop tracking history changes.
         settings.SIMPLE_HISTORY_ENABLED = False
 
-        self.stdout.write(
-            self.style.SUCCESS(f"Staff complete. Created: {staff_created}, updated: {staff_updated}, skipped: {staff_skipped}.")
-        )
-
+        self.stdout.write(self.style.SUCCESS(f"Staff complete. Created: {staff_created}, updated: {staff_updated}, skipped: {staff_skipped}."))

@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db.models import Sum
+
 from app.models import AcademicGroup, Staff
 
 logger: Logger = getLogger(__name__)
@@ -29,7 +30,7 @@ class Command(BaseCommand):
         date_2022: datetime = datetime(year=2022, month=9, day=20, hour=0, minute=0, second=0, tzinfo=ZoneInfo("GMT"))
         date_2023: datetime = datetime(year=2023, month=9, day=20, hour=0, minute=0, second=0, tzinfo=ZoneInfo("GMT"))
         date_2024: datetime = datetime(year=2024, month=9, day=20, hour=0, minute=0, second=0, tzinfo=ZoneInfo("GMT"))
-        date_2025: datetime = datetime(year=2025, month=9, day=20, hour=0, minute=0, second=0, tzinfo=ZoneInfo("GMT"))
+        # date_2025: datetime = datetime(year=2025, month=9, day=20, hour=0, minute=0, second=0, tzinfo=ZoneInfo("GMT"))
 
         for academic_group in AcademicGroup.objects.all():
             for history in academic_group.history.all():
@@ -69,6 +70,4 @@ class Command(BaseCommand):
         # Stop tracking history changes.
         settings.SIMPLE_HISTORY_ENABLED = False
 
-        self.stdout.write(
-            self.style.SUCCESS("Calculation finished.")
-        )
+        self.stdout.write(self.style.SUCCESS("Calculation finished."))

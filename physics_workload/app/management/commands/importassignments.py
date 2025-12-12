@@ -11,10 +11,10 @@ from pandas import DataFrame, isna, read_excel
 from app.management.load_utils import (
     ADMIN_PREFIXES,
     SPECIAL_CODES,
+    TITLE_DISSERTATION,
+    TITLE_PROJECT_MARKING,
     TITLE_UNIT_DEPUTY,
     TITLE_UNIT_LEAD,
-    TITLE_PROJECT_MARKING,
-    TITLE_DISSERTATION,
     UNIT_PREFIXES,
     load_staff_tasks_from_excel,
     xlsx_file_only,
@@ -38,11 +38,7 @@ class Command(BaseCommand):
             type=xlsx_file_only,
             help="Path to excel file for units",
         )
-        parser.add_argument(
-            "year",
-            type=int,
-            help="Starting year of the spreadsheet, i.e. 24 for 2024/2025."
-        )
+        parser.add_argument("year", type=int, help="Starting year of the spreadsheet, i.e. 24 for 2024/2025.")
 
     def handle(self, *args: Path, **options):
         """
@@ -87,13 +83,11 @@ class Command(BaseCommand):
 
         if staff_missing:
             staff_missing.sort()
-            self.stderr.write(
-                self.style.WARNING(f"Staff not imported: {', '.join(staff_missing)}")
-            )
+            self.stderr.write(self.style.WARNING(f"Staff not imported: {', '.join(staff_missing)}"))
 
         # Make sure all the units are valid
         units_missing: list[str] = []
-        for unit__code in set(load_df.unit__code.astype('str').unique()) - ADMIN_PREFIXES - SPECIAL_CODES:
+        for unit__code in set(load_df.unit__code.astype("str").unique()) - ADMIN_PREFIXES - SPECIAL_CODES:
             try:
                 unit: Unit = Unit.objects.get(code=unit__code)
             except Unit.DoesNotExist:
@@ -102,18 +96,16 @@ class Command(BaseCommand):
 
         if units_missing:
             units_missing.sort()
-            self.stderr.write(
-                self.style.WARNING(f"Units not imported: {', '.join(units_missing)}")
-            )
+            self.stderr.write(self.style.WARNING(f"Units not imported: {', '.join(units_missing)}"))
 
         tasks_missing: list[str] = []
         for idx, row in load_df.iterrows():
-            academic_group: AcademicGroup|None = None
-            students: list[int]|None = None
-            task: Task|None = None
-            staff: Staff|None = None
-            unit: Unit|None = None
-            title: str|None = None
+            academic_group: AcademicGroup | None = None
+            students: list[int] | None = None
+            task: Task | None = None
+            staff: Staff | None = None
+            unit: Unit | None = None
+            title: str | None = None
 
             # Iterate through the dataframe, and for each row create a new unit and save the details.
             try:
@@ -190,7 +182,8 @@ class Command(BaseCommand):
 
                 try:
                     task: Task = Task.objects.get(
-                        unit=unit, title__iexact=title,
+                        unit=unit,
+                        title__iexact=title,
                     )
                 except Task.DoesNotExist:
                     logger.error(f"Task '{unit} - {row.task__title}' does not exist.")
@@ -216,9 +209,7 @@ class Command(BaseCommand):
                 continue
 
             try:
-                assignment: Assignment = Assignment.objects.get(
-                    task=task, staff=staff
-                )
+                assignment: Assignment = Assignment.objects.get(task=task, staff=staff)
                 assignments_skipped.append(assignment)
             except Assignment.MultipleObjectsReturned:
                 continue
@@ -258,13 +249,7 @@ class Command(BaseCommand):
             self.stderr.write(self.style.WARNING(f"Student counts not parsed: {', '.join(students_failed)}"))
             self.stderr.write(self.style.WARNING("Just use a spaced list, e.g. '1 2 1'"))
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"Assignments complete. Created: {len(assignments_created)}, skipped: {len(assignments_skipped)}."
-            )
-        )
+        self.stdout.write(self.style.SUCCESS(f"Assignments complete. Created: {len(assignments_created)}, skipped: {len(assignments_skipped)}."))
 
-        dataframe_failed: DataFrame = read_excel(
-            options['path'], sheet_name="Staff Tasks", header=0, index_col=False
-        ).loc[assignments_failed]
+        dataframe_failed: DataFrame = read_excel(options["path"], sheet_name="Staff Tasks", header=0, index_col=False).loc[assignments_failed]
         dataframe_failed.to_csv("failed_assignments.csv", index=False)

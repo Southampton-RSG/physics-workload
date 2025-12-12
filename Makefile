@@ -105,7 +105,7 @@ print-%:
 # PROJECT COMMANDS
 ############################################################################################
 
-data: site school unit task
+data: site school unit task assignment
 
 site:
 	uv run physics_workload/manage.py loaddata site info
@@ -139,6 +139,8 @@ superuser:
 
 initialise:
 	uv run physics_workload/manage.py initialise
+	uv run physics_workload/manage.py calchistoric
+	uv run physics_workload/manage.py fixtaskfirsttime
 
 all: database data initialise
 

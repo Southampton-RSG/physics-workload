@@ -2,7 +2,6 @@ from django.conf import settings
 from iommi.main_menu import M
 from iommi.path import register_path_decoding
 
-
 from app.models import AcademicGroup, Task
 from app.pages.academic_group import (
     AcademicGroupCreate,
@@ -14,7 +13,6 @@ from app.pages.academic_group import (
 )
 from app.pages.academic_group.history import AcademicGroupHistoryList
 from app.pages.task import TaskDelete, TaskDetail, TaskEdit
-
 
 # Decodes "<academic_group>" in paths to add academic_group to params
 register_path_decoding(academic_group=AcademicGroup)
