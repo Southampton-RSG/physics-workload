@@ -228,7 +228,7 @@
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../management/index.html">physics_workload.app.management</a><input aria-label="Toggle navigation of physics_workload.app.management" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5 has-children"><a class="reference internal" href="../../management/commands/index.html">physics_workload.app.management.commands</a><input aria-label="Toggle navigation of physics_workload.app.management.commands" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../../management/commands/calchistoric/index.html">physics_workload.app.management.commands.calchistoric</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../management/commands/calcloads/index.html">physics_workload.app.management.commands.calcloads</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../management/commands/fixtaskfirsttime/index.html">physics_workload.app.management.commands.fixtaskfirsttime</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../management/commands/importassignments/index.html">physics_workload.app.management.commands.importassignments</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../management/commands/importnonunittasks/index.html">physics_workload.app.management.commands.importnonunittasks</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../management/commands/importstaff/index.html">physics_workload.app.management.commands.importstaff</a></li>
@@ -378,20 +378,17 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentTable" title="physics_workload.app.tables.assignment.AssignmentTable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssignmentTable</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentStaffTable" title="physics_workload.app.tables.assignment.AssignmentStaffTable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssignmentStaffTable</span></code></a></p></td>
+<td><p>Table that appears on Staff pages, for non-staff users.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentStaffTable" title="physics_workload.app.tables.assignment.AssignmentStaffTable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssignmentStaffTable</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentStaffEditTable" title="physics_workload.app.tables.assignment.AssignmentStaffEditTable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssignmentStaffEditTable</span></code></a></p></td>
+<td><p>Table that appears on Staff pages for staff users, with editable assignments.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentStaffEditTable" title="physics_workload.app.tables.assignment.AssignmentStaffEditTable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssignmentStaffEditTable</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentTaskTable" title="physics_workload.app.tables.assignment.AssignmentTaskTable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssignmentTaskTable</span></code></a></p></td>
+<td><p>Table that appears on Task pages, for non-staff users.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentTaskTable" title="physics_workload.app.tables.assignment.AssignmentTaskTable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssignmentTaskTable</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentTaskEditTable" title="physics_workload.app.tables.assignment.AssignmentTaskEditTable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssignmentTaskEditTable</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentTaskEditTable" title="physics_workload.app.tables.assignment.AssignmentTaskEditTable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssignmentTaskEditTable</span></code></a></p></td>
+<td><p>Table that appears on Task pages for staff users, with editable assignments.</p></td>
 </tr>
 </tbody>
 </table>
@@ -403,6 +400,9 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#physics_workload.app.tables.assignment.handle_bulk_approval" title="physics_workload.app.tables.assignment.handle_bulk_approval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_bulk_approval</span></code></a>(table, request, **_)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#physics_workload.app.tables.assignment.test_func" title="physics_workload.app.tables.assignment.test_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_func</span></code></a>(_)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -417,44 +417,10 @@
 <dd></dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="physics_workload.app.tables.assignment.AssignmentTable">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">physics_workload.app.tables.assignment.</span></span><span class="sig-name descname"><span class="pre">AssignmentTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#physics_workload.app.tables.assignment.AssignmentTable" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">iommi.Table</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>rows</strong> – a list or QuerySet of objects</p></li>
-<li><p><strong>columns</strong> – (use this only when not using the declarative style) a list of Column objects</p></li>
-<li><p><strong>attrs</strong> – dict of strings to string/callable of HTML attributes to apply to the table</p></li>
-<li><p><strong>row__attrs</strong> – dict of strings to string/callable of HTML attributes to apply to the row. Callables are passed the row as argument.</p></li>
-<li><p><strong>row__template</strong> – name of template (or <cite>Template</cite> object) to use for rendering the row</p></li>
-<li><p><strong>bulk_filter</strong> – filters to apply to the <cite>QuerySet</cite> before performing the bulk operation</p></li>
-<li><p><strong>bulk_exclude</strong> – exclude filters to apply to the <cite>QuerySet</cite> before performing the bulk operation</p></li>
-<li><p><strong>sortable</strong> – set this to <cite>False</cite> to turn off sorting for all columns</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py class">
-<dt class="sig sig-object py" id="physics_workload.app.tables.assignment.AssignmentTable.Meta">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Meta</span></span><a class="headerlink" href="#physics_workload.app.tables.assignment.AssignmentTable.Meta" title="Link to this definition">¶</a></dt>
-<dd><dl class="py attribute">
-<dt class="sig sig-object py" id="physics_workload.app.tables.assignment.AssignmentTable.Meta.auto__model">
-<span class="sig-name descname"><span class="pre">auto__model</span></span><a class="headerlink" href="#physics_workload.app.tables.assignment.AssignmentTable.Meta.auto__model" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="physics_workload.app.tables.assignment.AssignmentTable.Meta.columns">
-<span class="sig-name descname"><span class="pre">columns</span></span><a class="headerlink" href="#physics_workload.app.tables.assignment.AssignmentTable.Meta.columns" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="physics_workload.app.tables.assignment.AssignmentStaffTable">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">physics_workload.app.tables.assignment.</span></span><span class="sig-name descname"><span class="pre">AssignmentStaffTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#physics_workload.app.tables.assignment.AssignmentStaffTable" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">iommi.Table</span></code></p>
+<p>Table that appears on Staff pages, for non-staff users.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -501,10 +467,16 @@
 <span class="sig-prename descclassname"><span class="pre">physics_workload.app.tables.assignment.</span></span><span class="sig-name descname"><span class="pre">handle_bulk_approval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#physics_workload.app.tables.assignment.handle_bulk_approval" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="physics_workload.app.tables.assignment.test_func">
+<span class="sig-prename descclassname"><span class="pre">physics_workload.app.tables.assignment.</span></span><span class="sig-name descname"><span class="pre">test_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#physics_workload.app.tables.assignment.test_func" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="physics_workload.app.tables.assignment.AssignmentStaffEditTable">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">physics_workload.app.tables.assignment.</span></span><span class="sig-name descname"><span class="pre">AssignmentStaffEditTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#physics_workload.app.tables.assignment.AssignmentStaffEditTable" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">iommi.EditTable</span></code></p>
+<p>Table that appears on Staff pages for staff users, with editable assignments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -571,6 +543,7 @@
 <dt class="sig sig-object py" id="physics_workload.app.tables.assignment.AssignmentTaskTable">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">physics_workload.app.tables.assignment.</span></span><span class="sig-name descname"><span class="pre">AssignmentTaskTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#physics_workload.app.tables.assignment.AssignmentTaskTable" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">iommi.EditTable</span></code></p>
+<p>Table that appears on Task pages, for non-staff users.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -616,6 +589,7 @@
 <dt class="sig sig-object py" id="physics_workload.app.tables.assignment.AssignmentTaskEditTable">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">physics_workload.app.tables.assignment.</span></span><span class="sig-name descname"><span class="pre">AssignmentTaskEditTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#physics_workload.app.tables.assignment.AssignmentTaskEditTable" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">iommi.EditTable</span></code></p>
+<p>Table that appears on Task pages for staff users, with editable assignments.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -742,14 +716,6 @@
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#physics_workload.app.tables.assignment.logger"><code class="docutils literal notranslate"><span class="pre">logger</span></code></a></li>
-<li><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentTable"><code class="docutils literal notranslate"><span class="pre">AssignmentTable</span></code></a><ul>
-<li><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentTable.Meta"><code class="docutils literal notranslate"><span class="pre">AssignmentTable.Meta</span></code></a><ul>
-<li><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentTable.Meta.auto__model"><code class="docutils literal notranslate"><span class="pre">AssignmentTable.Meta.auto__model</span></code></a></li>
-<li><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentTable.Meta.columns"><code class="docutils literal notranslate"><span class="pre">AssignmentTable.Meta.columns</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentStaffTable"><code class="docutils literal notranslate"><span class="pre">AssignmentStaffTable</span></code></a><ul>
 <li><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentStaffTable.Meta"><code class="docutils literal notranslate"><span class="pre">AssignmentStaffTable.Meta</span></code></a><ul>
 <li><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentStaffTable.Meta.auto"><code class="docutils literal notranslate"><span class="pre">AssignmentStaffTable.Meta.auto</span></code></a></li>
@@ -761,6 +727,7 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#physics_workload.app.tables.assignment.handle_bulk_approval"><code class="docutils literal notranslate"><span class="pre">handle_bulk_approval()</span></code></a></li>
+<li><a class="reference internal" href="#physics_workload.app.tables.assignment.test_func"><code class="docutils literal notranslate"><span class="pre">test_func()</span></code></a></li>
 <li><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentStaffEditTable"><code class="docutils literal notranslate"><span class="pre">AssignmentStaffEditTable</span></code></a><ul>
 <li><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentStaffEditTable.Meta"><code class="docutils literal notranslate"><span class="pre">AssignmentStaffEditTable.Meta</span></code></a><ul>
 <li><a class="reference internal" href="#physics_workload.app.tables.assignment.AssignmentStaffEditTable.Meta.auto"><code class="docutils literal notranslate"><span class="pre">AssignmentStaffEditTable.Meta.auto</span></code></a></li>

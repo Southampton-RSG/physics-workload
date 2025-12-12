@@ -17,7 +17,6 @@ Classes
 
 .. autoapisummary::
 
-   physics_workload.app.tables.assignment.AssignmentTable
    physics_workload.app.tables.assignment.AssignmentStaffTable
    physics_workload.app.tables.assignment.AssignmentStaffEditTable
    physics_workload.app.tables.assignment.AssignmentTaskTable
@@ -30,6 +29,7 @@ Functions
 .. autoapisummary::
 
    physics_workload.app.tables.assignment.handle_bulk_approval
+   physics_workload.app.tables.assignment.test_func
 
 
 Module Contents
@@ -38,37 +38,13 @@ Module Contents
 .. py:data:: logger
    :type:  logging.Logger
 
-.. py:class:: AssignmentTable(**kwargs)
-
-   Bases: :py:obj:`iommi.Table`
-
-
-   
-   :param rows: a list or QuerySet of objects
-   :param columns: (use this only when not using the declarative style) a list of Column objects
-   :param attrs: dict of strings to string/callable of HTML attributes to apply to the table
-   :param row__attrs: dict of strings to string/callable of HTML attributes to apply to the row. Callables are passed the row as argument.
-   :param row__template: name of template (or `Template` object) to use for rendering the row
-   :param bulk_filter: filters to apply to the `QuerySet` before performing the bulk operation
-   :param bulk_exclude: exclude filters to apply to the `QuerySet` before performing the bulk operation
-   :param sortable: set this to `False` to turn off sorting for all columns
-
-
-   .. py:class:: Meta
-
-      .. py:attribute:: auto__model
-
-
-      .. py:attribute:: columns
-
-
-
 .. py:class:: AssignmentStaffTable(**kwargs)
 
    Bases: :py:obj:`iommi.Table`
 
 
-   
+   Table that appears on Staff pages, for non-staff users.
+
    :param rows: a list or QuerySet of objects
    :param columns: (use this only when not using the declarative style) a list of Column objects
    :param attrs: dict of strings to string/callable of HTML attributes to apply to the table
@@ -96,12 +72,15 @@ Module Contents
 
 .. py:function:: handle_bulk_approval(table, request, **_)
 
+.. py:function:: test_func(_)
+
 .. py:class:: AssignmentStaffEditTable(**kwargs)
 
    Bases: :py:obj:`iommi.EditTable`
 
 
-   
+   Table that appears on Staff pages for staff users, with editable assignments.
+
    :param rows: a list or QuerySet of objects
    :param columns: (use this only when not using the declarative style) a list of Column objects
    :param attrs: dict of strings to string/callable of HTML attributes to apply to the table
@@ -145,7 +124,8 @@ Module Contents
    Bases: :py:obj:`iommi.EditTable`
 
 
-   
+   Table that appears on Task pages, for non-staff users.
+
    :param rows: a list or QuerySet of objects
    :param columns: (use this only when not using the declarative style) a list of Column objects
    :param attrs: dict of strings to string/callable of HTML attributes to apply to the table
@@ -176,7 +156,8 @@ Module Contents
    Bases: :py:obj:`iommi.EditTable`
 
 
-   
+   Table that appears on Task pages for staff users, with editable assignments.
+
    :param rows: a list or QuerySet of objects
    :param columns: (use this only when not using the declarative style) a list of Column objects
    :param attrs: dict of strings to string/callable of HTML attributes to apply to the table

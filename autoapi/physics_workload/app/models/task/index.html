@@ -228,7 +228,7 @@
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../management/index.html">physics_workload.app.management</a><input aria-label="Toggle navigation of physics_workload.app.management" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5 has-children"><a class="reference internal" href="../../management/commands/index.html">physics_workload.app.management.commands</a><input aria-label="Toggle navigation of physics_workload.app.management.commands" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="../../management/commands/calchistoric/index.html">physics_workload.app.management.commands.calchistoric</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../management/commands/calcloads/index.html">physics_workload.app.management.commands.calcloads</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../management/commands/fixtaskfirsttime/index.html">physics_workload.app.management.commands.fixtaskfirsttime</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../management/commands/importassignments/index.html">physics_workload.app.management.commands.importassignments</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../management/commands/importnonunittasks/index.html">physics_workload.app.management.commands.importnonunittasks</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../management/commands/importstaff/index.html">physics_workload.app.management.commands.importstaff</a></li>
@@ -482,8 +482,31 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="physics_workload.app.models.task.Task.FIELDS_TASK_GENERIC">
-<span class="sig-name descname"><span class="pre">FIELDS_TASK_GENERIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('load_function',</span> <span class="pre">'students',</span> <span class="pre">'requires_students')</span></em><a class="headerlink" href="#physics_workload.app.models.task.Task.FIELDS_TASK_GENERIC" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">FIELDS_TASK_GENERIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('load_function',</span> <span class="pre">'students',</span> <span class="pre">'assignment_students')</span></em><a class="headerlink" href="#physics_workload.app.models.task.Task.FIELDS_TASK_GENERIC" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="physics_workload.app.models.task.Task.AssignmentStudentsChoices">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AssignmentStudentsChoices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#physics_workload.app.models.task.Task.AssignmentStudentsChoices" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">django.db.models.TextChoices</span></code></p>
+<p>Class for creating enumerated string choices.</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="physics_workload.app.models.task.Task.AssignmentStudentsChoices.OPTIONAL">
+<span class="sig-name descname"><span class="pre">OPTIONAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('OPTIONAL',</span> <span class="pre">'Optional')</span></em><a class="headerlink" href="#physics_workload.app.models.task.Task.AssignmentStudentsChoices.OPTIONAL" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="physics_workload.app.models.task.Task.AssignmentStudentsChoices.REQUIRED">
+<span class="sig-name descname"><span class="pre">REQUIRED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('REQUIRED',</span> <span class="pre">'Required')</span></em><a class="headerlink" href="#physics_workload.app.models.task.Task.AssignmentStudentsChoices.REQUIRED" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="physics_workload.app.models.task.Task.AssignmentStudentsChoices.INVALID">
+<span class="sig-name descname"><span class="pre">INVALID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('INVALID',</span> <span class="pre">'Invalid')</span></em><a class="headerlink" href="#physics_workload.app.models.task.Task.AssignmentStudentsChoices.INVALID" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="physics_workload.app.models.task.Task.assignment_students">
@@ -760,6 +783,12 @@
 <li><a class="reference internal" href="#physics_workload.app.models.task.Task.load_fixed_first"><code class="docutils literal notranslate"><span class="pre">Task.load_fixed_first</span></code></a></li>
 <li><a class="reference internal" href="#physics_workload.app.models.task.Task.load_multiplier"><code class="docutils literal notranslate"><span class="pre">Task.load_multiplier</span></code></a></li>
 <li><a class="reference internal" href="#physics_workload.app.models.task.Task.FIELDS_TASK_GENERIC"><code class="docutils literal notranslate"><span class="pre">Task.FIELDS_TASK_GENERIC</span></code></a></li>
+<li><a class="reference internal" href="#physics_workload.app.models.task.Task.AssignmentStudentsChoices"><code class="docutils literal notranslate"><span class="pre">Task.AssignmentStudentsChoices</span></code></a><ul>
+<li><a class="reference internal" href="#physics_workload.app.models.task.Task.AssignmentStudentsChoices.OPTIONAL"><code class="docutils literal notranslate"><span class="pre">Task.AssignmentStudentsChoices.OPTIONAL</span></code></a></li>
+<li><a class="reference internal" href="#physics_workload.app.models.task.Task.AssignmentStudentsChoices.REQUIRED"><code class="docutils literal notranslate"><span class="pre">Task.AssignmentStudentsChoices.REQUIRED</span></code></a></li>
+<li><a class="reference internal" href="#physics_workload.app.models.task.Task.AssignmentStudentsChoices.INVALID"><code class="docutils literal notranslate"><span class="pre">Task.AssignmentStudentsChoices.INVALID</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#physics_workload.app.models.task.Task.assignment_students"><code class="docutils literal notranslate"><span class="pre">Task.assignment_students</span></code></a></li>
 <li><a class="reference internal" href="#physics_workload.app.models.task.Task.load_function"><code class="docutils literal notranslate"><span class="pre">Task.load_function</span></code></a></li>
 <li><a class="reference internal" href="#physics_workload.app.models.task.Task.students"><code class="docutils literal notranslate"><span class="pre">Task.students</span></code></a></li>

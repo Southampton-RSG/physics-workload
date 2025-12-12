@@ -1,7 +1,7 @@
-physics_workload.app.management.commands.calcloads
-==================================================
+physics_workload.app.management.commands.fixtaskfirsttime
+=========================================================
 
-.. py:module:: physics_workload.app.management.commands.calcloads
+.. py:module:: physics_workload.app.management.commands.fixtaskfirsttime
 
 
 Classes
@@ -9,7 +9,7 @@ Classes
 
 .. autoapisummary::
 
-   physics_workload.app.management.commands.calcloads.Command
+   physics_workload.app.management.commands.fixtaskfirsttime.Command
 
 
 Module Contents
@@ -24,7 +24,7 @@ Module Contents
 
 
    .. py:attribute:: help
-      :value: 'Initialises the staff workloads in the database.'
+      :value: "Fixes imported tasks where the 'first time' value is not a bonus added, but the flat value."
 
 
 

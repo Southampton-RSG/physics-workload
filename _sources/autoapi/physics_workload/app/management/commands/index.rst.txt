@@ -11,7 +11,7 @@ Submodules
    :maxdepth: 1
 
    /autoapi/physics_workload/app/management/commands/calchistoric/index
-   /autoapi/physics_workload/app/management/commands/calcloads/index
+   /autoapi/physics_workload/app/management/commands/fixtaskfirsttime/index
    /autoapi/physics_workload/app/management/commands/importassignments/index
    /autoapi/physics_workload/app/management/commands/importnonunittasks/index
    /autoapi/physics_workload/app/management/commands/importstaff/index

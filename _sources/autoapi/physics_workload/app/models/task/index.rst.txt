@@ -87,7 +87,33 @@ Module Contents
 
 
    .. py:attribute:: FIELDS_TASK_GENERIC
-      :value: ('load_function', 'students', 'requires_students')
+      :value: ('load_function', 'students', 'assignment_students')
+
+
+
+   .. py:class:: AssignmentStudentsChoices(*args, **kwds)
+
+      Bases: :py:obj:`django.db.models.TextChoices`
+
+
+      Class for creating enumerated string choices.
+
+      Initialize self.  See help(type(self)) for accurate signature.
+
+
+      .. py:attribute:: OPTIONAL
+         :value: ('OPTIONAL', 'Optional')
+
+
+
+      .. py:attribute:: REQUIRED
+         :value: ('REQUIRED', 'Required')
+
+
+
+      .. py:attribute:: INVALID
+         :value: ('INVALID', 'Invalid')
+
 
 
 
