@@ -146,6 +146,7 @@ physics_workload/extension
 # Jupyter
 .ipynb_checkpoints
 .autoversion
+Untitled*.ipynb
 !physics_workload/extension/physics_workload.json
 !physics_workload/extension/install.json
 physics_workload/nbextension
