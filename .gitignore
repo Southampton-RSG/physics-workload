@@ -141,13 +141,12 @@ js/node_modules
 js/test-results
 js/playwright-report
 js/*.tgz
-physics_workload/extension
 
 # Jupyter
 .ipynb_checkpoints
 .autoversion
-!physics_workload/extension/physics_workload.json
-!physics_workload/extension/install.json
+Untitled*.ipynb
+physics_workload/extension
 physics_workload/nbextension
 physics_workload/labextension
 
@@ -157,8 +156,14 @@ physics_workload/labextension
 # Rust
 target
 
+<<<<<<< before updating
 # Project
 staticfiles/
 *.csv
 *.xlsx
 */migrations/*
+=======
+# Hydra
+outputs/
+multirun/
+>>>>>>> after updating
