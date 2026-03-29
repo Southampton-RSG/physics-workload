@@ -43,6 +43,24 @@ lints: lint
 fix: fix-py fix-docs  ## run all autoformatters
 format: fix
 
+<<<<<<< before updating
+=======
+################
+# Other Checks #
+################
+.PHONY: check-dist check-types checks check
+
+check-dist:  ## check python sdist and wheel with check-dist
+	check-dist -v
+
+check-types:  ## check python types with ty
+	ty check --python $$(which python)
+
+checks: check-dist
+
+# Alias
+check: checks
+>>>>>>> after updating
 
 #########
 # TESTS #
