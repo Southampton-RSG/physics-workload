@@ -33,7 +33,7 @@ jobs:
         python-version: ["3.12"]
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - uses: actions-ext/python/setup@main
       with:
@@ -53,6 +53,7 @@ jobs:
     - name: Build
       run: make build
 
+<<<<<<< before updating
 #    - name: Test
 #      run: make coverage
 #
@@ -72,3 +73,32 @@ jobs:
 #      uses: codecov/codecov-action@v5
 #      with:
 #        token: ${{ secrets.CODECOV_TOKEN }}
+=======
+    - name: Test
+      run: make coverage
+
+    - name: Upload test results (Python)
+      uses: actions/upload-artifact@v7
+      with:
+        name: test-results-${{ matrix.os }}-${{ matrix.python-version }}
+        path: junit.xml
+      if: ${{ always() }}
+
+    - name: Publish Unit Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      with:
+        files: '**/junit.xml'
+
+    - name: Upload coverage
+      uses: codecov/codecov-action@v6
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+
+    - name: Make dist
+      run: make dist
+
+    - uses: actions/upload-artifact@v7
+      with:
+        name: dist-${{matrix.os}}
+        path: dist
+>>>>>>> after updating
