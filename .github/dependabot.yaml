@@ -3,12 +3,24 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     labels:
       - "part: github_actions"
 
+<<<<<<< before updating
   - updates:
       - package-ecosystem: "uv"
         directory: "/"
         schedule:
           interval: "weekly"
+=======
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    cooldown:
+      default-days: 7
+    labels:
+      - "lang: python"
+      - "part: dependencies"
+>>>>>>> after updating
